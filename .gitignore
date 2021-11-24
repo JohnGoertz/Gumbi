@@ -1,0 +1,13 @@
+.idea/*
+*__pycache__*
+*.egg-info
+docs/build
+docs/source/gumbi
+*.ipynb_checkpoints*
+*.ipynb
+*__pycache__*
+*.ipynb
+.coverage
+htmlcov
+*_backup*
+nupack/*

@@ -1,0 +1,12 @@
+pandas>=1.2.3
+numpy>=1.15, <=1.19.3  # numpy >1.19.3 leads to inscrutable linear algebra errors with mvup.cov and mvup.dist. May just be on Windows/WSL. Hopefully fixed soon.
+scipy
+seaborn
+scikit-learn
+matplotlib
+pymc3>=3.11.2
+bambi
+arviz>=0.11.2
+ipympl
+pathlib
+uncertainties
