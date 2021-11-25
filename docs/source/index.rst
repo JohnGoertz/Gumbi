@@ -15,6 +15,7 @@ Welcome to Gumbi's documentation!
    :caption: Examples:
    :glob:
 
+   notebooks/examples/Cars_Dataset
    notebooks/examples/Simple_Regression
    notebooks/examples/Multioutput_Regression
 
