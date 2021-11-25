@@ -37,7 +37,7 @@ df = pd.read_pickle(gmb.data.example_dataset).query('Metric=="mean"')
 outputs=['a', 'b', 'c', 'd', 'e', 'f']
 log_vars=['Y', 'b', 'c', 'd', 'f']
 logit_vars=['X', 'e']
-ds = gmb.DataSet(df, outputs=outputs, log_vars=log_vars,logit_vars=logit_vars)
+ds = gmb.DataSet(df, outputs=outputs, log_vars=log_vars, logit_vars=logit_vars)
 ds.tidy = ds.tidy[ds.tidy.Color.isin(['cyan', 'magenta']) & (ds.tidy.Pair == 'burrata+barbaresco')]
 
 # %% [markdown]
