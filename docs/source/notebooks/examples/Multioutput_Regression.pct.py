@@ -29,7 +29,6 @@ import gumbi as gmb
 
 # %%
 plt.style.use(str(gmb.style.futura))
-%config InlineBackend.figure_format ='retina'
 
 # %% [markdown]
 # ## Setup

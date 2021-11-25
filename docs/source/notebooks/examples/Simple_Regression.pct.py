@@ -24,8 +24,7 @@ import gumbi as gmb
 # Use gumbi' plotting defaults for stylistic consistency, good dataviz practice, and aesthetics
 
 # %%
-plt.style.use(str(gmb.style.breve))
-%config InlineBackend.figure_format ='retina'
+plt.style.use(str(gmb.style.futura))
 
 # %% [markdown]
 # ## Setup

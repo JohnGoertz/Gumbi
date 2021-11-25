@@ -19,11 +19,9 @@
 import gumbi as gmb
 import seaborn as sns
 import numpy as np
-import pandas as pd
 
 import matplotlib.pyplot as plt
 plt.style.use(gmb.style.breve)
-%config InlineBackend.figure_format ='retina'
 
 # %% [markdown]
 # Read in some data and store it as a Gumbi `DataSet`:
