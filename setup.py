@@ -35,6 +35,7 @@ setup(
     author_email="",
     description=DESCRIPTION,
     #long_description=LONG_DESCRIPTION,
+    python_requires='>=3.9',
     packages=find_packages(),
     package_data={'': ['*.pkl', '*.mplstyle']},
     include_package_data=True,
