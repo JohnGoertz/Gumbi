@@ -317,6 +317,9 @@ class GP(Regressor):
         self : :class:`GP`
         """
 
+        if heteroskedastic_inputs:
+            raise NotImplementedError('Heteroskedasticity over inputs is not yet implemented.')
+
         X, y = self.get_shaped_data('mean')
 
         seed = self.seed if seed is None else seed
@@ -430,7 +433,7 @@ class GP(Regressor):
             noise = pm.gp.cov.WhiteNoise(sigma=σ)
             if heteroskedastic_inputs:
                 raise NotImplementedError('Heteroskedasticity over inputs is not yet implemented')
-                noise += continuous_cov('noise')
+                # noise += continuous_cov('noise')
             if heteroskedastic_outputs and self.out_col in self.categorical_dims:
                 D_out = len(self.categorical_levels[self.out_col])
                 noise *= coreg_cov('Output_noise', D_out, idx_p)

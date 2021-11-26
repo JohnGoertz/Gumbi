@@ -205,7 +205,7 @@ class Regressor(ABC):
         self.linear_dims = self._parse_dimensions(linear_dims)
         self.categorical_dims = self._parse_dimensions(categorical_dims)
         if set(self.categorical_dims) & set(self.continuous_dims) != set():
-            raise ValueError('Overlapping items in categorical_dims, continuous_dims, and/or additive_dims')
+            raise ValueError('Overlapping items in categorical_dims and continuous_dims')
 
         # Ensure levels are valid and format as dict
         self.continuous_levels = self._parse_levels(self.continuous_dims, continuous_levels)
@@ -280,7 +280,8 @@ class Regressor(ABC):
             else:
                 raise TypeError('`levels` must be of type str, list, or dict')
 
-            assert all(set(levels[dim]).issubset(set(self.data.tidy[dim])) for dim in dims)
+            for dim in dims:
+                assert_is_subset(f'data[{dim}]', levels[dim], self.data.tidy[dim])
         else:
             levels = {}
         return levels
@@ -625,8 +626,8 @@ class Regressor(ABC):
     def predict_grid(self, output=None, categorical_levels=None, with_noise=True, **kwargs):
         """Make predictions and reshape into grid.
 
-        If the model has :attr:`categorical_dims`, a specific level for each dimension must be specified as key-value pairs
-        in `categorical_levels`.
+        If the model has :attr:`categorical_dims`, a specific level for each dimension must be specified as key-value
+        pairs in `categorical_levels`.
 
         Parameters
         ----------
@@ -653,6 +654,32 @@ class Regressor(ABC):
         self.predictions_X = self.predictions_X.reshape(self.grid_parray.shape)
 
         return self.predictions
+
+    def append_categorical_points(self, continuous_parray, categorical_levels):
+        """Appends coordinates for the supplied categorical dim-level pairs to tall array of continuous coordinates.
+
+        Parameters
+        ----------
+        continuous_points : ParameterArray
+            Tall :class:`ParameterArray` of coordinates, one layer per continuous dimension
+        categorical_levels : dict
+            Single level for each :attr:`categorical_dims` at which to make prediction
+
+        Returns
+        -------
+        points : ParameterArray
+            Tall `ParameterArray` of coordinates, one layer per continuous and categorical dimension
+        """
+
+        if categorical_levels is not None:
+            if set(categorical_levels.keys()) != (set(self.categorical_dims) - set([self.out_col])):
+                raise AttributeError('Must specify level for every categorical dimension')
+
+            points = continuous_parray.fill_with(**{dim: self.categorical_coords[dim][level]
+                                                 for dim, level in categorical_levels.items()})
+        else:
+            points = continuous_parray
+        return points
 
     ################################################################################
     # Proposals
@@ -681,32 +708,6 @@ class Regressor(ABC):
         self.proposal = self.predictions_X.ravel()[self.proposal_idx]
 
         return self.proposal
-
-    def append_categorical_points(self, continuous_parray, categorical_levels):
-        """Appends coordinates for the supplied categorical dim-level pairs to tall array of continuous coordinates.
-
-        Parameters
-        ----------
-        continuous_points : ParameterArray
-            Tall :class:`ParameterArray` of coordinates, one layer per continuous dimension
-        categorical_levels : dict
-            Single level for each :attr:`categorical_dims` at which to make prediction
-
-        Returns
-        -------
-        points : ParameterArray
-            Tall `ParameterArray` of coordinates, one layer per continuous and categorical dimension
-        """
-
-        if categorical_levels is not None:
-            if set(categorical_levels.keys()) != (set(self.categorical_dims) - set([self.out_col])):
-                raise AttributeError('Must specify level for every categorical dimension')
-
-            points = continuous_parray.fill_with(**{dim: self.categorical_coords[dim][level]
-                                                 for dim, level in categorical_levels.items()})
-        else:
-            points = continuous_parray
-        return points
 
     ################################################################################
     # Evaluation

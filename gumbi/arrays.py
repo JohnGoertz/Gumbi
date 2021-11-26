@@ -247,7 +247,7 @@ class LayeredArray(np.ndarray):
         return f'{tuple(self.names)}: {np.asarray(self)}'
 
     def get(self, name, default=None):
-        """Return value given by `name` if it exists, otherwise return `default`"""
+        """Return value given by `name` if it exists, otherwise return `default`."""
         if name in self.names:
             return self[name]
         elif default is None:
@@ -264,7 +264,7 @@ class LayeredArray(np.ndarray):
             raise KeyError(f'Name {name} not found in array.')
 
     def values(self):
-        """Values at each index stacked into regular ndarray"""
+        """Values at each index stacked into regular ndarray."""
         stacked = np.stack([self[name].astype(float) for name in self.names])
         if len(self.names) > 1:
             return stacked
@@ -272,7 +272,7 @@ class LayeredArray(np.ndarray):
             return stacked[0]
 
     def dstack(self):
-        """Values at each index as ndarrays stacked in sequence depth wise (along third axis)"""
+        """Values at each index as ndarrays stacked in sequence depth wise (along third axis)."""
         return np.dstack([la.values() for la in self.as_list()])
 
     def as_list(self, order=None):
@@ -281,13 +281,13 @@ class LayeredArray(np.ndarray):
         return [self[name] for name in order]
 
     def as_dict(self):
-        """Values corresponding to each named level as a dictionary"""
+        """Values corresponding to each named level as a dictionary."""
         return {name: self[name].values() for name in self.names}
 
     def add_layers(self, **arrays):
-        """Add additional layers at each index"""
+        """Add additional layers at each index."""
         arrays_ = arrays.as_dict() if isinstance(arrays, LayeredArray) else arrays
-        return LayeredArray(**self.as_dict(), **arrays_)
+        return LayeredArray(**(self.as_dict() | arrays_))
 
 
 class ParameterArray(LayeredArray):
@@ -427,6 +427,7 @@ class ParameterArray(LayeredArray):
         return self.parray(**narrays.as_dict(), stdzd=False)
 
     def fill_with(self, **params):
+        """Add a single value for a new parameter at all locations."""
         assert all([isinstance(value, (float, int)) for value in params.values()])
         assert all([isinstance(key, str) for key in params.keys()])
         return self.add_layers(**{param: np.full(self.shape, value) for param, value in params.items()})
