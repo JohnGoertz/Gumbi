@@ -44,16 +44,20 @@ More complex GPs are also possible, such as correlated multi-input and multi-out
 
 ### Via pip
 
-`pip install gumbi`
+    pip install gumbi
 
 ### Bleeding edge
+
+    pip install git+git://github.com/JohnGoertz/Gumbi.git@develop
+
+### Local development
 
 * Clone the repo and navigate to the new directory
   * `git clone https://gitlab.com/JohnGoertz/gumbi gumbi`
   * `cd gumbi`
 * Create a new conda environment using mamba
   * `conda install mamba` 
-  * `mamba install -f gumbi_env.yaml`
+  * `mamba install -f environment.yaml`
 * Install `gumbi` via `pip` in editable/development mode
   * From within the `gumbi` repo 
   * `pip install --editable ./`
