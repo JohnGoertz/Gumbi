@@ -8,7 +8,7 @@ Welcome to Gumbi's documentation!
    :maxdepth: 1
    :caption: Getting Started:
 
-   notebooks/getting_started/installation
+   notebooks/getting_started/introduction
 
 .. toctree::
    :maxdepth: 2

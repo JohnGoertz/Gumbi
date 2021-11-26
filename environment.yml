@@ -14,5 +14,6 @@ dependencies:
   - uncertainties
   - ipympl
   - mkl
+  - pip
   - pip:
     - .
