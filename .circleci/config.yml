@@ -1,0 +1,125 @@
+# Use the latest 2.1 version of CircleCI pipeline process engine.
+# See: https://circleci.com/docs/2.0/configuration-reference
+version: 2.1
+
+# Orbs are reusable packages of CircleCI configuration that you may share across projects, enabling you to create encapsulated, parameterized commands, jobs, and executors that can be used across multiple projects.
+# See: https://circleci.com/docs/2.0/orb-intro/
+orbs:
+  # The python orb contains a set of prepackaged CircleCI configuration you can use repeatedly in your configuration files
+  # Orb commands and jobs help you with common scripting around a language/tool
+  # so you dont have to copy and paste it everywhere.
+  # See the orb documentation here: https://circleci.com/developer/orbs/orb/circleci/python
+  python: circleci/python@1.2
+
+# Define a job to be invoked later in a workflow.
+# See: https://circleci.com/docs/2.0/configuration-reference/#jobs
+jobs:
+  build-docs: # This is the name of the job, feel free to change it to better match what you're trying to do!
+    # These next lines defines a Docker executors: https://circleci.com/docs/2.0/executor-types/
+    # You can specify an image from Dockerhub or use one of the convenience images from CircleCI's Developer Hub
+    # A list of available CircleCI Docker convenience images are available here: https://circleci.com/developer/images/image/cimg/python
+    # The executor is the environment in which the steps below will be executed - below will use a python 3.8 container
+    # Change the version below to your required version of python
+    docker:
+      - image: cimg/python:3.9
+    # Checkout the code as the first step. This is a dedicated CircleCI step.
+    # The python orb's install-packages step will install the dependencies from a Pipfile via Pipenv by default.
+    # Here we're making sure we use just use the system-wide pip. By default it uses the project root's requirements.txt.
+    # Then run your tests!
+    # CircleCI will report the results back to your VCS provider.
+    steps:
+      - checkout
+      - run:
+          name: Install Gumbi
+          command: |
+            sudo apt-get update
+            sudo apt-get install pandoc
+            pip install -U pip
+            pip install git+git://github.com/JohnGoertz/Gumbi.git@main
+            git clone --branch main https://github.com/JohnGoertz/Gumbi.git
+            pip install -r Gumbi/docs/requirements.txt
+      # - run:
+      #     name: Make notebooks
+      #     no_output_timeout: 60m
+      #     command: |
+      #       python -m ipykernel install --name python3.9 --user
+      #       rm Gumbi/docs/source/notebooks/examples/Cars_Dataset.pct.py
+      #       rm Gumbi/docs/source/notebooks/examples/Simple_Regression.pct.py
+      #       make -C Gumbi/docs/source/notebooks
+      #       # make -k -C Gumbi/docs/source/notebooks -j 4
+      #       # make -k -C Gumbi/docs/source/notebooks -j 2
+      #       # make -C Gumbi/docs/source/notebooks -j 1
+      - run:
+          name: Move docs
+          command: |
+            rm -rf docs
+            cp -r Gumbi/docs .
+            rm -rf Gumbi
+      - run:
+          name: Generate doc rst file
+          command: |
+            python docs/source/generate_api_rst.py
+      - run:
+          name: Make docs
+          command: |
+            cd docs
+            make clean
+            make html
+      - persist_to_workspace:
+          root: docs/build
+          paths: html
+      # - add_ssh_keys:
+      #     fingerprints:
+      #       - "b8:0e:35:48:12:3b:b6:55:75:c4:18:25:75:c6:d5:78"
+      # - run:
+      #     name: Commit
+      #     command: |
+      #       git config user.email "docs.bot@gumbi.com"
+      #       git config user.name "Docs Bot"
+      #       git add --all
+      #       git commit -m "Update docs [ci skip]"
+      #       git pull origin main
+      #       git push origin main
+      #       # bash tag-stable.sh
+      - run: echo "Docs created successfully"
+  deploy-docs:
+    docker:
+      - image: node:8.10.0
+    steps:
+      - checkout
+      - attach_workspace:
+          at: docs/build
+      - run:
+          name: Disable jekyll builds
+          command: touch docs/build/html/.nojekyll
+      - run:
+          name: Install and configure dependencies
+          command: |
+            npm install -g --silent gh-pages@2.0.1
+            git config user.email "docs.bot@gumbi.com"
+            git config user.name "Docs Bot"
+      - add_ssh_keys:
+          fingerprints:
+            - "b8:0e:35:48:12:3b:b6:55:75:c4:18:25:75:c6:d5:78"
+      - run:
+          name: Deploy docs to gh-pages branch
+          command: gh-pages --dotfiles --message "Deploy docs [ci skip]" --dist docs/build/html
+
+
+# Invoke jobs via workflows
+# See: https://circleci.com/docs/2.0/configuration-reference/#workflows
+workflows:
+  build: # This is the name of the workflow, feel free to change it to better match your workflow.
+    # Inside the workflow, you define the jobs you want to run.
+    jobs:
+      - build-docs
+      - deploy-docs:
+          requires:
+            - build-docs
+          # filters:
+          #   branches:
+          #     only: main
+
+# config.yaml written using advice from:
+# https://circleci.com/blog/deploying-documentation-to-github-pages-with-continuous-integration/#c-consent-modal
+# https://github.com/GPflow/docs/blob/master/.circleci/config.yml
