@@ -1,5 +1,7 @@
 # Gumbi: Gaussian Process Model Building Interface
 
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JohnGoertz/Gumbi/HEAD)
+
 ## Overview
 
 Gumbi simplifies the steps needed to build a Gaussian Process model from tabular data. It takes care of shaping, 
