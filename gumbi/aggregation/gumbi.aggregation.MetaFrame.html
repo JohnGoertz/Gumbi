@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MetaFrame &mdash; Gumbi 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/green_theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Standardizer" href="gumbi.aggregation.Standardizer.html" />
+    <link rel="prev" title="DataSet" href="gumbi.aggregation.DataSet.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> Gumbi
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/getting_started/installation.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Cars_Dataset.html">The Cars Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Simple_Regression.html">Simple Regression and Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Multioutput_Regression.html">Multioutput Regression</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">gumbi</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#module-gumbi.aggregation">gumbi.aggregation</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="gumbi.aggregation.DataSet.html">DataSet</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">MetaFrame</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gumbi.aggregation.Standardizer.html">Standardizer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gumbi.aggregation.TidyData.html">TidyData</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gumbi.aggregation.WideData.html">WideData</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#module-gumbi.arrays">gumbi.arrays</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#module-gumbi.plotting">gumbi.plotting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#module-gumbi.regression">gumbi.regression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#module-gumbi.utils">gumbi.utils</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Gumbi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">gumbi</a> &raquo;</li>
+      <li>MetaFrame</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/gumbi/aggregation/gumbi.aggregation.MetaFrame.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="metaframe">
+<h1>MetaFrame<a class="headerlink" href="#metaframe" title="Permalink to this headline"></a></h1>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.aggregation.MetaFrame" title="gumbi.aggregation.MetaFrame"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MetaFrame</span></code></a>(df, outputs[, log_vars, ...])</p></td>
+<td><p>Abstract Base Class for <a class="reference internal" href="gumbi.aggregation.WideData.html#gumbi.aggregation.WideData" title="gumbi.aggregation.WideData"><code class="xref py py-class docutils literal notranslate"><span class="pre">WideData</span></code></a> and <a class="reference internal" href="gumbi.aggregation.TidyData.html#gumbi.aggregation.TidyData" title="gumbi.aggregation.TidyData"><code class="xref py py-class docutils literal notranslate"><span class="pre">TidyData</span></code></a>.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.aggregation.MetaFrame.float_inputs" title="gumbi.aggregation.MetaFrame.float_inputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MetaFrame.float_inputs</span></code></a></p></td>
+<td><p>Columns of dataframe with &quot;float64&quot; dtype.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gumbi.aggregation.MetaFrame.inputs" title="gumbi.aggregation.MetaFrame.inputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MetaFrame.inputs</span></code></a></p></td>
+<td><p>Columns of dataframe not contained in <code class="xref py py-attr docutils literal notranslate"><span class="pre">outputs</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">MetaFrame.log_vars</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">MetaFrame.logit_vars</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">MetaFrame.names_column</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gumbi.aggregation.MetaFrame.specs" title="gumbi.aggregation.MetaFrame.specs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MetaFrame.specs</span></code></a></p></td>
+<td><p>Provides keyword arguments for easy instantiation of a similar object.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">MetaFrame.stdzr</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gumbi.aggregation.MetaFrame.t" title="gumbi.aggregation.MetaFrame.t"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MetaFrame.t</span></code></a></p></td>
+<td><p>Transformed data values.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">MetaFrame.values_column</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gumbi.aggregation.MetaFrame.z" title="gumbi.aggregation.MetaFrame.z"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MetaFrame.z</span></code></a></p></td>
+<td><p>Standardized data values.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">MetaFrame.df</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">MetaFrame.outputs</span></code></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="gumbi.aggregation.MetaFrame">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gumbi.aggregation.</span></span><span class="sig-name descname"><span class="pre">MetaFrame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_vars</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logit_vars</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Variable'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Value'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stdzr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="gumbi.aggregation.Standardizer.html#gumbi.aggregation.Standardizer" title="gumbi.aggregation.Standardizer"><span class="pre">gumbi.aggregation.Standardizer</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.aggregation.MetaFrame" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pandas.core.frame.DataFrame</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>Abstract Base Class for <a class="reference internal" href="gumbi.aggregation.WideData.html#gumbi.aggregation.WideData" title="gumbi.aggregation.WideData"><code class="xref py py-class docutils literal notranslate"><span class="pre">WideData</span></code></a> and <a class="reference internal" href="gumbi.aggregation.TidyData.html#gumbi.aggregation.TidyData" title="gumbi.aggregation.TidyData"><code class="xref py py-class docutils literal notranslate"><span class="pre">TidyData</span></code></a>.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="gumbi.aggregation.MetaFrame.float_inputs">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">float_inputs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#gumbi.aggregation.MetaFrame.float_inputs" title="Permalink to this definition"></a></dt>
+<dd><p>Columns of dataframe with “float64” dtype.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gumbi.aggregation.MetaFrame.inputs">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">inputs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#gumbi.aggregation.MetaFrame.inputs" title="Permalink to this definition"></a></dt>
+<dd><p>Columns of dataframe not contained in <code class="xref py py-attr docutils literal notranslate"><span class="pre">outputs</span></code>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gumbi.aggregation.MetaFrame.specs">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">specs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span></em><a class="headerlink" href="#gumbi.aggregation.MetaFrame.specs" title="Permalink to this definition"></a></dt>
+<dd><p>Provides keyword arguments for easy instantiation of a similar object.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gumbi.aggregation.MetaFrame.t">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">t</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">pandas.core.frame.DataFrame</span></em><a class="headerlink" href="#gumbi.aggregation.MetaFrame.t" title="Permalink to this definition"></a></dt>
+<dd><p>Transformed data values.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gumbi.aggregation.MetaFrame.z">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">z</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">pandas.core.frame.DataFrame</span></em><a class="headerlink" href="#gumbi.aggregation.MetaFrame.z" title="Permalink to this definition"></a></dt>
+<dd><p>Standardized data values.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="gumbi.aggregation.DataSet.html" class="btn btn-neutral float-left" title="DataSet" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gumbi.aggregation.Standardizer.html" class="btn btn-neutral float-right" title="Standardizer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, John Goertz.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MVUncertainParameterArray &mdash; Gumbi 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/green_theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="MultivariateNormalish" href="gumbi.arrays.MultivariateNormalish.html" />
+    <link rel="prev" title="LogitNormal" href="gumbi.arrays.LogitNormal.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> Gumbi
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/getting_started/installation.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Cars_Dataset.html">The Cars Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Simple_Regression.html">Simple Regression and Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Multioutput_Regression.html">Multioutput Regression</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">gumbi</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#module-gumbi.aggregation">gumbi.aggregation</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#module-gumbi.arrays">gumbi.arrays</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="gumbi.arrays.LayeredArray.html">LayeredArray</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gumbi.arrays.LogitNormal.html">LogitNormal</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">MVUncertainParameterArray</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gumbi.arrays.MultivariateNormalish.html">MultivariateNormalish</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gumbi.arrays.ParameterArray.html">ParameterArray</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gumbi.arrays.UncertainArray.html">UncertainArray</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gumbi.arrays.UncertainParameterArray.html">UncertainParameterArray</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#module-gumbi.plotting">gumbi.plotting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#module-gumbi.regression">gumbi.regression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#module-gumbi.utils">gumbi.utils</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Gumbi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">gumbi</a> &raquo;</li>
+      <li>MVUncertainParameterArray</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/gumbi/arrays/gumbi.arrays.MVUncertainParameterArray.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="mvuncertainparameterarray">
+<h1>MVUncertainParameterArray<a class="headerlink" href="#mvuncertainparameterarray" title="Permalink to this headline"></a></h1>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.arrays.MVUncertainParameterArray" title="gumbi.arrays.MVUncertainParameterArray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MVUncertainParameterArray</span></code></a>(*uparrays, cor[, ...])</p></td>
+<td><p>Structured array of multiple parameter means and variances along with correlations.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.arrays.MVUncertainParameterArray.cov" title="gumbi.arrays.MVUncertainParameterArray.cov"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MVUncertainParameterArray.cov</span></code></a>([stdzd, whiten])</p></td>
+<td><p>Covariance matrix (only supported for 0-D MVUParrays)</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gumbi.arrays.MVUncertainParameterArray.get" title="gumbi.arrays.MVUncertainParameterArray.get"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MVUncertainParameterArray.get</span></code></a>(name[, default])</p></td>
+<td><p>Return one component parameter as an UncertainParameterArray or a subset as an MVUncertainParameterArray</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.arrays.MVUncertainParameterArray.mahalanobis" title="gumbi.arrays.MVUncertainParameterArray.mahalanobis"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MVUncertainParameterArray.mahalanobis</span></code></a>(parray)</p></td>
+<td><p>Calculates the Mahalanobis distance between the MVUParray distribution and a (ParameterArray) point.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gumbi.arrays.MVUncertainParameterArray.mvuparray" title="gumbi.arrays.MVUncertainParameterArray.mvuparray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MVUncertainParameterArray.mvuparray</span></code></a>(*args, ...)</p></td>
+<td><p>Create an MVUncertainParameterArray using this instance's Standardizer</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.arrays.MVUncertainParameterArray.outlier_pval" title="gumbi.arrays.MVUncertainParameterArray.outlier_pval"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MVUncertainParameterArray.outlier_pval</span></code></a>(parray)</p></td>
+<td><p>Calculates the p-value that a given (ParameterArray) point is an outlier from the MVUParray distribution.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gumbi.arrays.MVUncertainParameterArray.parray" title="gumbi.arrays.MVUncertainParameterArray.parray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MVUncertainParameterArray.parray</span></code></a>(*args, **kwargs)</p></td>
+<td><p>Create a ParameterArray using this instance's Standardizer</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.arrays.MVUncertainParameterArray.uparray" title="gumbi.arrays.MVUncertainParameterArray.uparray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MVUncertainParameterArray.uparray</span></code></a>(*args, ...)</p></td>
+<td><p>Create an UncertainParameterArray using this instance's Standardizer</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.arrays.MVUncertainParameterArray.dist" title="gumbi.arrays.MVUncertainParameterArray.dist"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MVUncertainParameterArray.dist</span></code></a></p></td>
+<td><p>Scipy <code class="xref py py-func docutils literal notranslate"><span class="pre">multivariate_normal()</span></code> object (only supported for 0-D MVUParrays)</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gumbi.arrays.MVUncertainParameterArray.t" title="gumbi.arrays.MVUncertainParameterArray.t"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MVUncertainParameterArray.t</span></code></a></p></td>
+<td><p>Transformed values.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.arrays.MVUncertainParameterArray.z" title="gumbi.arrays.MVUncertainParameterArray.z"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MVUncertainParameterArray.z</span></code></a></p></td>
+<td><p>Standardized values.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gumbi.arrays.MVUncertainParameterArray." title="gumbi.arrays.MVUncertainParameterArray.μ"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MVUncertainParameterArray.μ</span></code></a></p></td>
+<td><p>Means</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#id0" title="gumbi.arrays.MVUncertainParameterArray.σ"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MVUncertainParameterArray.σ</span></code></a></p></td>
+<td><p>Standard deviations</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gumbi.arrays.MVUncertainParameterArray.2" title="gumbi.arrays.MVUncertainParameterArray.σ2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MVUncertainParameterArray.σ2</span></code></a></p></td>
+<td><p>Marginal variances</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="gumbi.arrays.MVUncertainParameterArray">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gumbi.arrays.</span></span><span class="sig-name descname"><span class="pre">MVUncertainParameterArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">uparrays</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stdzr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.arrays.MVUncertainParameterArray" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></p>
+<p>Structured array of multiple parameter means and variances along with correlations.</p>
+<p>This class is essentially a combination of the <a class="reference internal" href="gumbi.arrays.ParameterArray.html#gumbi.arrays.ParameterArray" title="gumbi.arrays.ParameterArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParameterArray</span></code></a> and <a class="reference internal" href="gumbi.arrays.UncertainParameterArray.html#gumbi.arrays.UncertainParameterArray" title="gumbi.arrays.UncertainParameterArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">UncertainParameterArray</span></code></a> classes.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.multivariate_normal.html">multivariate_normal</a>:
+scipy <cite>Multivariate Normal</cite> random variable</p>
+<p><a class="reference internal" href="gumbi.arrays.ParameterArray.html#gumbi.arrays.ParameterArray" title="gumbi.arrays.ParameterArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParameterArray</span></code></a></p>
+<p><a class="reference internal" href="gumbi.arrays.UncertainParameterArray.html#gumbi.arrays.UncertainParameterArray" title="gumbi.arrays.UncertainParameterArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">UncertainParameterArray</span></code></a></p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>*uparrays</strong> (<a class="reference internal" href="gumbi.arrays.UncertainParameterArray.html#gumbi.arrays.UncertainParameterArray" title="gumbi.arrays.UncertainParameterArray"><em>UncertainParameterArray</em></a>) – UParrays of identical shape containing the marginal mean and variance of each parameter</p></li>
+<li><p><strong>stdzr</strong> (<a class="reference internal" href="../aggregation/gumbi.aggregation.Standardizer.html#gumbi.aggregation.Standardizer" title="gumbi.aggregation.Standardizer"><em>Standardizer</em></a>) – An instance  of <code class="xref py py-class docutils literal notranslate"><span class="pre">Standardizer</span></code></p></li>
+<li><p><strong>stdzd</strong> (<em>bool</em><em>, </em><em>default False</em>) – Whether the supplied values are on standardized scale instead of the natural scale</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Create an MVUParray from two UParrays with negative correlation</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gumbi</span> <span class="kn">import</span> <span class="n">uparray</span><span class="p">,</span> <span class="n">mvuparray</span><span class="p">,</span> <span class="n">Standardizer</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stdzr</span> <span class="o">=</span> <span class="n">Standardizer</span><span class="p">(</span><span class="n">m</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;μ&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">5.30</span><span class="p">,</span> <span class="s1">&#39;σ&#39;</span><span class="p">:</span> <span class="mf">0.582</span><span class="p">},</span> <span class="n">r</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;μ&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.307</span><span class="p">,</span> <span class="s1">&#39;σ&#39;</span><span class="p">:</span> <span class="mf">0.158</span><span class="p">},</span> <span class="n">log_vars</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m_upa</span> <span class="o">=</span> <span class="n">uparray</span><span class="p">(</span><span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span><span class="o">/</span><span class="mi">10</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span><span class="o">/</span><span class="mi">100</span><span class="p">,</span> <span class="n">stdzr</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r_upa</span> <span class="o">=</span> <span class="n">uparray</span><span class="p">(</span><span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span><span class="o">/</span><span class="mi">10</span><span class="o">+</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span><span class="o">/</span><span class="mi">100</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="n">stdzr</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.6</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.6</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cor</span>
+<span class="go">array([[ 1. , -0.6],</span>
+<span class="go">       [-0.6,  1. ]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mvup</span> <span class="o">=</span> <span class="n">mvuparray</span><span class="p">(</span><span class="n">m_upa</span><span class="p">,</span> <span class="n">r_upa</span><span class="p">,</span> <span class="n">cor</span><span class="o">=</span><span class="n">cor</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The MVUParray is displayed as an array of tuples ((μ_a, μ_b), (σ2_a, σ2_b))</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mvup</span>
+<span class="go">(&#39;c&#39;, &#39;d&#39;)[&#39;μ&#39;, &#39;σ2&#39;]: [((0.1, 0.6), (0.01, 0.02)) ((0.2, 0.7), (0.02, 0.04))</span>
+<span class="go">                        ((0.3, 0.8), (0.03, 0.06)) ((0.4, 0.9), (0.04, 0.08))]</span>
+</pre></div>
+</div>
+<p>The marginal means or variances can be extracted as ParameterArrays:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mvup</span><span class="o">.</span><span class="n">μ</span>
+<span class="go">(&#39;c&#39;, &#39;d&#39;): [(0.1, 0.6) (0.2, 0.7) (0.3, 0.8) (0.4, 0.9)]</span>
+</pre></div>
+</div>
+<p>The component UncertainParameterArrays can be extracted with the <a class="reference internal" href="#gumbi.arrays.MVUncertainParameterArray.get" title="gumbi.arrays.MVUncertainParameterArray.get"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get()</span></code></a> method:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mvup</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;d&#39;</span><span class="p">)</span>
+<span class="go">r[&#39;μ&#39;, &#39;σ2&#39;]: [(0.6, 0.02) (0.7, 0.04) (0.8, 0.06) (0.9, 0.08)]</span>
+</pre></div>
+</div>
+<p>Slicing and indexing works as normal:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mvup</span><span class="p">[::</span><span class="mi">2</span><span class="p">]</span>
+<span class="go">(&#39;c&#39;, &#39;d&#39;): [((0.1, 0.6), (0.01, 0.02)) ((0.3, 0.8), (0.03, 0.06))]</span>
+</pre></div>
+</div>
+<p>Transformed and standardized distributions can be obtained as with UncertainParameterArray</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mvup</span><span class="o">.</span><span class="n">t</span>
+<span class="go">(&#39;m_t&#39;, &#39;r_t&#39;)[&#39;μ&#39;, &#39;σ2&#39;]: [((-2.30258509, -0.51082562), (0.01, 0.02))</span>
+<span class="go">                            ((-1.60943791, -0.35667494), (0.02, 0.04))</span>
+<span class="go">                            ((-1.2039728 , -0.22314355), (0.03, 0.06))</span>
+<span class="go">                            ((-0.91629073, -0.10536052), (0.04, 0.08))]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mvup</span><span class="o">.</span><span class="n">z</span>
+<span class="go">(&#39;m_z&#39;, &#39;r_z&#39;)[&#39;μ&#39;, &#39;σ2&#39;]: [((5.15019743, -1.29003559), (0.02952256, 0.80115366))</span>
+<span class="go">                            ((6.34117197, -0.31439838), (0.05904512, 1.60230732))</span>
+<span class="go">                            ((7.03784742,  0.53073702), (0.08856768, 2.40346098))</span>
+<span class="go">                            ((7.53214651,  1.27619927), (0.11809024, 3.20461465))]</span>
+</pre></div>
+</div>
+<p>For 0-d MVUParrays (or individual elements of larger arrays), the <a class="reference internal" href="#gumbi.arrays.MVUncertainParameterArray.dist" title="gumbi.arrays.MVUncertainParameterArray.dist"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dist()</span></code></a> exposes the scipy
+<cite>multivariate_normal</cite> object. Because this distribution is defined in standardized space (by default, <cite>stdzd=True</cite>)
+or transformed spaced (<cite>stdzd=False</cite>), ParameterArrays may be the most convenient way to pass arguments to the
+distribution methods:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pa</span> <span class="o">=</span> <span class="n">mvup</span><span class="o">.</span><span class="n">parray</span><span class="p">(</span><span class="n">m</span><span class="o">=</span><span class="mf">0.09</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="mf">0.61</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mvup</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dist</span><span class="p">()</span><span class="o">.</span><span class="n">cdf</span><span class="p">(</span><span class="n">pa</span><span class="o">.</span><span class="n">z</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+<span class="go">0.023900979112885523</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mvup</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dist</span><span class="p">(</span><span class="n">stdzd</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">cdf</span><span class="p">(</span><span class="n">pa</span><span class="o">.</span><span class="n">t</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+<span class="go">0.023900979112885523</span>
+</pre></div>
+</div>
+<p>Perhaps most importantly, the <code class="xref py py-meth docutils literal notranslate"><span class="pre">rvs()</span></code> allows drawing correlated samples from the joint distribution, returned as
+a ParameterArray:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mvup</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dist</span><span class="o">.</span><span class="n">rvs</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">2021</span><span class="p">)</span>
+<span class="go">(&#39;c&#39;, &#39;d&#39;): [(0.0962634 , 0.74183363) (0.09627651, 0.56437764)</span>
+<span class="go">             (0.09140986, 0.64790721) (0.09816149, 0.70518567)</span>
+<span class="go">             (0.10271404, 0.60974628) (0.09288982, 0.60933939)</span>
+<span class="go">             (0.0983131 , 0.63588871) (0.12262933, 0.45941758)</span>
+<span class="go">             (0.1070759 , 0.4918009 ) (0.11118635, 0.49708401)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mvup</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dist</span><span class="o">.</span><span class="n">rvs</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">2021</span><span class="p">)</span><span class="o">.</span><span class="n">z</span>
+<span class="go">(&#39;m_z&#39;, &#39;r_z&#39;): (5.08476443, 0.05297293)</span>
+</pre></div>
+</div>
+<p>Allowing us to easily visualize the joint distribution:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sns</span><span class="o">.</span><span class="n">jointplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">mvup</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dist</span><span class="o">.</span><span class="n">rvs</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span><span class="o">.</span><span class="n">as_dict</span><span class="p">()),</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;kde&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="gumbi.arrays.MVUncertainParameterArray.cov">
+<span class="sig-name descname"><span class="pre">cov</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stdzd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">whiten</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-10</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.arrays.MVUncertainParameterArray.cov" title="Permalink to this definition"></a></dt>
+<dd><p>Covariance matrix (only supported for 0-D MVUParrays)</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gumbi.arrays.MVUncertainParameterArray.dist">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dist</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="gumbi.arrays.MultivariateNormalish.html#gumbi.arrays.MultivariateNormalish" title="gumbi.arrays.MultivariateNormalish"><span class="pre">gumbi.arrays.MultivariateNormalish</span></a></em><a class="headerlink" href="#gumbi.arrays.MVUncertainParameterArray.dist" title="Permalink to this definition"></a></dt>
+<dd><p>Scipy <code class="xref py py-func docutils literal notranslate"><span class="pre">multivariate_normal()</span></code> object (only supported for 0-D MVUParrays)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gumbi.arrays.MVUncertainParameterArray.get">
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="gumbi.arrays.UncertainParameterArray.html#gumbi.arrays.UncertainParameterArray" title="gumbi.arrays.UncertainParameterArray"><span class="pre">UncertainParameterArray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#gumbi.arrays.MVUncertainParameterArray" title="gumbi.arrays.MVUncertainParameterArray"><span class="pre">MVUncertainParameterArray</span></a></span></span><a class="headerlink" href="#gumbi.arrays.MVUncertainParameterArray.get" title="Permalink to this definition"></a></dt>
+<dd><p>Return one component parameter as an UncertainParameterArray or a subset as an MVUncertainParameterArray</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gumbi.arrays.MVUncertainParameterArray.mahalanobis">
+<span class="sig-name descname"><span class="pre">mahalanobis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parray</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gumbi.arrays.ParameterArray.html#gumbi.arrays.ParameterArray" title="gumbi.arrays.ParameterArray"><span class="pre">gumbi.arrays.ParameterArray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#gumbi.arrays.MVUncertainParameterArray.mahalanobis" title="Permalink to this definition"></a></dt>
+<dd><p>Calculates the Mahalanobis distance between the MVUParray distribution and a (ParameterArray) point.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gumbi.arrays.MVUncertainParameterArray.mvuparray">
+<span class="sig-name descname"><span class="pre">mvuparray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gumbi.arrays.MVUncertainParameterArray" title="gumbi.arrays.MVUncertainParameterArray"><span class="pre">gumbi.arrays.MVUncertainParameterArray</span></a></span></span><a class="headerlink" href="#gumbi.arrays.MVUncertainParameterArray.mvuparray" title="Permalink to this definition"></a></dt>
+<dd><p>Create an MVUncertainParameterArray using this instance’s Standardizer</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gumbi.arrays.MVUncertainParameterArray.outlier_pval">
+<span class="sig-name descname"><span class="pre">outlier_pval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parray</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gumbi.arrays.ParameterArray.html#gumbi.arrays.ParameterArray" title="gumbi.arrays.ParameterArray"><span class="pre">gumbi.arrays.ParameterArray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#gumbi.arrays.MVUncertainParameterArray.outlier_pval" title="Permalink to this definition"></a></dt>
+<dd><p>Calculates the p-value that a given (ParameterArray) point is an outlier from the MVUParray distribution.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gumbi.arrays.MVUncertainParameterArray.parray">
+<span class="sig-name descname"><span class="pre">parray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="gumbi.arrays.ParameterArray.html#gumbi.arrays.ParameterArray" title="gumbi.arrays.ParameterArray"><span class="pre">gumbi.arrays.ParameterArray</span></a></span></span><a class="headerlink" href="#gumbi.arrays.MVUncertainParameterArray.parray" title="Permalink to this definition"></a></dt>
+<dd><p>Create a ParameterArray using this instance’s Standardizer</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gumbi.arrays.MVUncertainParameterArray.t">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">t</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#gumbi.arrays.MVUncertainParameterArray" title="gumbi.arrays.MVUncertainParameterArray"><span class="pre">gumbi.arrays.MVUncertainParameterArray</span></a></em><a class="headerlink" href="#gumbi.arrays.MVUncertainParameterArray.t" title="Permalink to this definition"></a></dt>
+<dd><p>Transformed values.</p>
+<p>Returns a MVUncertainParameterArray with the same Standardizer values as the current instance but with all
+transforms set to <cite>lambda x: x</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gumbi.arrays.MVUncertainParameterArray.uparray">
+<span class="sig-name descname"><span class="pre">uparray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="gumbi.arrays.UncertainParameterArray.html#gumbi.arrays.UncertainParameterArray" title="gumbi.arrays.UncertainParameterArray"><span class="pre">gumbi.arrays.UncertainParameterArray</span></a></span></span><a class="headerlink" href="#gumbi.arrays.MVUncertainParameterArray.uparray" title="Permalink to this definition"></a></dt>
+<dd><p>Create an UncertainParameterArray using this instance’s Standardizer</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gumbi.arrays.MVUncertainParameterArray.z">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">z</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#gumbi.arrays.MVUncertainParameterArray" title="gumbi.arrays.MVUncertainParameterArray"><span class="pre">gumbi.arrays.MVUncertainParameterArray</span></a></em><a class="headerlink" href="#gumbi.arrays.MVUncertainParameterArray.z" title="Permalink to this definition"></a></dt>
+<dd><p>Standardized values.</p>
+<p>Returns a MVUncertainParameterArray with a default Standardizer (mean and SD of all variables set to zero and
+all transforms set to <cite>lambda x: x</cite>).</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gumbi.arrays.MVUncertainParameterArray.">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">μ</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="gumbi.arrays.ParameterArray.html#gumbi.arrays.ParameterArray" title="gumbi.arrays.ParameterArray"><span class="pre">gumbi.arrays.ParameterArray</span></a></em><a class="headerlink" href="#gumbi.arrays.MVUncertainParameterArray." title="Permalink to this definition"></a></dt>
+<dd><p>Means</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="id0">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">σ</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="gumbi.arrays.ParameterArray.html#gumbi.arrays.ParameterArray" title="gumbi.arrays.ParameterArray"><span class="pre">gumbi.arrays.ParameterArray</span></a></em><a class="headerlink" href="#id0" title="Permalink to this definition"></a></dt>
+<dd><p>Standard deviations</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gumbi.arrays.MVUncertainParameterArray.2">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">σ2</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="gumbi.arrays.ParameterArray.html#gumbi.arrays.ParameterArray" title="gumbi.arrays.ParameterArray"><span class="pre">gumbi.arrays.ParameterArray</span></a></em><a class="headerlink" href="#gumbi.arrays.MVUncertainParameterArray.2" title="Permalink to this definition"></a></dt>
+<dd><p>Marginal variances</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="gumbi.arrays.LogitNormal.html" class="btn btn-neutral float-left" title="LogitNormal" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gumbi.arrays.MultivariateNormalish.html" class="btn btn-neutral float-right" title="MultivariateNormalish" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, John Goertz.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

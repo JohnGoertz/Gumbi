@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ParameterArray &mdash; Gumbi 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/green_theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="UncertainArray" href="gumbi.arrays.UncertainArray.html" />
+    <link rel="prev" title="MultivariateNormalish" href="gumbi.arrays.MultivariateNormalish.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> Gumbi
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/getting_started/installation.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Cars_Dataset.html">The Cars Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Simple_Regression.html">Simple Regression and Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Multioutput_Regression.html">Multioutput Regression</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">gumbi</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#module-gumbi.aggregation">gumbi.aggregation</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#module-gumbi.arrays">gumbi.arrays</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="gumbi.arrays.LayeredArray.html">LayeredArray</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gumbi.arrays.LogitNormal.html">LogitNormal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gumbi.arrays.MVUncertainParameterArray.html">MVUncertainParameterArray</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gumbi.arrays.MultivariateNormalish.html">MultivariateNormalish</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">ParameterArray</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gumbi.arrays.UncertainArray.html">UncertainArray</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gumbi.arrays.UncertainParameterArray.html">UncertainParameterArray</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#module-gumbi.plotting">gumbi.plotting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#module-gumbi.regression">gumbi.regression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#module-gumbi.utils">gumbi.utils</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Gumbi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">gumbi</a> &raquo;</li>
+      <li>ParameterArray</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/gumbi/arrays/gumbi.arrays.ParameterArray.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="parameterarray">
+<h1>ParameterArray<a class="headerlink" href="#parameterarray" title="Permalink to this headline"></a></h1>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.arrays.ParameterArray" title="gumbi.arrays.ParameterArray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ParameterArray</span></code></a>(stdzr[, stdzd])</p></td>
+<td><p>Array of parameter values, allowing simple transformation.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.arrays.ParameterArray.add_layers" title="gumbi.arrays.ParameterArray.add_layers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ParameterArray.add_layers</span></code></a>([stdzd])</p></td>
+<td><p>Add additional layers at each index</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ParameterArray.drop</span></code>(name[, missing_ok])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.arrays.ParameterArray.fill_with" title="gumbi.arrays.ParameterArray.fill_with"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ParameterArray.fill_with</span></code></a>(**params)</p></td>
+<td><p>Add a single value for a new parameter at all locations.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gumbi.arrays.ParameterArray.get" title="gumbi.arrays.ParameterArray.get"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ParameterArray.get</span></code></a>(name[, default])</p></td>
+<td><p>Return value given by <cite>name</cite> if it exists, otherwise return <cite>default</cite></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ParameterArray.hstack</span></code>(parray_list, **kwargs)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gumbi.arrays.ParameterArray.parray" title="gumbi.arrays.ParameterArray.parray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ParameterArray.parray</span></code></a>(*args, **kwargs)</p></td>
+<td><p>Create a new ParameterArray using this instance's standardizer</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ParameterArray.stack</span></code>(parray_list[, axis])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ParameterArray.vstack</span></code>(parray_list, **kwargs)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.arrays.ParameterArray.t" title="gumbi.arrays.ParameterArray.t"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ParameterArray.t</span></code></a></p></td>
+<td><p>Transformed values</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gumbi.arrays.ParameterArray.z" title="gumbi.arrays.ParameterArray.z"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ParameterArray.z</span></code></a></p></td>
+<td><p>Standardized values</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="gumbi.arrays.ParameterArray">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gumbi.arrays.</span></span><span class="sig-name descname"><span class="pre">ParameterArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stdzr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../aggregation/gumbi.aggregation.Standardizer.html#gumbi.aggregation.Standardizer" title="gumbi.aggregation.Standardizer"><span class="pre">gumbi.aggregation.Standardizer</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">stdzd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">arrays</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.arrays.ParameterArray" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="gumbi.arrays.LayeredArray.html#gumbi.arrays.LayeredArray" title="gumbi.arrays.LayeredArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">gumbi.arrays.LayeredArray</span></code></a></p>
+<p>Array of parameter values, allowing simple transformation.</p>
+<p><a class="reference internal" href="#gumbi.arrays.ParameterArray" title="gumbi.arrays.ParameterArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParameterArray</span></code></a> stores not only the value of the variable itself but also a <code class="xref py py-class docutils literal notranslate"><span class="pre">Standardizer</span></code> instance.
+This makes it simple to switch between the natural scale of the parameter and its transformed and standardized
+values through the <a class="reference internal" href="#gumbi.arrays.ParameterArray.t" title="gumbi.arrays.ParameterArray.t"><code class="xref py py-attr docutils literal notranslate"><span class="pre">t</span></code></a> and <a class="reference internal" href="#gumbi.arrays.ParameterArray.z" title="gumbi.arrays.ParameterArray.z"><code class="xref py py-attr docutils literal notranslate"><span class="pre">z</span></code></a> properties, respectively.</p>
+<p>This class can also be accessed through the alias <a class="reference internal" href="#gumbi.arrays.ParameterArray.parray" title="gumbi.arrays.ParameterArray.parray"><code class="xref py py-class docutils literal notranslate"><span class="pre">parray</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>**arrays</strong> – arrays to store with their names as keywords</p></li>
+<li><p><strong>stdzr</strong> (<a class="reference internal" href="../aggregation/gumbi.aggregation.Standardizer.html#gumbi.aggregation.Standardizer" title="gumbi.aggregation.Standardizer"><em>Standardizer</em></a>) – An instance  of <code class="xref py py-class docutils literal notranslate"><span class="pre">Standardizer</span></code></p></li>
+<li><p><strong>stdzd</strong> (<em>bool</em><em>, </em><em>default False</em>) – Whether the supplied values are on standardized scale instead of the natural scale</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>A parray can created with a single parameter. In this case, <cite>r</cite> is treated as a <cite>LogNormal</cite> variable by the stdzr.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gumbi</span> <span class="kn">import</span> <span class="n">ParameterArray</span> <span class="k">as</span> <span class="n">parray</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stdzr</span> <span class="o">=</span> <span class="n">Standardizer</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;μ&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">0.307</span><span class="p">,</span> <span class="s1">&#39;σ&#39;</span><span class="p">:</span> <span class="mf">0.158</span><span class="p">},</span> <span class="n">log_vars</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;d&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rpa</span> <span class="o">=</span> <span class="n">parray</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span><span class="o">/</span><span class="mi">10</span><span class="p">,</span> <span class="n">stdzr</span><span class="o">=</span><span class="n">stdzr</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rpa</span>
+<span class="go">(&#39;d&#39;,): [(0.5,) (0.6,) (0.7,) (0.8,) (0.9,)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rpa</span><span class="o">.</span><span class="n">t</span>
+<span class="go">(&#39;r_t&#39;,): [(-0.69314718,) (-0.51082562,) (-0.35667494,) (-0.22314355,) (-0.10536052,)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rpa</span><span class="o">.</span><span class="n">z</span>
+<span class="go">(&#39;r_z&#39;,): [(-2.4439695 ,) (-1.29003559,) (-0.31439838,) ( 0.53073702,) ( 1.27619927,)]</span>
+</pre></div>
+</div>
+<p>If the parameter is completely absent from the stdzr, its natural, <a class="reference internal" href="#gumbi.arrays.ParameterArray.t" title="gumbi.arrays.ParameterArray.t"><code class="xref py py-attr docutils literal notranslate"><span class="pre">t</span></code></a>, and <a class="reference internal" href="#gumbi.arrays.ParameterArray.z" title="gumbi.arrays.ParameterArray.z"><code class="xref py py-attr docutils literal notranslate"><span class="pre">z</span></code></a> values are identical.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pa</span> <span class="o">=</span> <span class="n">parray</span><span class="p">(</span><span class="n">param</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span> <span class="n">stdzr</span><span class="o">=</span><span class="n">stdzr</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pa</span>
+<span class="go">(&#39;param&#39;,): [(0,) (1,) (2,) (3,) (4,)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pa</span><span class="o">.</span><span class="n">t</span>
+<span class="go">(&#39;param_t&#39;,): [(0,) (1,) (2,) (3,) (4,)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pa</span><span class="o">.</span><span class="n">z</span>
+<span class="go">(&#39;param_z&#39;,): [(0.,) (1.,) (2.,) (3.,) (4.,)]</span>
+</pre></div>
+</div>
+<p>You can even do monstrous compositions like</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">rpa</span><span class="o">-</span><span class="n">rpa</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mf">0.05</span><span class="p">))))</span><span class="o">.</span><span class="n">t</span>
+<span class="go">(&#39;r_t&#39;,): (-1.5791256,)</span>
+</pre></div>
+</div>
+<p>If you <cite>have</cite> work with an ordinary numpy array, use <code class="xref py py-meth docutils literal notranslate"><span class="pre">values()</span></code>.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">rpa</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+<span class="go">4</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gumbi.arrays.ParameterArray.names">
+<span class="sig-name descname"><span class="pre">names</span></span><a class="headerlink" href="#gumbi.arrays.ParameterArray.names" title="Permalink to this definition"></a></dt>
+<dd><p>Names of all stored parameters</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gumbi.arrays.ParameterArray.stdzr">
+<span class="sig-name descname"><span class="pre">stdzr</span></span><a class="headerlink" href="#gumbi.arrays.ParameterArray.stdzr" title="Permalink to this definition"></a></dt>
+<dd><p>An instance  of <code class="xref py py-class docutils literal notranslate"><span class="pre">Standardizer</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../aggregation/gumbi.aggregation.Standardizer.html#gumbi.aggregation.Standardizer" title="gumbi.aggregation.Standardizer">Standardizer</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gumbi.arrays.ParameterArray.add_layers">
+<span class="sig-name descname"><span class="pre">add_layers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stdzd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">arrays</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.arrays.ParameterArray.add_layers" title="Permalink to this definition"></a></dt>
+<dd><p>Add additional layers at each index</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gumbi.arrays.ParameterArray.fill_with">
+<span class="sig-name descname"><span class="pre">fill_with</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.arrays.ParameterArray.fill_with" title="Permalink to this definition"></a></dt>
+<dd><p>Add a single value for a new parameter at all locations.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gumbi.arrays.ParameterArray.get">
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.arrays.ParameterArray.get" title="Permalink to this definition"></a></dt>
+<dd><p>Return value given by <cite>name</cite> if it exists, otherwise return <cite>default</cite></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gumbi.arrays.ParameterArray.parray">
+<span class="sig-name descname"><span class="pre">parray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.arrays.ParameterArray.parray" title="Permalink to this definition"></a></dt>
+<dd><p>Create a new ParameterArray using this instance’s standardizer</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gumbi.arrays.ParameterArray.t">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">t</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="gumbi.arrays.LayeredArray.html#gumbi.arrays.LayeredArray" title="gumbi.arrays.LayeredArray"><span class="pre">gumbi.arrays.LayeredArray</span></a></em><a class="headerlink" href="#gumbi.arrays.ParameterArray.t" title="Permalink to this definition"></a></dt>
+<dd><p>Transformed values</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gumbi.arrays.ParameterArray.z">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">z</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="gumbi.arrays.LayeredArray.html#gumbi.arrays.LayeredArray" title="gumbi.arrays.LayeredArray"><span class="pre">gumbi.arrays.LayeredArray</span></a></em><a class="headerlink" href="#gumbi.arrays.ParameterArray.z" title="Permalink to this definition"></a></dt>
+<dd><p>Standardized values</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="gumbi.arrays.MultivariateNormalish.html" class="btn btn-neutral float-left" title="MultivariateNormalish" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gumbi.arrays.UncertainArray.html" class="btn btn-neutral float-right" title="UncertainArray" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, John Goertz.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

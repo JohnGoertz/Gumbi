@@ -1,0 +1,33 @@
+﻿TidyData
+========
+
+.. currentmodule:: gumbi.aggregation
+
+.. autosummary:: TidyData
+
+
+
+.. rubric:: Methods
+
+.. autosummary::
+
+  TidyData.to_wide
+
+
+
+
+
+.. rubric:: Attributes
+
+.. autosummary::
+
+  TidyData.t
+  TidyData.z
+  TidyData.df
+  TidyData.outputs
+
+
+
+.. autoclass:: TidyData
+   :members:
+   :show-inheritance:

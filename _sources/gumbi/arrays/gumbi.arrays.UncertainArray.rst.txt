@@ -1,0 +1,41 @@
+﻿UncertainArray
+==============
+
+.. currentmodule:: gumbi.arrays
+
+.. autosummary:: UncertainArray
+
+
+
+.. rubric:: Methods
+
+.. autosummary::
+
+  UncertainArray.BC
+  UncertainArray.BD
+  UncertainArray.EI
+  UncertainArray.HD
+  UncertainArray.KLD
+  UncertainArray.mean
+  UncertainArray.nlpd
+  UncertainArray.stack
+  UncertainArray.sum
+
+
+
+
+
+.. rubric:: Attributes
+
+.. autosummary::
+
+  UncertainArray.dist
+  UncertainArray.μ
+  UncertainArray.σ
+  UncertainArray.σ2
+
+
+
+.. autoclass:: UncertainArray
+   :members:
+   :show-inheritance:

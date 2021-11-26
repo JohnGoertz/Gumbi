@@ -1,0 +1,35 @@
+﻿LayeredArray
+============
+
+.. currentmodule:: gumbi.arrays
+
+.. autosummary:: LayeredArray
+
+
+
+.. rubric:: Methods
+
+.. autosummary::
+
+  LayeredArray.add_layers
+  LayeredArray.as_dict
+  LayeredArray.as_list
+  LayeredArray.drop
+  LayeredArray.dstack
+  LayeredArray.get
+  LayeredArray.values
+
+
+
+
+
+.. rubric:: Attributes
+
+.. autosummary::
+
+
+
+
+.. autoclass:: LayeredArray
+   :members:
+   :show-inheritance:

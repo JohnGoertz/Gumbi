@@ -1,0 +1,40 @@
+﻿MetaFrame
+=========
+
+.. currentmodule:: gumbi.aggregation
+
+.. autosummary:: MetaFrame
+
+
+
+.. rubric:: Methods
+
+.. autosummary::
+
+
+
+
+
+
+.. rubric:: Attributes
+
+.. autosummary::
+
+  MetaFrame.float_inputs
+  MetaFrame.inputs
+  MetaFrame.log_vars
+  MetaFrame.logit_vars
+  MetaFrame.names_column
+  MetaFrame.specs
+  MetaFrame.stdzr
+  MetaFrame.t
+  MetaFrame.values_column
+  MetaFrame.z
+  MetaFrame.df
+  MetaFrame.outputs
+
+
+
+.. autoclass:: MetaFrame
+   :members:
+   :show-inheritance:

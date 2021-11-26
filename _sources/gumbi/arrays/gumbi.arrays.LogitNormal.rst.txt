@@ -1,0 +1,30 @@
+﻿LogitNormal
+===========
+
+.. currentmodule:: gumbi.arrays
+
+.. autosummary:: LogitNormal
+
+
+
+.. rubric:: Methods
+
+.. autosummary::
+
+  LogitNormal.ppf
+  LogitNormal.rvs
+
+
+
+
+
+.. rubric:: Attributes
+
+.. autosummary::
+
+
+
+
+.. autoclass:: LogitNormal
+   :members:
+   :show-inheritance:

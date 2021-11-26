@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gumbi &mdash; Gumbi 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/green_theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="DataSet" href="aggregation/gumbi.aggregation.DataSet.html" />
+    <link rel="prev" title="Multioutput Regression" href="../notebooks/examples/Multioutput_Regression.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> Gumbi
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/getting_started/installation.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/examples/Cars_Dataset.html">The Cars Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/examples/Simple_Regression.html">Simple Regression and Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/examples/Multioutput_Regression.html">Multioutput Regression</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">gumbi</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-gumbi.aggregation">gumbi.aggregation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="aggregation/gumbi.aggregation.DataSet.html">DataSet</a></li>
+<li class="toctree-l3"><a class="reference internal" href="aggregation/gumbi.aggregation.MetaFrame.html">MetaFrame</a></li>
+<li class="toctree-l3"><a class="reference internal" href="aggregation/gumbi.aggregation.Standardizer.html">Standardizer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="aggregation/gumbi.aggregation.TidyData.html">TidyData</a></li>
+<li class="toctree-l3"><a class="reference internal" href="aggregation/gumbi.aggregation.WideData.html">WideData</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-gumbi.arrays">gumbi.arrays</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="arrays/gumbi.arrays.LayeredArray.html">LayeredArray</a></li>
+<li class="toctree-l3"><a class="reference internal" href="arrays/gumbi.arrays.LogitNormal.html">LogitNormal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="arrays/gumbi.arrays.MVUncertainParameterArray.html">MVUncertainParameterArray</a></li>
+<li class="toctree-l3"><a class="reference internal" href="arrays/gumbi.arrays.MultivariateNormalish.html">MultivariateNormalish</a></li>
+<li class="toctree-l3"><a class="reference internal" href="arrays/gumbi.arrays.ParameterArray.html">ParameterArray</a></li>
+<li class="toctree-l3"><a class="reference internal" href="arrays/gumbi.arrays.UncertainArray.html">UncertainArray</a></li>
+<li class="toctree-l3"><a class="reference internal" href="arrays/gumbi.arrays.UncertainParameterArray.html">UncertainParameterArray</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-gumbi.plotting">gumbi.plotting</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="plotting/gumbi.plotting.ParrayPlotter.html">ParrayPlotter</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-gumbi.regression">gumbi.regression</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="regression/gumbi.regression.GP.html">GP</a></li>
+<li class="toctree-l3"><a class="reference internal" href="regression/gumbi.regression.Regressor.html">Regressor</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-gumbi.utils">gumbi.utils</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="utils/index.html">gumbi.utils</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Gumbi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>gumbi</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/gumbi/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="gumbi">
+<h1>gumbi<a class="headerlink" href="#gumbi" title="Permalink to this headline"></a></h1>
+<section id="module-gumbi.aggregation">
+<span id="gumbi-aggregation"></span><h2>gumbi.aggregation<a class="headerlink" href="#module-gumbi.aggregation" title="Permalink to this headline"></a></h2>
+<p class="rubric">Classes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="aggregation/gumbi.aggregation.DataSet.html#gumbi.aggregation.DataSet" title="gumbi.aggregation.DataSet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataSet</span></code></a>(data, outputs[, names_column, ...])</p></td>
+<td><p>Container for tabular data, allowing simple access to standardized values and wide or tidy dataframe formats.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="aggregation/gumbi.aggregation.MetaFrame.html#gumbi.aggregation.MetaFrame" title="gumbi.aggregation.MetaFrame"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MetaFrame</span></code></a>(df, outputs[, log_vars, ...])</p></td>
+<td><p>Abstract Base Class for <a class="reference internal" href="aggregation/gumbi.aggregation.WideData.html#gumbi.aggregation.WideData" title="gumbi.aggregation.WideData"><code class="xref py py-class docutils literal notranslate"><span class="pre">WideData</span></code></a> and <a class="reference internal" href="aggregation/gumbi.aggregation.TidyData.html#gumbi.aggregation.TidyData" title="gumbi.aggregation.TidyData"><code class="xref py py-class docutils literal notranslate"><span class="pre">TidyData</span></code></a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="aggregation/gumbi.aggregation.Standardizer.html#gumbi.aggregation.Standardizer" title="gumbi.aggregation.Standardizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Standardizer</span></code></a>([log_vars, logit_vars])</p></td>
+<td><p>Container for dict of mean (μ) and variance (σ2) for every parameter.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="aggregation/gumbi.aggregation.TidyData.html#gumbi.aggregation.TidyData" title="gumbi.aggregation.TidyData"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TidyData</span></code></a>(df, outputs[, log_vars, ...])</p></td>
+<td><p>Container for tidy-form tabular data, allowing simple access to standardized and/or transformed values.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="aggregation/gumbi.aggregation.WideData.html#gumbi.aggregation.WideData" title="gumbi.aggregation.WideData"><code class="xref py py-obj docutils literal notranslate"><span class="pre">WideData</span></code></a>(df, outputs[, log_vars, ...])</p></td>
+<td><p>Container for wide-form tabular data, allowing simple access to standardized and/or transformed values.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-gumbi.arrays">
+<span id="gumbi-arrays"></span><h2>gumbi.arrays<a class="headerlink" href="#module-gumbi.arrays" title="Permalink to this headline"></a></h2>
+<p class="rubric">Classes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="arrays/gumbi.arrays.LayeredArray.html#gumbi.arrays.LayeredArray" title="gumbi.arrays.LayeredArray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LayeredArray</span></code></a>([stdzr])</p></td>
+<td><p>An array with one or more named values at every index.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="arrays/gumbi.arrays.LogitNormal.html#gumbi.arrays.LogitNormal" title="gumbi.arrays.LogitNormal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LogitNormal</span></code></a>([loc, scale])</p></td>
+<td><p>A logit-normal continuous random variable.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="arrays/gumbi.arrays.MVUncertainParameterArray.html#gumbi.arrays.MVUncertainParameterArray" title="gumbi.arrays.MVUncertainParameterArray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MVUncertainParameterArray</span></code></a>(*uparrays, cor[, ...])</p></td>
+<td><p>Structured array of multiple parameter means and variances along with correlations.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="arrays/gumbi.arrays.MultivariateNormalish.html#gumbi.arrays.MultivariateNormalish" title="gumbi.arrays.MultivariateNormalish"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MultivariateNormalish</span></code></a>(mean, cov, **kwargs)</p></td>
+<td><p>A multivariate Normal distribution built from and callable on ParameterArrays.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="arrays/gumbi.arrays.ParameterArray.html#gumbi.arrays.ParameterArray" title="gumbi.arrays.ParameterArray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ParameterArray</span></code></a>(stdzr[, stdzd])</p></td>
+<td><p>Array of parameter values, allowing simple transformation.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="arrays/gumbi.arrays.UncertainArray.html#gumbi.arrays.UncertainArray" title="gumbi.arrays.UncertainArray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UncertainArray</span></code></a>(name, μ, σ2[, stdzr])</p></td>
+<td><p>Structured array containing mean and variance of a normal distribution at each point.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="arrays/gumbi.arrays.UncertainParameterArray.html#gumbi.arrays.UncertainParameterArray" title="gumbi.arrays.UncertainParameterArray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UncertainParameterArray</span></code></a>(name, μ, σ2, stdzr)</p></td>
+<td><p>Structured array of parameter means and variances, allowing transformation with uncertainty handling.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-gumbi.plotting">
+<span id="gumbi-plotting"></span><h2>gumbi.plotting<a class="headerlink" href="#module-gumbi.plotting" title="Permalink to this headline"></a></h2>
+<p class="rubric">Classes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="plotting/gumbi.plotting.ParrayPlotter.html#gumbi.plotting.ParrayPlotter" title="gumbi.plotting.ParrayPlotter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ParrayPlotter</span></code></a>(x, y[, z, stdzr, x_scale, ...])</p></td>
+<td><p>Wrapper for a <code class="docutils literal notranslate"><span class="pre">matplotlib.pyplot</span></code> function; adjusts ticks and labels according to plotter settings.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-gumbi.regression">
+<span id="gumbi-regression"></span><h2>gumbi.regression<a class="headerlink" href="#module-gumbi.regression" title="Permalink to this headline"></a></h2>
+<p class="rubric">Classes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="regression/gumbi.regression.GP.html#gumbi.regression.GP" title="gumbi.regression.GP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GP</span></code></a>(dataset[, outputs, seed])</p></td>
+<td><p>Gaussian Process surface learning and prediction.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="regression/gumbi.regression.Regressor.html#gumbi.regression.Regressor" title="gumbi.regression.Regressor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Regressor</span></code></a>(dataset[, outputs, seed])</p></td>
+<td><p>Surface learning and prediction.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="module-gumbi.utils">
+<span id="gumbi-utils"></span><h2>gumbi.utils<a class="headerlink" href="#module-gumbi.utils" title="Permalink to this headline"></a></h2>
+<p class="rubric">Submodules</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="utils/index.html">gumbi.utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="utils/generic_utils/index.html">gumbi.utils.generic_utils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils/gp_utils/index.html">gumbi.utils.gp_utils</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../notebooks/examples/Multioutput_Regression.html" class="btn btn-neutral float-left" title="Multioutput Regression" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="aggregation/gumbi.aggregation.DataSet.html" class="btn btn-neutral float-right" title="DataSet" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, John Goertz.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

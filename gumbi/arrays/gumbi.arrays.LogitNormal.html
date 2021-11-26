@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LogitNormal &mdash; Gumbi 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/green_theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="MVUncertainParameterArray" href="gumbi.arrays.MVUncertainParameterArray.html" />
+    <link rel="prev" title="LayeredArray" href="gumbi.arrays.LayeredArray.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> Gumbi
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/getting_started/installation.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Cars_Dataset.html">The Cars Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Simple_Regression.html">Simple Regression and Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Multioutput_Regression.html">Multioutput Regression</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">gumbi</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#module-gumbi.aggregation">gumbi.aggregation</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#module-gumbi.arrays">gumbi.arrays</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="gumbi.arrays.LayeredArray.html">LayeredArray</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">LogitNormal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gumbi.arrays.MVUncertainParameterArray.html">MVUncertainParameterArray</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gumbi.arrays.MultivariateNormalish.html">MultivariateNormalish</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gumbi.arrays.ParameterArray.html">ParameterArray</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gumbi.arrays.UncertainArray.html">UncertainArray</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gumbi.arrays.UncertainParameterArray.html">UncertainParameterArray</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#module-gumbi.plotting">gumbi.plotting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#module-gumbi.regression">gumbi.regression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#module-gumbi.utils">gumbi.utils</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Gumbi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">gumbi</a> &raquo;</li>
+      <li>LogitNormal</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/gumbi/arrays/gumbi.arrays.LogitNormal.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="logitnormal">
+<h1>LogitNormal<a class="headerlink" href="#logitnormal" title="Permalink to this headline"></a></h1>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.arrays.LogitNormal" title="gumbi.arrays.LogitNormal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LogitNormal</span></code></a>([loc, scale])</p></td>
+<td><p>A logit-normal continuous random variable.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.arrays.LogitNormal.ppf" title="gumbi.arrays.LogitNormal.ppf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LogitNormal.ppf</span></code></a>(q)</p></td>
+<td><p>Percent point function (inverse of <cite>cdf</cite>) at q of the given RV.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gumbi.arrays.LogitNormal.rvs" title="gumbi.arrays.LogitNormal.rvs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LogitNormal.rvs</span></code></a>([size, random_state])</p></td>
+<td><p>Random variates of given type.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="gumbi.arrays.LogitNormal">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gumbi.arrays.</span></span><span class="sig-name descname"><span class="pre">LogitNormal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.arrays.LogitNormal" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">scipy.stats._distn_infrastructure.rv_continuous</span></code></p>
+<p>A logit-normal continuous random variable.</p>
+<p>The probability density function for LogitNormal is:</p>
+<div class="math notranslate nohighlight">
+\[f \left( x, \sigma \right) = \frac{1}{\sigma \sqrt{2 \pi}} e^{- \frac{ \left( \text{logit} (x) - \mu \right)^2}{2 \sigma^2}} \frac{1}{x \left( 1-x \right)}\]</div>
+<p>for <span class="math notranslate nohighlight">\(0&lt;x&lt;1\)</span>, <span class="math notranslate nohighlight">\(\sigma&gt;0\)</span></p>
+<p>A logit-normal random variable <cite>Y</cite> can be parameterized in terms of the mean, <span class="math notranslate nohighlight">\(\mu\)</span>, and standard deviation,
+<span class="math notranslate nohighlight">\(\sigma\)</span>, of the unique normally distributed random variable <cite>X</cite> such that <cite>expit(X) = Y</cite>. This parametrization
+corresponds to setting <cite>scale = σ</cite> and <cite>loc = expit(μ)</cite>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gumbi.arrays.LogitNormal.ppf">
+<span class="sig-name descname"><span class="pre">ppf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.arrays.LogitNormal.ppf" title="Permalink to this definition"></a></dt>
+<dd><p>Percent point function (inverse of <cite>cdf</cite>) at q of the given RV.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>q</strong> (<em>array_like</em>) – lower tail probability</p></li>
+<li><p><strong>arg1</strong> (<em>array_like</em>) – The shape parameter(s) for the distribution (see docstring of the
+instance object for more information)</p></li>
+<li><p><strong>arg2</strong> (<em>array_like</em>) – The shape parameter(s) for the distribution (see docstring of the
+instance object for more information)</p></li>
+<li><p><strong>arg3</strong> (<em>array_like</em>) – The shape parameter(s) for the distribution (see docstring of the
+instance object for more information)</p></li>
+<li><p><strong>...</strong> (<em>array_like</em>) – The shape parameter(s) for the distribution (see docstring of the
+instance object for more information)</p></li>
+<li><p><strong>loc</strong> (<em>array_like</em><em>, </em><em>optional</em>) – location parameter (default=0)</p></li>
+<li><p><strong>scale</strong> (<em>array_like</em><em>, </em><em>optional</em>) – scale parameter (default=1)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>x</strong> – quantile corresponding to the lower tail probability q.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>array_like</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gumbi.arrays.LogitNormal.rvs">
+<span class="sig-name descname"><span class="pre">rvs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.arrays.LogitNormal.rvs" title="Permalink to this definition"></a></dt>
+<dd><p>Random variates of given type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>arg1</strong> (<em>array_like</em>) – The shape parameter(s) for the distribution (see docstring of the
+instance object for more information).</p></li>
+<li><p><strong>arg2</strong> (<em>array_like</em>) – The shape parameter(s) for the distribution (see docstring of the
+instance object for more information).</p></li>
+<li><p><strong>arg3</strong> (<em>array_like</em>) – The shape parameter(s) for the distribution (see docstring of the
+instance object for more information).</p></li>
+<li><p><strong>...</strong> (<em>array_like</em>) – The shape parameter(s) for the distribution (see docstring of the
+instance object for more information).</p></li>
+<li><p><strong>loc</strong> (<em>array_like</em><em>, </em><em>optional</em>) – Location parameter (default=0).</p></li>
+<li><p><strong>scale</strong> (<em>array_like</em><em>, </em><em>optional</em>) – Scale parameter (default=1).</p></li>
+<li><p><strong>size</strong> (<em>int</em><em> or </em><em>tuple of ints</em><em>, </em><em>optional</em>) – Defining number of random variates (default is 1).</p></li>
+<li><p><strong>random_state</strong> ({None, int, <cite>numpy.random.Generator</cite>,) – <p><cite>numpy.random.RandomState</cite>}, optional</p>
+<p>If <cite>seed</cite> is None (or <cite>np.random</cite>), the <cite>numpy.random.RandomState</cite>
+singleton is used.
+If <cite>seed</cite> is an int, a new <code class="docutils literal notranslate"><span class="pre">RandomState</span></code> instance is used,
+seeded with <cite>seed</cite>.
+If <cite>seed</cite> is already a <code class="docutils literal notranslate"><span class="pre">Generator</span></code> or <code class="docutils literal notranslate"><span class="pre">RandomState</span></code> instance
+then that instance is used.</p>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>rvs</strong> – Random variates of given <cite>size</cite>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray or scalar</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="gumbi.arrays.LayeredArray.html" class="btn btn-neutral float-left" title="LayeredArray" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gumbi.arrays.MVUncertainParameterArray.html" class="btn btn-neutral float-right" title="MVUncertainParameterArray" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, John Goertz.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

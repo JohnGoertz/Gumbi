@@ -1,0 +1,43 @@
+﻿DataSet
+=======
+
+.. currentmodule:: gumbi.aggregation
+
+.. autosummary:: DataSet
+
+
+
+.. rubric:: Methods
+
+.. autosummary::
+
+  DataSet.from_tidy
+  DataSet.from_wide
+  DataSet.update_stdzr
+
+
+
+
+
+.. rubric:: Attributes
+
+.. autosummary::
+
+  DataSet.float_inputs
+  DataSet.inputs
+  DataSet.log_vars
+  DataSet.logit_vars
+  DataSet.names_column
+  DataSet.specs
+  DataSet.stdzr
+  DataSet.tidy
+  DataSet.values_column
+  DataSet.wide
+  DataSet.data
+  DataSet.outputs
+
+
+
+.. autoclass:: DataSet
+   :members:
+   :show-inheritance:

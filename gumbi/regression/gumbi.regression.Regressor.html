@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Regressor &mdash; Gumbi 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/green_theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="gumbi.utils" href="../utils/index.html" />
+    <link rel="prev" title="GP" href="gumbi.regression.GP.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> Gumbi
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/getting_started/installation.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Cars_Dataset.html">The Cars Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Simple_Regression.html">Simple Regression and Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Multioutput_Regression.html">Multioutput Regression</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">gumbi</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#module-gumbi.aggregation">gumbi.aggregation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#module-gumbi.arrays">gumbi.arrays</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#module-gumbi.plotting">gumbi.plotting</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#module-gumbi.regression">gumbi.regression</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="gumbi.regression.GP.html">GP</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Regressor</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#module-gumbi.utils">gumbi.utils</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Gumbi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">gumbi</a> &raquo;</li>
+      <li>Regressor</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/gumbi/regression/gumbi.regression.Regressor.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="regressor">
+<h1>Regressor<a class="headerlink" href="#regressor" title="Permalink to this headline"></a></h1>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.regression.Regressor" title="gumbi.regression.Regressor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Regressor</span></code></a>(dataset[, outputs, seed])</p></td>
+<td><p>Surface learning and prediction.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.regression.Regressor.append_categorical_points" title="gumbi.regression.Regressor.append_categorical_points"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Regressor.append_categorical_points</span></code></a>(...)</p></td>
+<td><p>Appends coordinates for the supplied categorical dim-level pairs to tall array of continuous coordinates.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gumbi.regression.Regressor.build_model" title="gumbi.regression.Regressor.build_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Regressor.build_model</span></code></a>(*args, **kwargs)</p></td>
+<td><p>Defined by subclass</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.regression.Regressor.cross_validate" title="gumbi.regression.Regressor.cross_validate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Regressor.cross_validate</span></code></a>(dims[, n_train, ...])</p></td>
+<td><p>Fits model on random subset of tidy and evaluates accuracy of predictions on remaining observations.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gumbi.regression.Regressor.fit" title="gumbi.regression.Regressor.fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Regressor.fit</span></code></a>(*args, **kwargs)</p></td>
+<td><p>Defined by subclass</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.regression.Regressor.get_conditional_prediction" title="gumbi.regression.Regressor.get_conditional_prediction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Regressor.get_conditional_prediction</span></code></a>(...)</p></td>
+<td><p>The conditional prediction at the given values of the specified dimensions over the remaining dimension(s).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gumbi.regression.Regressor.get_filtered_data" title="gumbi.regression.Regressor.get_filtered_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Regressor.get_filtered_data</span></code></a>([standardized, ...])</p></td>
+<td><p>The portion of the dataset under consideration</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Regressor.get_shaped_data</span></code>([metric])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gumbi.regression.Regressor.get_structured_data" title="gumbi.regression.Regressor.get_structured_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Regressor.get_structured_data</span></code></a>([metric])</p></td>
+<td><p>Formats input tidy and observations as parrays</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.regression.Regressor.mvuparray" title="gumbi.regression.Regressor.mvuparray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Regressor.mvuparray</span></code></a>(*uparrays, cor, **kwargs)</p></td>
+<td><p>Creates a uparray with the current instance's stdzr attached</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gumbi.regression.Regressor.parray" title="gumbi.regression.Regressor.parray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Regressor.parray</span></code></a>(**kwargs)</p></td>
+<td><p>Creates a parray with the current instance's stdzr attached</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.regression.Regressor.predict" title="gumbi.regression.Regressor.predict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Regressor.predict</span></code></a>(points_array[, with_noise])</p></td>
+<td><p>Defined by subclass.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gumbi.regression.Regressor.predict_grid" title="gumbi.regression.Regressor.predict_grid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Regressor.predict_grid</span></code></a>([output, ...])</p></td>
+<td><p>Make predictions and reshape into grid.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.regression.Regressor.predict_points" title="gumbi.regression.Regressor.predict_points"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Regressor.predict_points</span></code></a>(points[, output, ...])</p></td>
+<td><p>Make predictions at supplied points</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gumbi.regression.Regressor.prepare_grid" title="gumbi.regression.Regressor.prepare_grid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Regressor.prepare_grid</span></code></a>([limits, at, resolution])</p></td>
+<td><p>Prepare unobserved input coordinates for specified continuous dimensions.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.regression.Regressor.propose" title="gumbi.regression.Regressor.propose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Regressor.propose</span></code></a>(target[, acquisition])</p></td>
+<td><p>Bayesian Optimization with Expected Improvement acquisition function</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gumbi.regression.Regressor.specify_model" title="gumbi.regression.Regressor.specify_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Regressor.specify_model</span></code></a>([outputs, ...])</p></td>
+<td><p>Checks for consistency among dimensions and levels and formats appropriately.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.regression.Regressor.uparray" title="gumbi.regression.Regressor.uparray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Regressor.uparray</span></code></a>(name, μ, σ2, **kwargs)</p></td>
+<td><p>Creates a uparray with the current instance's stdzr attached</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.regression.Regressor.coords" title="gumbi.regression.Regressor.coords"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Regressor.coords</span></code></a></p></td>
+<td><p>Dictionary of numerical coordinates of each level within each dimension as <code class="docutils literal notranslate"><span class="pre">{dim:</span> <span class="pre">{level:</span> <span class="pre">coord}}</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gumbi.regression.Regressor.dims" title="gumbi.regression.Regressor.dims"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Regressor.dims</span></code></a></p></td>
+<td><p>List of all dimensions under consideration</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.regression.Regressor.levels" title="gumbi.regression.Regressor.levels"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Regressor.levels</span></code></a></p></td>
+<td><p>Dictionary of values considered within each dimension as <code class="docutils literal notranslate"><span class="pre">{dim:</span> <span class="pre">[level1,</span> <span class="pre">level2]}</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="gumbi.regression.Regressor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gumbi.regression.</span></span><span class="sig-name descname"><span class="pre">Regressor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../aggregation/gumbi.aggregation.DataSet.html#gumbi.aggregation.DataSet" title="gumbi.aggregation.DataSet"><span class="pre">gumbi.aggregation.DataSet</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2021</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.regression.Regressor" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>Surface learning and prediction.</p>
+<p>A Regressor is built from a dataframe in the form of a <code class="xref py py-class docutils literal notranslate"><span class="pre">DataSet</span></code> object. This is stored as
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">tidy</span></code>. The model inputs are constructed by filtering this dataframe, extracting column values, and
+converting these to numerical input coordinates. Each subclass defines at least <cite>build_model</cite>, <cite>fit</cite>, and <cite>predict_points</cite>
+methods in addition to subclass-specific methods.</p>
+<p>Dimensions fall into several categories:</p>
+<ul class="simple">
+<li><p>Filter dimensions, those with only one level, are used to subset the dataframe but are not included as explicit
+inputs to the model. These are not specified explicitly, but rather any continuous or categorical dimension with only one
+level is treated as a filter dimension.</p></li>
+<li><p>Continuous dimensions are treated as explicit coordinates and given a Radial Basis Function kernel</p>
+<ul>
+<li><p>Linear dimensions (which must be a subset of <cite>continuous_dims</cite>) have an additional linear kernel.</p></li>
+</ul>
+</li>
+<li><p>Coregion dimensions imply a distinct but correlated output for each level</p>
+<ul>
+<li><p>If more than one output is specified, <code class="docutils literal notranslate"><span class="pre">self.out_col</span></code> is treated as a categorical dim.</p></li>
+</ul>
+</li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset</strong> (<a class="reference internal" href="../aggregation/gumbi.aggregation.DataSet.html#gumbi.aggregation.DataSet" title="gumbi.aggregation.DataSet"><em>DataSet</em></a>) – Data for fitting.</p></li>
+<li><p><strong>outputs</strong> (<em>str</em><em> or </em><em>list of str</em><em>, </em><em>default None</em>) – Name(s) of output(s) to learn. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, uses all values from <code class="docutils literal notranslate"><span class="pre">outputs</span></code> attribute of <em>dataset</em>.</p></li>
+<li><p><strong>seed</strong> (<em>int</em>) – Random seed</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gumbi.regression.Regressor.data">
+<span class="sig-name descname"><span class="pre">data</span></span><a class="headerlink" href="#gumbi.regression.Regressor.data" title="Permalink to this definition"></a></dt>
+<dd><p>Data for fitting.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../aggregation/gumbi.aggregation.DataSet.html#gumbi.aggregation.DataSet" title="gumbi.aggregation.DataSet">DataSet</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gumbi.regression.Regressor.outputs">
+<span class="sig-name descname"><span class="pre">outputs</span></span><a class="headerlink" href="#gumbi.regression.Regressor.outputs" title="Permalink to this definition"></a></dt>
+<dd><p>Name(s) of output(s) to learn.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of str, optional</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gumbi.regression.Regressor.seed">
+<span class="sig-name descname"><span class="pre">seed</span></span><a class="headerlink" href="#gumbi.regression.Regressor.seed" title="Permalink to this definition"></a></dt>
+<dd><p>Random seed</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gumbi.regression.Regressor.continuous_dims">
+<span class="sig-name descname"><span class="pre">continuous_dims</span></span><a class="headerlink" href="#gumbi.regression.Regressor.continuous_dims" title="Permalink to this definition"></a></dt>
+<dd><p>Columns of dataframe used as continuous dimensions</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gumbi.regression.Regressor.linear_dims">
+<span class="sig-name descname"><span class="pre">linear_dims</span></span><a class="headerlink" href="#gumbi.regression.Regressor.linear_dims" title="Permalink to this definition"></a></dt>
+<dd><p>Subset of continuous dimensions to apply an additional linear kernel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gumbi.regression.Regressor.continuous_levels">
+<span class="sig-name descname"><span class="pre">continuous_levels</span></span><a class="headerlink" href="#gumbi.regression.Regressor.continuous_levels" title="Permalink to this definition"></a></dt>
+<dd><p>Values considered within each continuous column as <code class="docutils literal notranslate"><span class="pre">{dim:</span> <span class="pre">[level1,</span> <span class="pre">level2]}</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gumbi.regression.Regressor.continuous_coords">
+<span class="sig-name descname"><span class="pre">continuous_coords</span></span><a class="headerlink" href="#gumbi.regression.Regressor.continuous_coords" title="Permalink to this definition"></a></dt>
+<dd><p>Numerical coordinates of each continuous level within each continuous dimension as <code class="docutils literal notranslate"><span class="pre">{dim:</span> <span class="pre">{level:</span> <span class="pre">coord}}</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gumbi.regression.Regressor.categorical_dims">
+<span class="sig-name descname"><span class="pre">categorical_dims</span></span><a class="headerlink" href="#gumbi.regression.Regressor.categorical_dims" title="Permalink to this definition"></a></dt>
+<dd><p>Columns of dataframe used as categorical dimensions</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gumbi.regression.Regressor.categorical_levels">
+<span class="sig-name descname"><span class="pre">categorical_levels</span></span><a class="headerlink" href="#gumbi.regression.Regressor.categorical_levels" title="Permalink to this definition"></a></dt>
+<dd><p>Values considered within each categorical column as <code class="docutils literal notranslate"><span class="pre">{dim:</span> <span class="pre">[level1,</span> <span class="pre">level2]}</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gumbi.regression.Regressor.categorical_coords">
+<span class="sig-name descname"><span class="pre">categorical_coords</span></span><a class="headerlink" href="#gumbi.regression.Regressor.categorical_coords" title="Permalink to this definition"></a></dt>
+<dd><p>Numerical coordinates of each categorical level within each categorical dimension as <code class="docutils literal notranslate"><span class="pre">{dim:</span> <span class="pre">{level:</span> <span class="pre">coord}}</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gumbi.regression.Regressor.additive">
+<span class="sig-name descname"><span class="pre">additive</span></span><a class="headerlink" href="#gumbi.regression.Regressor.additive" title="Permalink to this definition"></a></dt>
+<dd><p>Whether to treat categorical dimensions as additive or joint</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gumbi.regression.Regressor.filter_dims">
+<span class="sig-name descname"><span class="pre">filter_dims</span></span><a class="headerlink" href="#gumbi.regression.Regressor.filter_dims" title="Permalink to this definition"></a></dt>
+<dd><p>Dictionary of column-value pairs used to filter dataset before fitting</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gumbi.regression.Regressor.X">
+<span class="sig-name descname"><span class="pre">X</span></span><a class="headerlink" href="#gumbi.regression.Regressor.X" title="Permalink to this definition"></a></dt>
+<dd><p>A 2D tall array of input coordinates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gumbi.regression.Regressor.y">
+<span class="sig-name descname"><span class="pre">y</span></span><a class="headerlink" href="#gumbi.regression.Regressor.y" title="Permalink to this definition"></a></dt>
+<dd><p>A 1D vector of observations</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gumbi.regression.Regressor.append_categorical_points">
+<span class="sig-name descname"><span class="pre">append_categorical_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">continuous_parray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">categorical_levels</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.regression.Regressor.append_categorical_points" title="Permalink to this definition"></a></dt>
+<dd><p>Appends coordinates for the supplied categorical dim-level pairs to tall array of continuous coordinates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>continuous_points</strong> (<a class="reference internal" href="../arrays/gumbi.arrays.ParameterArray.html#gumbi.arrays.ParameterArray" title="gumbi.arrays.ParameterArray"><em>ParameterArray</em></a>) – Tall <code class="xref py py-class docutils literal notranslate"><span class="pre">ParameterArray</span></code> of coordinates, one layer per continuous dimension</p></li>
+<li><p><strong>categorical_levels</strong> (<em>dict</em>) – Single level for each <a class="reference internal" href="#gumbi.regression.Regressor.categorical_dims" title="gumbi.regression.Regressor.categorical_dims"><code class="xref py py-attr docutils literal notranslate"><span class="pre">categorical_dims</span></code></a> at which to make prediction</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>points</strong> – Tall <cite>ParameterArray</cite> of coordinates, one layer per continuous and categorical dimension</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../arrays/gumbi.arrays.ParameterArray.html#gumbi.arrays.ParameterArray" title="gumbi.arrays.ParameterArray">ParameterArray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gumbi.regression.Regressor.build_model">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">build_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.regression.Regressor.build_model" title="Permalink to this definition"></a></dt>
+<dd><p>Defined by subclass</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="gumbi.regression.GP.html#gumbi.regression.GP.build_model" title="gumbi.regression.GP.build_model"><code class="xref py py-meth docutils literal notranslate"><span class="pre">GP.build_model()</span></code></a>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">GLM.build_model()</span></code></p>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gumbi.regression.Regressor.coords">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">coords</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span></em><a class="headerlink" href="#gumbi.regression.Regressor.coords" title="Permalink to this definition"></a></dt>
+<dd><p>Dictionary of numerical coordinates of each level within each dimension as <code class="docutils literal notranslate"><span class="pre">{dim:</span> <span class="pre">{level:</span> <span class="pre">coord}}</span></code></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gumbi.regression.Regressor.cross_validate">
+<span class="sig-name descname"><span class="pre">cross_validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dims</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_train</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pct_train</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warm_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">MAP_kws</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.regression.Regressor.cross_validate" title="Permalink to this definition"></a></dt>
+<dd><p>Fits model on random subset of tidy and evaluates accuracy of predictions on remaining observations.</p>
+<p>This method finds unique combinations of values in the columns specified by <code class="docutils literal notranslate"><span class="pre">dims</span></code>, takes a random subset of
+these for training, and evaluates the predictions made for the remaining tidy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dims</strong> (<em>list of str</em>) – Columns from which to take unique combinations as training and testing sets</p></li>
+<li><p><strong>n_train</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of training points to use. Exactly one of <cite>n_train</cite> and <cite>pct_train</cite> must be specified.</p></li>
+<li><p><strong>pct_train</strong> (<em>float</em><em>, </em><em>optional</em>) – Percent of training points to use. Exactly one of <cite>n_train</cite> and <cite>pct_train</cite> must be specified.</p></li>
+<li><p><strong>train_only</strong> (<em>dict</em><em>, </em><em>optional</em>) – Dimension and level names to be always included in the training set.</p></li>
+<li><p><strong>warm_start</strong> (<em>bool</em><em>, </em><em>default True</em>) – Whether to include a minimum of one observation for each level in each <cite>categorical_dim</cite> in the training set.</p></li>
+<li><p><strong>seed</strong> (<em>int</em><em>, </em><em>optional</em>) – Random seed</p></li>
+<li><p><strong>**MAP_kws</strong> – Additional</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gumbi.regression.Regressor.dims">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dims</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span></em><a class="headerlink" href="#gumbi.regression.Regressor.dims" title="Permalink to this definition"></a></dt>
+<dd><p>List of all dimensions under consideration</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gumbi.regression.Regressor.fit">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.regression.Regressor.fit" title="Permalink to this definition"></a></dt>
+<dd><p>Defined by subclass</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="gumbi.regression.GP.html#gumbi.regression.GP.fit" title="gumbi.regression.GP.fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">GP.fit()</span></code></a>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">GLM.fit()</span></code></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gumbi.regression.Regressor.get_conditional_prediction">
+<span class="sig-name descname"><span class="pre">get_conditional_prediction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">dim_values</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.regression.Regressor.get_conditional_prediction" title="Permalink to this definition"></a></dt>
+<dd><p>The conditional prediction at the given values of the specified dimensions over the remaining dimension(s).</p>
+<p>Conditioning the prediction on specific values of <cite>m</cite> dimensions can be thought of as taking a “slice” along the
+remaining <cite>n</cite> dimensions.</p>
+<p>Performs <cite>(m+n)</cite>-dimensional interpolation over the entire prediction grid for each of the mean and variance
+separately, then returns the interpolation evaluated at the specified values for the provided dimensions and the
+original values for the remaining dimensions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dim_values</strong> – Keyword arguments specifying value for each dimension at which to return the conditional prediction of the
+remaining dimensions.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>conditional_grid</strong> (<em>ParameterArray</em>) – <cite>n</cite>-dimensional grid with <cite>n</cite> parameters (layers) at which the conditional prediction is evaluated</p></li>
+<li><p><strong>conditional_prediction</strong> (<em>UncertainParameterArray</em>) – <cite>n</cite>-dimensional grid of predictions conditional on the given values of the <cite>m</cite> specified dimensions</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gumbi.regression.Regressor.get_filtered_data">
+<span class="sig-name descname"><span class="pre">get_filtered_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">standardized</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mean'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.regression.Regressor.get_filtered_data" title="Permalink to this definition"></a></dt>
+<dd><p>The portion of the dataset under consideration</p>
+<p>A filter is built by comparing the values in the unstandardized dataframe with those in <a class="reference internal" href="#gumbi.regression.Regressor.filter_dims" title="gumbi.regression.Regressor.filter_dims"><code class="xref py py-attr docutils literal notranslate"><span class="pre">filter_dims</span></code></a>,
+<a class="reference internal" href="#gumbi.regression.Regressor.categorical_levels" title="gumbi.regression.Regressor.categorical_levels"><code class="xref py py-attr docutils literal notranslate"><span class="pre">categorical_levels</span></code></a>, and <a class="reference internal" href="#gumbi.regression.Regressor.continuous_levels" title="gumbi.regression.Regressor.continuous_levels"><code class="xref py py-attr docutils literal notranslate"><span class="pre">continuous_levels</span></code></a>, then the filter is applied to the standardized or
+unstandardized dataframe as indicated by the <cite>standardized</cite> input argument.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>standardized</strong> (<em>bool</em><em>, </em><em>default True</em>) – Whether to return a subset of the raw tidy or the centered and scaled tidy</p></li>
+<li><p><strong>metric</strong> (<em>str</em><em>, </em><em>default 'mean'</em>) – Which summary statistic to return (must be a value in the <cite>Metric</cite> column)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>tidy</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gumbi.regression.Regressor.get_structured_data">
+<span class="sig-name descname"><span class="pre">get_structured_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mean'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.regression.Regressor.get_structured_data" title="Permalink to this definition"></a></dt>
+<dd><p>Formats input tidy and observations as parrays</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>metric</strong> (<em>str</em><em>, </em><em>default 'mean'</em>) – Which summary statistic to return (must be a value in the <cite>Metric</cite> column)</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>X</strong> (<em>parray</em>) – A multilayered column vector of input coordinates.</p></li>
+<li><p><strong>y</strong> (<em>parray</em>) – A multilayered (1D) vector of observations</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#gumbi.regression.Regressor.get_filtered_data" title="gumbi.regression.Regressor.get_filtered_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_filtered_data()</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gumbi.regression.Regressor.levels">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">levels</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span></em><a class="headerlink" href="#gumbi.regression.Regressor.levels" title="Permalink to this definition"></a></dt>
+<dd><p>Dictionary of values considered within each dimension as <code class="docutils literal notranslate"><span class="pre">{dim:</span> <span class="pre">[level1,</span> <span class="pre">level2]}</span></code></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gumbi.regression.Regressor.mvuparray">
+<span class="sig-name descname"><span class="pre">mvuparray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">uparrays</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cor</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../arrays/gumbi.arrays.MVUncertainParameterArray.html#gumbi.arrays.MVUncertainParameterArray" title="gumbi.arrays.MVUncertainParameterArray"><span class="pre">gumbi.arrays.MVUncertainParameterArray</span></a></span></span><a class="headerlink" href="#gumbi.regression.Regressor.mvuparray" title="Permalink to this definition"></a></dt>
+<dd><p>Creates a uparray with the current instance’s stdzr attached</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gumbi.regression.Regressor.parray">
+<span class="sig-name descname"><span class="pre">parray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../arrays/gumbi.arrays.ParameterArray.html#gumbi.arrays.ParameterArray" title="gumbi.arrays.ParameterArray"><span class="pre">gumbi.arrays.ParameterArray</span></a></span></span><a class="headerlink" href="#gumbi.regression.Regressor.parray" title="Permalink to this definition"></a></dt>
+<dd><p>Creates a parray with the current instance’s stdzr attached</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gumbi.regression.Regressor.predict">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points_array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_noise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.regression.Regressor.predict" title="Permalink to this definition"></a></dt>
+<dd><p>Defined by subclass.</p>
+<p>It is not recommended to call <a class="reference internal" href="#gumbi.regression.Regressor.predict" title="gumbi.regression.Regressor.predict"><code class="xref py py-meth docutils literal notranslate"><span class="pre">predict()</span></code></a> directly, since it requires a very specific formatting for inputs,
+specifically a tall array of standardized coordinates in the same order as <a class="reference internal" href="#gumbi.regression.Regressor.dims" title="gumbi.regression.Regressor.dims"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dims</span></code></a>. Rather, one of the
+convenience functions <a class="reference internal" href="#gumbi.regression.Regressor.predict_points" title="gumbi.regression.Regressor.predict_points"><code class="xref py py-meth docutils literal notranslate"><span class="pre">predict_points()</span></code></a> or <a class="reference internal" href="#gumbi.regression.Regressor.predict_grid" title="gumbi.regression.Regressor.predict_grid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">predict_grid()</span></code></a> should be used, as these have a more
+intuitive input structure and format the tidy appropriately prior to calling <a class="reference internal" href="#gumbi.regression.Regressor.predict" title="gumbi.regression.Regressor.predict"><code class="xref py py-meth docutils literal notranslate"><span class="pre">predict()</span></code></a>.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="gumbi.regression.GP.html#gumbi.regression.GP.predict" title="gumbi.regression.GP.predict"><code class="xref py py-meth docutils literal notranslate"><span class="pre">GP.predict()</span></code></a>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">GLM.predict()</span></code></p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>prediction_mean, prediction_var</strong> – Mean and variance of predictions at each supplied points</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list of np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gumbi.regression.Regressor.predict_grid">
+<span class="sig-name descname"><span class="pre">predict_grid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">categorical_levels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_noise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.regression.Regressor.predict_grid" title="Permalink to this definition"></a></dt>
+<dd><p>Make predictions and reshape into grid.</p>
+<p>If the model has <a class="reference internal" href="#gumbi.regression.Regressor.categorical_dims" title="gumbi.regression.Regressor.categorical_dims"><code class="xref py py-attr docutils literal notranslate"><span class="pre">categorical_dims</span></code></a>, a specific level for each dimension must be specified as key-value
+pairs in <cite>categorical_levels</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>categorical_levels</strong> (<em>dict</em><em>, </em><em>optional</em>) – Level for each <a class="reference internal" href="#gumbi.regression.Regressor.categorical_dims" title="gumbi.regression.Regressor.categorical_dims"><code class="xref py py-attr docutils literal notranslate"><span class="pre">categorical_dims</span></code></a> at which to make prediction</p></li>
+<li><p><strong>with_noise</strong> (<em>bool</em><em>, </em><em>default True</em>) – Whether to incorporate aleatoric uncertainty into prediction error</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>prediction</strong> – Predictions as a grid with len(<a class="reference internal" href="#gumbi.regression.Regressor.continuous_dims" title="gumbi.regression.Regressor.continuous_dims"><code class="xref py py-attr docutils literal notranslate"><span class="pre">continuous_dims</span></code></a>) dimensions</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../arrays/gumbi.arrays.UncertainParameterArray.html#gumbi.arrays.UncertainParameterArray" title="gumbi.arrays.UncertainParameterArray">UncertainParameterArray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gumbi.regression.Regressor.predict_points">
+<span class="sig-name descname"><span class="pre">predict_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_noise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.regression.Regressor.predict_points" title="Permalink to this definition"></a></dt>
+<dd><p>Make predictions at supplied points</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>points</strong> (<a class="reference internal" href="../arrays/gumbi.arrays.ParameterArray.html#gumbi.arrays.ParameterArray" title="gumbi.arrays.ParameterArray"><em>ParameterArray</em></a>) – 1-D ParameterArray vector of coordinates for prediction, must have one layer per <code class="docutils literal notranslate"><span class="pre">self.dims</span></code></p></li>
+<li><p><strong>output</strong> (<em>str</em><em> or </em><em>list of str</em><em>, </em><em>optional</em>) – Variable for which to make predictions</p></li>
+<li><p><strong>with_noise</strong> (<em>bool</em><em>, </em><em>default True</em>) – Whether to incorporate aleatoric uncertainty into prediction error</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments passed to subclass-specific <a class="reference internal" href="#gumbi.regression.Regressor.predict" title="gumbi.regression.Regressor.predict"><code class="xref py py-meth docutils literal notranslate"><span class="pre">predict()</span></code></a> method</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>prediction</strong> – Predictions as a <cite>uparray</cite></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../arrays/gumbi.arrays.UncertainParameterArray.html#gumbi.arrays.UncertainParameterArray" title="gumbi.arrays.UncertainParameterArray">UncertainParameterArray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gumbi.regression.Regressor.prepare_grid">
+<span class="sig-name descname"><span class="pre">prepare_grid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">limits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">at</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.regression.Regressor.prepare_grid" title="Permalink to this definition"></a></dt>
+<dd><p>Prepare unobserved input coordinates for specified continuous dimensions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>limits</strong> (<a class="reference internal" href="../arrays/gumbi.arrays.ParameterArray.html#gumbi.arrays.ParameterArray" title="gumbi.arrays.ParameterArray"><em>ParameterArray</em></a>) – List of min/max values as a single parray with one layer for each of a subset of <cite>continuous_dims</cite>.</p></li>
+<li><p><strong>at</strong> (<a class="reference internal" href="../arrays/gumbi.arrays.ParameterArray.html#gumbi.arrays.ParameterArray" title="gumbi.arrays.ParameterArray"><em>ParameterArray</em></a>) – A single parray of length 1 with one layer for each remaining <cite>continuous_dims</cite> by name.</p></li>
+<li><p><strong>ticks</strong> (<em>dict</em>) – </p></li>
+<li><p><strong>resolution</strong> (<em>dict</em><em> or </em><em>int</em>) – Number of points along each dimension, either as a dictionary or one value applied to all dimensions</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gumbi.regression.Regressor.propose">
+<span class="sig-name descname"><span class="pre">propose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">acquisition</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'EI'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.regression.Regressor.propose" title="Permalink to this definition"></a></dt>
+<dd><p>Bayesian Optimization with Expected Improvement acquisition function</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gumbi.regression.Regressor.specify_model">
+<span class="sig-name descname"><span class="pre">specify_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linear_dims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">continuous_dims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">continuous_levels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">continuous_coords</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">categorical_dims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">categorical_levels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">additive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.regression.Regressor.specify_model" title="Permalink to this definition"></a></dt>
+<dd><p>Checks for consistency among dimensions and levels and formats appropriately.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>outputs</strong> (<em>str</em><em> or </em><em>list of str</em><em>, </em><em>default None</em>) – Name(s) of output(s) to learn. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, <a class="reference internal" href="#gumbi.regression.Regressor.outputs" title="gumbi.regression.Regressor.outputs"><code class="xref py py-attr docutils literal notranslate"><span class="pre">outputs</span></code></a> is used.</p></li>
+<li><p><strong>linear_dims</strong> (<em>str</em><em> or </em><em>list of str</em><em>, </em><em>optional</em>) – Subset of continuous dimensions to apply an additional linear kernel. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, defaults to <code class="docutils literal notranslate"><span class="pre">['Y','X']</span></code>.</p></li>
+<li><p><strong>continuous_dims</strong> (<em>str</em><em> or </em><em>list of str</em><em>, </em><em>optional</em>) – Columns of dataframe used as continuous dimensions</p></li>
+<li><p><strong>continuous_levels</strong> (<em>str</em><em>, </em><em>list</em><em>, or </em><em>dict</em><em>, </em><em>optional</em>) – Values considered within each continuous column as <code class="docutils literal notranslate"><span class="pre">{dim:</span> <span class="pre">[level1,</span> <span class="pre">level2]}</span></code></p></li>
+<li><p><strong>continuous_coords</strong> (<em>list</em><em> or </em><em>dict</em><em>, </em><em>optional</em>) – Numerical coordinates of each continuous level within each continuous dimension as <code class="docutils literal notranslate"><span class="pre">{dim:</span> <span class="pre">{level:</span> <span class="pre">coord}}</span></code></p></li>
+<li><p><strong>categorical_dims</strong> (<em>str</em><em> or </em><em>list of str</em><em>, </em><em>optional</em>) – Columns of dataframe used as categorical dimensions</p></li>
+<li><p><strong>categorical_levels</strong> (<em>str</em><em>, </em><em>list</em><em>, or </em><em>dict</em><em>, </em><em>optional</em>) – Values considered within each categorical column as <code class="docutils literal notranslate"><span class="pre">{dim:</span> <span class="pre">[level1,</span> <span class="pre">level2]}</span></code></p></li>
+<li><p><strong>additive</strong> (<em>bool</em><em>, </em><em>default False</em>) – Whether to treat categorical_dims as additive or joint (default)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>self</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="gumbi.regression.GP.html#gumbi.regression.GP" title="gumbi.regression.GP"><code class="xref py py-class docutils literal notranslate"><span class="pre">GP</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gumbi.regression.Regressor.uparray">
+<span class="sig-name descname"><span class="pre">uparray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">μ</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">σ2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../arrays/gumbi.arrays.UncertainParameterArray.html#gumbi.arrays.UncertainParameterArray" title="gumbi.arrays.UncertainParameterArray"><span class="pre">gumbi.arrays.UncertainParameterArray</span></a></span></span><a class="headerlink" href="#gumbi.regression.Regressor.uparray" title="Permalink to this definition"></a></dt>
+<dd><p>Creates a uparray with the current instance’s stdzr attached</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="gumbi.regression.GP.html" class="btn btn-neutral float-left" title="GP" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../utils/index.html" class="btn btn-neutral float-right" title="gumbi.utils" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, John Goertz.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

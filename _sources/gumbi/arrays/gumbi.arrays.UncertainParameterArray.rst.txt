@@ -1,0 +1,33 @@
+﻿UncertainParameterArray
+=======================
+
+.. currentmodule:: gumbi.arrays
+
+.. autosummary:: UncertainParameterArray
+
+
+
+.. rubric:: Methods
+
+.. autosummary::
+
+  UncertainParameterArray.mean
+  UncertainParameterArray.sum
+
+
+
+
+
+.. rubric:: Attributes
+
+.. autosummary::
+
+  UncertainParameterArray.dist
+  UncertainParameterArray.t
+  UncertainParameterArray.z
+
+
+
+.. autoclass:: UncertainParameterArray
+   :members:
+   :show-inheritance:

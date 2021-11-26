@@ -1,0 +1,38 @@
+﻿ParameterArray
+==============
+
+.. currentmodule:: gumbi.arrays
+
+.. autosummary:: ParameterArray
+
+
+
+.. rubric:: Methods
+
+.. autosummary::
+
+  ParameterArray.add_layers
+  ParameterArray.drop
+  ParameterArray.fill_with
+  ParameterArray.get
+  ParameterArray.hstack
+  ParameterArray.parray
+  ParameterArray.stack
+  ParameterArray.vstack
+
+
+
+
+
+.. rubric:: Attributes
+
+.. autosummary::
+
+  ParameterArray.t
+  ParameterArray.z
+
+
+
+.. autoclass:: ParameterArray
+   :members:
+   :show-inheritance:

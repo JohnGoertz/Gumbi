@@ -1,0 +1,34 @@
+﻿WideData
+========
+
+.. currentmodule:: gumbi.aggregation
+
+.. autosummary:: WideData
+
+
+
+.. rubric:: Methods
+
+.. autosummary::
+
+  WideData.from_tidy
+  WideData.to_tidy
+
+
+
+
+
+.. rubric:: Attributes
+
+.. autosummary::
+
+  WideData.t
+  WideData.z
+  WideData.df
+  WideData.outputs
+
+
+
+.. autoclass:: WideData
+   :members:
+   :show-inheritance:

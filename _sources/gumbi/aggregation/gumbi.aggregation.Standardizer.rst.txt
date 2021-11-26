@@ -1,0 +1,39 @@
+﻿Standardizer
+============
+
+.. currentmodule:: gumbi.aggregation
+
+.. autosummary:: Standardizer
+
+
+
+.. rubric:: Methods
+
+.. autosummary::
+
+  Standardizer.from_DataFrame
+  Standardizer.stdz
+  Standardizer.transform
+  Standardizer.unstdz
+  Standardizer.untransform
+  Standardizer.validate
+
+
+
+
+
+.. rubric:: Attributes
+
+.. autosummary::
+
+  Standardizer.log_vars
+  Standardizer.logit_vars
+  Standardizer.mean_transforms
+  Standardizer.transforms
+  Standardizer.var_transforms
+
+
+
+.. autoclass:: Standardizer
+   :members:
+   :show-inheritance:

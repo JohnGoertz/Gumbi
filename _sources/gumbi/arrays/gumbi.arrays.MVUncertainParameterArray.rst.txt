@@ -1,0 +1,41 @@
+﻿MVUncertainParameterArray
+=========================
+
+.. currentmodule:: gumbi.arrays
+
+.. autosummary:: MVUncertainParameterArray
+
+
+
+.. rubric:: Methods
+
+.. autosummary::
+
+  MVUncertainParameterArray.cov
+  MVUncertainParameterArray.get
+  MVUncertainParameterArray.mahalanobis
+  MVUncertainParameterArray.mvuparray
+  MVUncertainParameterArray.outlier_pval
+  MVUncertainParameterArray.parray
+  MVUncertainParameterArray.uparray
+
+
+
+
+
+.. rubric:: Attributes
+
+.. autosummary::
+
+  MVUncertainParameterArray.dist
+  MVUncertainParameterArray.t
+  MVUncertainParameterArray.z
+  MVUncertainParameterArray.μ
+  MVUncertainParameterArray.σ
+  MVUncertainParameterArray.σ2
+
+
+
+.. autoclass:: MVUncertainParameterArray
+   :members:
+   :show-inheritance:

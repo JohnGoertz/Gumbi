@@ -1,0 +1,48 @@
+﻿Regressor
+=========
+
+.. currentmodule:: gumbi.regression
+
+.. autosummary:: Regressor
+
+
+
+.. rubric:: Methods
+
+.. autosummary::
+
+  Regressor.append_categorical_points
+  Regressor.build_model
+  Regressor.cross_validate
+  Regressor.fit
+  Regressor.get_conditional_prediction
+  Regressor.get_filtered_data
+  Regressor.get_shaped_data
+  Regressor.get_structured_data
+  Regressor.mvuparray
+  Regressor.parray
+  Regressor.predict
+  Regressor.predict_grid
+  Regressor.predict_points
+  Regressor.prepare_grid
+  Regressor.propose
+  Regressor.specify_model
+  Regressor.uparray
+
+
+
+
+
+.. rubric:: Attributes
+
+.. autosummary::
+
+  Regressor.coords
+  Regressor.dims
+  Regressor.levels
+
+
+
+.. autoclass:: Regressor
+   :members:
+   :show-inheritance:

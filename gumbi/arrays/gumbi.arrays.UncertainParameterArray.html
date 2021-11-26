@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UncertainParameterArray &mdash; Gumbi 0.1.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/green_theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="ParrayPlotter" href="../plotting/gumbi.plotting.ParrayPlotter.html" />
+    <link rel="prev" title="UncertainArray" href="gumbi.arrays.UncertainArray.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> Gumbi
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/getting_started/installation.html">Installation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Cars_Dataset.html">The Cars Dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Simple_Regression.html">Simple Regression and Prediction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Multioutput_Regression.html">Multioutput Regression</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">gumbi</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../index.html#module-gumbi.aggregation">gumbi.aggregation</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#module-gumbi.arrays">gumbi.arrays</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="gumbi.arrays.LayeredArray.html">LayeredArray</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gumbi.arrays.LogitNormal.html">LogitNormal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gumbi.arrays.MVUncertainParameterArray.html">MVUncertainParameterArray</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gumbi.arrays.MultivariateNormalish.html">MultivariateNormalish</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gumbi.arrays.ParameterArray.html">ParameterArray</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gumbi.arrays.UncertainArray.html">UncertainArray</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">UncertainParameterArray</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#module-gumbi.plotting">gumbi.plotting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#module-gumbi.regression">gumbi.regression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#module-gumbi.utils">gumbi.utils</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Gumbi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">gumbi</a> &raquo;</li>
+      <li>UncertainParameterArray</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/gumbi/arrays/gumbi.arrays.UncertainParameterArray.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="uncertainparameterarray">
+<h1>UncertainParameterArray<a class="headerlink" href="#uncertainparameterarray" title="Permalink to this headline"></a></h1>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.arrays.UncertainParameterArray" title="gumbi.arrays.UncertainParameterArray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UncertainParameterArray</span></code></a>(name, μ, σ2, stdzr)</p></td>
+<td><p>Structured array of parameter means and variances, allowing transformation with uncertainty handling.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.arrays.UncertainParameterArray.mean" title="gumbi.arrays.UncertainParameterArray.mean"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UncertainParameterArray.mean</span></code></a>([axis, dtype, ...])</p></td>
+<td><p>The natural-space distribution parameters which represent the mean of the transformed-space distributions</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gumbi.arrays.UncertainParameterArray.sum" title="gumbi.arrays.UncertainParameterArray.sum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UncertainParameterArray.sum</span></code></a>([axis, dtype, ...])</p></td>
+<td><p>Summation with uncertainty propagation</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.arrays.UncertainParameterArray.dist" title="gumbi.arrays.UncertainParameterArray.dist"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UncertainParameterArray.dist</span></code></a></p></td>
+<td><p>Array of <code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.stats.rv_continuous()</span></code> objects.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gumbi.arrays.UncertainParameterArray.t" title="gumbi.arrays.UncertainParameterArray.t"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UncertainParameterArray.t</span></code></a></p></td>
+<td><p>Transformed values</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.arrays.UncertainParameterArray.z" title="gumbi.arrays.UncertainParameterArray.z"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UncertainParameterArray.z</span></code></a></p></td>
+<td><p>Standardized values</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="gumbi.arrays.UncertainParameterArray">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gumbi.arrays.</span></span><span class="sig-name descname"><span class="pre">UncertainParameterArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">μ</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">σ2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stdzr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../aggregation/gumbi.aggregation.Standardizer.html#gumbi.aggregation.Standardizer" title="gumbi.aggregation.Standardizer"><span class="pre">gumbi.aggregation.Standardizer</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">stdzd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.arrays.UncertainParameterArray" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="gumbi.arrays.UncertainArray.html#gumbi.arrays.UncertainArray" title="gumbi.arrays.UncertainArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">gumbi.arrays.UncertainArray</span></code></a></p>
+<p>Structured array of parameter means and variances, allowing transformation with uncertainty handling.</p>
+<p>The primary role of this class is to compactly store the outputs of our regression models
+(e.g., <code class="xref py py-class docutils literal notranslate"><span class="pre">gumbi.GP</span></code>). We typically use these models
+to produce parameter predictions or estimates, but under some transformation. For example, reaction <cite>rate</cite> must
+clearly be strictly positive, so we fit a GP to the <cite>log</cite> of rate in order to more appropriately conform to the
+assumption of normality. For prediction and visualization, however, we often need to switch back and forth between
+natural space (<span class="math notranslate nohighlight">\(rate\)</span>), transformed space (<span class="math notranslate nohighlight">\(\text{ln}\; rate\)</span>), and standardized space
+(<span class="math notranslate nohighlight">\(\left( \text{ln}\; rate  - \mu_{\text{ln}\; rate} \right)/\sigma_{\text{ln}\; rate}\)</span>), meanwhile calculating
+summary statistics such as means and percentiles. This class is intended to facilitate switching between those
+different contexts.</p>
+<p><a class="reference internal" href="#gumbi.arrays.UncertainParameterArray" title="gumbi.arrays.UncertainParameterArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">UncertainParameterArray</span></code></a>, also accessible through the alias <code class="xref py py-class docutils literal notranslate"><span class="pre">uparray</span></code>, combines the functionality of
+<a class="reference internal" href="gumbi.arrays.ParameterArray.html#gumbi.arrays.ParameterArray" title="gumbi.arrays.ParameterArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParameterArray</span></code></a> and <a class="reference internal" href="gumbi.arrays.UncertainArray.html#gumbi.arrays.UncertainArray" title="gumbi.arrays.UncertainArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">UncertainArray</span></code></a>. A <cite>uparray</cite> stores the mean and variance of the
+variable itself as well as a <code class="xref py py-class docutils literal notranslate"><span class="pre">Standardizer</span></code>
+instance. This  makes it simple to switch between the natural scale of the parameter and its transformed and
+standardized values through the <a class="reference internal" href="#gumbi.arrays.UncertainParameterArray.t" title="gumbi.arrays.UncertainParameterArray.t"><code class="xref py py-attr docutils literal notranslate"><span class="pre">t</span></code></a> and <a class="reference internal" href="#gumbi.arrays.UncertainParameterArray.z" title="gumbi.arrays.UncertainParameterArray.z"><code class="xref py py-attr docutils literal notranslate"><span class="pre">z</span></code></a> properties, respectively, with the accompanying variance
+transformed and scaled appropriately. This uncertainty is propagated under transformation, as with
+<a class="reference internal" href="gumbi.arrays.UncertainArray.html#gumbi.arrays.UncertainArray" title="gumbi.arrays.UncertainArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">UncertainArray</span></code></a>, and a scipy distribution object can be created at each point through the <a class="reference internal" href="#gumbi.arrays.UncertainParameterArray.dist" title="gumbi.arrays.UncertainParameterArray.dist"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dist</span></code></a>
+property, allowing access to that objects such as <code class="xref py py-meth docutils literal notranslate"><span class="pre">rvs()</span></code>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">ppf()</span></code>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">pdf()</span></code>, etc.</p>
+<p class="rubric">Notes</p>
+<p>The <cite>name</cite> argument is intended to be the general name of the value held, not unique to this instance. Combining two
+<a class="reference internal" href="#gumbi.arrays.UncertainParameterArray" title="gumbi.arrays.UncertainParameterArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">UncertainParameterArray</span></code></a> objects with the same name results in a new object with that name; combining two
+objects with different names results in a new name that reflects this combination (so <code class="docutils literal notranslate"><span class="pre">'A'+'B'</span></code> becomes
+<code class="docutils literal notranslate"><span class="pre">'(A+B)'</span></code>).</p>
+<p>The behavior of this object depends on the transformation associated with it, as indicated by its <cite>name</cite> in its
+stored <code class="xref py py-class docutils literal notranslate"><span class="pre">Standardizer</span></code> instance. If this transformation is <code class="xref py py-func docutils literal notranslate"><span class="pre">np.log()</span></code>, the parameter is treated as a
+<cite>LogNormal</cite> variable; otherwise it’s treated as a <cite>Normal</cite> variable. This affects which distribution is returned by
+<a class="reference internal" href="#gumbi.arrays.UncertainParameterArray.dist" title="gumbi.arrays.UncertainParameterArray.dist"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dist</span></code></a> (<a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.lognorm.html">lognorm</a> vs <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.norm.html">norm</a>) and also the interpretation of <a class="reference internal" href="#gumbi.arrays.UncertainParameterArray." title="gumbi.arrays.UncertainParameterArray.μ"><code class="xref py py-attr docutils literal notranslate"><span class="pre">μ</span></code></a> and <a class="reference internal" href="#gumbi.arrays.UncertainParameterArray.2" title="gumbi.arrays.UncertainParameterArray.σ2"><code class="xref py py-attr docutils literal notranslate"><span class="pre">σ2</span></code></a>.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>For a <cite>Normal</cite> random
+variable, these are simply parameter’s mean and variance in unstandardized space, <code class="xref py py-attr docutils literal notranslate"><span class="pre">t.μ</span></code> and <code class="xref py py-attr docutils literal notranslate"><span class="pre">t.σ2</span></code>
+are identical to <a class="reference internal" href="#gumbi.arrays.UncertainParameterArray." title="gumbi.arrays.UncertainParameterArray.μ"><code class="xref py py-attr docutils literal notranslate"><span class="pre">μ</span></code></a> and <a class="reference internal" href="#gumbi.arrays.UncertainParameterArray.2" title="gumbi.arrays.UncertainParameterArray.σ2"><code class="xref py py-attr docutils literal notranslate"><span class="pre">σ2</span></code></a>, and <code class="xref py py-attr docutils literal notranslate"><span class="pre">z.μ</span></code> and <code class="xref py py-attr docutils literal notranslate"><span class="pre">z.σ2</span></code> are the parameter’s mean and variance
+in standardized space.</p></li>
+<li><p>For a <cite>LogNormal</cite> random variable <code class="docutils literal notranslate"><span class="pre">Y</span></code>, however, <code class="xref py py-attr docutils literal notranslate"><span class="pre">t.μ</span></code> and <code class="xref py py-attr docutils literal notranslate"><span class="pre">t.σ2</span></code> are the mean and variance of a
+<cite>Normal</cite> variable <code class="docutils literal notranslate"><span class="pre">X</span></code> such that <code class="docutils literal notranslate"><span class="pre">exp(X)=Y</span></code> (<code class="xref py py-attr docutils literal notranslate"><span class="pre">z.μ</span></code> and <code class="xref py py-attr docutils literal notranslate"><span class="pre">z.σ2</span></code> are this mean and variance in
+standardized space). In this case, <a class="reference internal" href="#gumbi.arrays.UncertainParameterArray." title="gumbi.arrays.UncertainParameterArray.μ"><code class="xref py py-attr docutils literal notranslate"><span class="pre">μ</span></code></a> and <a class="reference internal" href="#gumbi.arrays.UncertainParameterArray.2" title="gumbi.arrays.UncertainParameterArray.σ2"><code class="xref py py-attr docutils literal notranslate"><span class="pre">σ2</span></code></a> are the scale and shape descriptors of <code class="docutils literal notranslate"><span class="pre">Y</span></code>, so
+<code class="docutils literal notranslate"><span class="pre">self.μ</span> <span class="pre">=</span> <span class="pre">np.exp(self.t.μ)</span></code> and <code class="docutils literal notranslate"><span class="pre">self.σ2</span> <span class="pre">=</span> <span class="pre">self.t.σ2</span></code>. Thus, <a class="reference internal" href="#gumbi.arrays.UncertainParameterArray." title="gumbi.arrays.UncertainParameterArray.μ"><code class="xref py py-attr docutils literal notranslate"><span class="pre">μ</span></code></a> and <a class="reference internal" href="#gumbi.arrays.UncertainParameterArray.2" title="gumbi.arrays.UncertainParameterArray.σ2"><code class="xref py py-attr docutils literal notranslate"><span class="pre">σ2</span></code></a> are not strictly the
+mean and variance of the random variable in natural space, these can be obtained from the <a class="reference internal" href="#gumbi.arrays.UncertainParameterArray.dist" title="gumbi.arrays.UncertainParameterArray.dist"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dist</span></code></a>.</p>
+<ul>
+<li><p>This behavior is most important, and potentially most confusing, when calculating the <a class="reference internal" href="#gumbi.arrays.UncertainParameterArray.mean" title="gumbi.arrays.UncertainParameterArray.mean"><code class="xref py py-meth docutils literal notranslate"><span class="pre">mean()</span></code></a>. Averaging
+is performed in <cite>transformed</cite> space, where the random variable exhibits a <cite>Normal</cite> distribution and the mean
+also exhibits a <cite>Normal</cite> distribution, allowing error propagation to be applied analytically. The <a class="reference internal" href="#gumbi.arrays.UncertainParameterArray." title="gumbi.arrays.UncertainParameterArray.μ"><code class="xref py py-attr docutils literal notranslate"><span class="pre">μ</span></code></a> and
+<a class="reference internal" href="#gumbi.arrays.UncertainParameterArray.2" title="gumbi.arrays.UncertainParameterArray.σ2"><code class="xref py py-attr docutils literal notranslate"><span class="pre">σ2</span></code></a> returned are the descriptors of the <cite>LogNormal</cite> distribution that represents the reverse
+transformation of this new <cite>Normal</cite> distribution. Therefore, the result is more akin to marginalizing out the
+given dimensions in the underlying model than a true natural-space average.</p></li>
+</ul>
+</li>
+</ul>
+</div></blockquote>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.norm.html">norm</a>: scipy <cite>Normal</cite> random variable</p>
+<p><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.lognorm.html">lognorm</a>: scipy <cite>LogNormal</cite> random variable</p>
+<p><a class="reference internal" href="gumbi.arrays.ParameterArray.html#gumbi.arrays.ParameterArray" title="gumbi.arrays.ParameterArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParameterArray</span></code></a></p>
+<p><a class="reference internal" href="gumbi.arrays.UncertainArray.html#gumbi.arrays.UncertainArray" title="gumbi.arrays.UncertainArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">UncertainArray</span></code></a></p>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">Standardizer</span></code></p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of variable.</p></li>
+<li><p><strong>μ</strong> (<em>array</em>) – Mean at each point</p></li>
+<li><p><strong>σ2</strong> (<em>array</em>) – Variance at each point</p></li>
+<li><p><strong>stdzr</strong> (<a class="reference internal" href="../aggregation/gumbi.aggregation.Standardizer.html#gumbi.aggregation.Standardizer" title="gumbi.aggregation.Standardizer"><em>Standardizer</em></a>) – An instance  of <code class="xref py py-class docutils literal notranslate"><span class="pre">Standardizer</span></code>, converted internally to <code class="xref py py-class docutils literal notranslate"><span class="pre">Standardizer</span></code></p></li>
+<li><p><strong>stdzd</strong> (<em>bool</em><em>, </em><em>default False</em>) – Whether the supplied values are on standardized scale instead of the natural scale</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Create a <cite>LogNormal</cite> random variable, as indicated by its <code class="xref py py-class docutils literal notranslate"><span class="pre">Standardizer</span></code></p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gumbi</span> <span class="kn">import</span> <span class="n">uparray</span><span class="p">,</span> <span class="n">Standardizer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stdzr</span> <span class="o">=</span> <span class="n">Standardizer</span><span class="p">(</span><span class="n">m</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;μ&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">5.30</span><span class="p">,</span> <span class="s1">&#39;σ&#39;</span><span class="p">:</span> <span class="mf">0.582</span><span class="p">},</span> <span class="n">log_vars</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;c&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">upa</span> <span class="o">=</span> <span class="n">uparray</span><span class="p">(</span><span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span><span class="o">/</span><span class="mi">10</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span><span class="o">/</span><span class="mi">100</span><span class="p">,</span> <span class="n">stdzr</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">upa</span>
+<span class="go">m[&#39;μ&#39;, &#39;σ2&#39;]: [(0.1, 0.01) (0.2, 0.02) (0.3, 0.03) (0.4, 0.04)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stdzr</span><span class="o">.</span><span class="n">transforms</span><span class="p">[</span><span class="s1">&#39;c&#39;</span><span class="p">]</span>
+<span class="go">[&lt;ufunc &#39;log&#39;&gt;, &lt;ufunc &#39;exp&#39;&gt;]</span>
+</pre></div>
+</div>
+<p>Mean and variance of the parameter in standardized space:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">upa</span><span class="o">.</span><span class="n">z</span>
+<span class="go">m_z[&#39;μ&#39;, &#39;σ2&#39;]: [(5.15019743, 0.02952256) (6.34117197, 0.05904512)</span>
+<span class="go">                 (7.03784742, 0.08856768) (7.53214651, 0.11809024)]</span>
+</pre></div>
+</div>
+<p>Verify round-trip transformation:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">upa</span><span class="o">.</span><span class="n">stdzr</span><span class="o">.</span><span class="n">unstdz</span><span class="p">(</span><span class="n">upa</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">upa</span><span class="o">.</span><span class="n">z</span><span class="o">.</span><span class="n">μ</span><span class="p">,</span> <span class="n">upa</span><span class="o">.</span><span class="n">z</span><span class="o">.</span><span class="n">σ2</span><span class="p">)</span>
+<span class="go">(array([0.1, 0.2, 0.3, 0.4]), array([0.01, 0.02, 0.03, 0.04]))</span>
+</pre></div>
+</div>
+<p>Create a <cite>uparray</cite> from already-standardized values and verify round-trip transformation:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">uparray</span><span class="p">(</span><span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">6</span><span class="p">)</span><span class="o">/</span><span class="mi">10</span><span class="p">,</span> <span class="n">stdzr</span><span class="p">,</span> <span class="n">stdzd</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">z</span>
+<span class="go">m_z[&#39;μ&#39;, &#39;σ2&#39;]: [(-2., 0.1) (-1., 0.2) ( 0., 0.3) ( 1., 0.4) ( 2., 0.5)]</span>
+</pre></div>
+</div>
+<p>For <cite>LogNormal</cite> parameters, uparray follows the <cite>scipy.stats</cite> convention  of parameterizing a lognormal random
+variable in terms of it’s natural-space mean and its log-space standard deviation. Thus, a LogNormal uparray defined
+as <cite>m[‘μ’, ‘σ2’]: (0.1, 0.01)</cite> represents <cite>exp(Normal(log(0.1), 0.01))</cite>.</p>
+<p>Note that the mean is not simply the mean of each component, it is the parameters of the <cite>LogNormal</cite> distribution
+that corresponds to the mean of the underlying <cite>Normal</cite> distributions in <cite>log</cite> (transformed) space.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">upa</span><span class="o">.</span><span class="n">μ</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="go">0.25</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">upa</span><span class="o">.</span><span class="n">σ2</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="go">0.025</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">upa</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="go">m[&#39;μ&#39;, &#39;σ2&#39;]: (0.22133638, 0.00625)</span>
+</pre></div>
+</div>
+<p>You can verify the mean and variance returned by averaging over the random variable explicitly.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">upa</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">dist</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="go">2.2202914201059437e-01</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">upa</span><span class="o">.</span><span class="n">t</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">dist</span><span class="o">.</span><span class="n">rvs</span><span class="p">(</span><span class="mi">10000</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">2021</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+<span class="go">2.2133371283050837e-01</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">upa</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">dist</span><span class="o">.</span><span class="n">var</span><span class="p">()</span>
+<span class="go">3.0907071428047016e-04</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">upa</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">dist</span><span class="o">.</span><span class="n">rvs</span><span class="p">(</span><span class="mi">10000</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">2021</span><span class="p">))</span><span class="o">.</span><span class="n">var</span><span class="p">()</span>
+<span class="go">6.304628046829242e-03</span>
+</pre></div>
+</div>
+<p>Calculate percentiles</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">upa</span><span class="o">.</span><span class="n">dist</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="mf">0.025</span><span class="p">)</span>
+<span class="go">array([0.08220152, 0.1515835 , 0.21364308, 0.27028359])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">upa</span><span class="o">.</span><span class="n">dist</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="mf">0.975</span><span class="p">)</span>
+<span class="go">array([0.12165225, 0.26388097, 0.42126336, 0.59197082])</span>
+</pre></div>
+</div>
+<p>Draw samples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">upa</span><span class="o">.</span><span class="n">dist</span><span class="o">.</span><span class="n">rvs</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="o">*</span><span class="n">upa</span><span class="o">.</span><span class="n">shape</span><span class="p">],</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">2021</span><span class="p">)</span>
+<span class="go">array([[0.11605116, 0.22006429, 0.27902589, 0.34041327],</span>
+<span class="go">       [0.10571616, 0.1810085 , 0.36491077, 0.45507622],</span>
+<span class="go">       [0.10106982, 0.21230397, 0.3065239 , 0.33827997]])</span>
+</pre></div>
+</div>
+<p>You can compose the variable with numpy functions, though you may get a warning if the operation is poorly defined
+for the distribution (which is most transforms on <cite>LogNormal</cite> distributions). Transformations are applied in
+transformed space.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">upa</span><span class="o">+</span><span class="mi">1</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">upa</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">))[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">])</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">t</span><span class="o">.</span><span class="n">dist</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="go">UserWarning: Transform is poorly defined for &lt;ufunc &#39;log&#39;&gt;; results may be unexpected.</span>
+<span class="go">-1.8423623672812148</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gumbi.arrays.UncertainParameterArray.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#gumbi.arrays.UncertainParameterArray.name" title="Permalink to this definition"></a></dt>
+<dd><p>Name of variable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gumbi.arrays.UncertainParameterArray.">
+<span class="sig-name descname"><span class="pre">μ</span></span><a class="headerlink" href="#gumbi.arrays.UncertainParameterArray." title="Permalink to this definition"></a></dt>
+<dd><p>Mean at each point</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gumbi.arrays.UncertainParameterArray.2">
+<span class="sig-name descname"><span class="pre">σ2</span></span><a class="headerlink" href="#gumbi.arrays.UncertainParameterArray.2" title="Permalink to this definition"></a></dt>
+<dd><p>Variance at each point</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gumbi.arrays.UncertainParameterArray.fields">
+<span class="sig-name descname"><span class="pre">fields</span></span><a class="headerlink" href="#gumbi.arrays.UncertainParameterArray.fields" title="Permalink to this definition"></a></dt>
+<dd><p>Names of each level held in the array</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gumbi.arrays.UncertainParameterArray.stdzr">
+<span class="sig-name descname"><span class="pre">stdzr</span></span><a class="headerlink" href="#gumbi.arrays.UncertainParameterArray.stdzr" title="Permalink to this definition"></a></dt>
+<dd><p>An instance  of <code class="xref py py-class docutils literal notranslate"><span class="pre">Standardizer</span></code> created from the supplied <code class="xref py py-class docutils literal notranslate"><span class="pre">Standardizer</span></code> object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../aggregation/gumbi.aggregation.Standardizer.html#gumbi.aggregation.Standardizer" title="gumbi.aggregation.Standardizer">Standardizer</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gumbi.arrays.UncertainParameterArray.dist">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dist</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">scipy.stats._distn_infrastructure.rv_continuous</span></em><a class="headerlink" href="#gumbi.arrays.UncertainParameterArray.dist" title="Permalink to this definition"></a></dt>
+<dd><p>Array of <code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.stats.rv_continuous()</span></code> objects.</p>
+<p>If the transformation associated with the array’s parameter is log/exp, this is a <cite>lognorm</cite> distribution object
+with <code class="docutils literal notranslate"><span class="pre">scale=self.μ</span></code> and <code class="docutils literal notranslate"><span class="pre">s=self.t.σ</span></code>. Otherwise it is a <cite>norm</cite> distribution with <code class="docutils literal notranslate"><span class="pre">loc=self.μ</span></code> and
+<code class="docutils literal notranslate"><span class="pre">scale=self.σ</span></code>. See the scipy documentation on <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.lognorm.html">LogNormal</a> and <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.norm.html">Normal</a> random variables for more
+explanation and a list of methods.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gumbi.arrays.UncertainParameterArray.mean">
+<span class="sig-name descname"><span class="pre">mean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.arrays.UncertainParameterArray.mean" title="Permalink to this definition"></a></dt>
+<dd><p>The natural-space distribution parameters which represent the mean of the transformed-space distributions</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gumbi.arrays.UncertainParameterArray.sum">
+<span class="sig-name descname"><span class="pre">sum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.arrays.UncertainParameterArray.sum" title="Permalink to this definition"></a></dt>
+<dd><p>Summation with uncertainty propagation</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gumbi.arrays.UncertainParameterArray.t">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">t</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="gumbi.arrays.UncertainArray.html#gumbi.arrays.UncertainArray" title="gumbi.arrays.UncertainArray"><span class="pre">gumbi.arrays.UncertainArray</span></a></em><a class="headerlink" href="#gumbi.arrays.UncertainParameterArray.t" title="Permalink to this definition"></a></dt>
+<dd><p>Transformed values</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gumbi.arrays.UncertainParameterArray.z">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">z</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="gumbi.arrays.UncertainArray.html#gumbi.arrays.UncertainArray" title="gumbi.arrays.UncertainArray"><span class="pre">gumbi.arrays.UncertainArray</span></a></em><a class="headerlink" href="#gumbi.arrays.UncertainParameterArray.z" title="Permalink to this definition"></a></dt>
+<dd><p>Standardized values</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="gumbi.arrays.UncertainArray.html" class="btn btn-neutral float-left" title="UncertainArray" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../plotting/gumbi.plotting.ParrayPlotter.html" class="btn btn-neutral float-right" title="ParrayPlotter" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, John Goertz.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

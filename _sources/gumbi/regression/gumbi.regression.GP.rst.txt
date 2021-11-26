@@ -1,0 +1,32 @@
+﻿GP
+==
+
+.. currentmodule:: gumbi.regression
+
+.. autosummary:: GP
+
+
+
+.. rubric:: Methods
+
+.. autosummary::
+
+  GP.build_model
+  GP.find_MAP
+  GP.fit
+  GP.predict
+
+
+
+
+
+.. rubric:: Attributes
+
+.. autosummary::
+
+
+
+
+.. autoclass:: GP
+   :members:
+   :show-inheritance:

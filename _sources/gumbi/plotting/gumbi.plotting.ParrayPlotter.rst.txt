@@ -1,0 +1,42 @@
+﻿ParrayPlotter
+=============
+
+.. currentmodule:: gumbi.plotting
+
+.. autosummary:: ParrayPlotter
+
+
+
+.. rubric:: Methods
+
+.. autosummary::
+
+  ParrayPlotter.colorbar
+  ParrayPlotter.plot
+  ParrayPlotter.plot_ci
+  ParrayPlotter.update
+
+
+
+
+
+.. rubric:: Attributes
+
+.. autosummary::
+
+  ParrayPlotter.stdzr
+  ParrayPlotter.x_scale
+  ParrayPlotter.x_tick_scale
+  ParrayPlotter.y_scale
+  ParrayPlotter.y_tick_scale
+  ParrayPlotter.z
+  ParrayPlotter.z_scale
+  ParrayPlotter.z_tick_scale
+  ParrayPlotter.x
+  ParrayPlotter.y
+
+
+
+.. autoclass:: ParrayPlotter
+   :members:
+   :show-inheritance:

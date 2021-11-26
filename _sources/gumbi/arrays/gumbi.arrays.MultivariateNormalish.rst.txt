@@ -1,0 +1,33 @@
+﻿MultivariateNormalish
+=====================
+
+.. currentmodule:: gumbi.arrays
+
+.. autosummary:: MultivariateNormalish
+
+
+
+.. rubric:: Methods
+
+.. autosummary::
+
+  MultivariateNormalish.cdf
+  MultivariateNormalish.logcdf
+  MultivariateNormalish.logpdf
+  MultivariateNormalish.pdf
+  MultivariateNormalish.rvs
+
+
+
+
+
+.. rubric:: Attributes
+
+.. autosummary::
+
+
+
+
+.. autoclass:: MultivariateNormalish
+   :members:
+   :show-inheritance:
