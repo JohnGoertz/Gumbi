@@ -20,10 +20,7 @@ Read in some data and store it as a Gumbi `DataSet`:
 import gumbi as gmb
 import seaborn as sns
 cars = sns.load_dataset('mpg').dropna()
-
-ds = gmb.DataSet(cars,
-                 outputs=['mpg', 'acceleration'],
-                 log_vars=['mpg', 'acceleration', 'weight', 'horsepower', 'displacement'])
+ds = gmb.DataSet(cars, outputs=['mpg', 'acceleration'], log_vars=['mpg', 'acceleration', 'weight', 'horsepower', 'displacement'])
 ```
 
 Create a Gumbi `GP` object and fit a model that predicts *mpg* from *horsepower*:
@@ -38,13 +35,18 @@ Make predictions and plot!
 ```python
 X = gp.prepare_grid()
 y = gp.predict_grid()
-
 gmb.ParrayPlotter(X, y).plot()
 ```
 
 More complex GPs are also possible, such as correlated multi-input and multi-output systems. See the docs for more examples.
 
 ## Installation
+
+### Via pip
+
+`pip install gumbi`
+
+### Bleeding edge
 
 * Clone the repo and navigate to the new directory
   * `git clone https://gitlab.com/JohnGoertz/gumbi gumbi`

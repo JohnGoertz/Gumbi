@@ -6,8 +6,8 @@ DISTNAME = "gumbi"
 DESCRIPTION = "Gaussian Process Model Building Interface"
 AUTHOR = "John Goertz"
 AUTHOR_EMAIL = ""
-URL = ""
-LICENSE = ""
+URL = "https://github.com/JohnGoertz/Gumbi"
+LICENSE = "Apache 2.0"
 
 PROJECT_ROOT = pl.Path(__file__).resolve().parent
 REQUIREMENTS = PROJECT_ROOT / "requirements.txt"
@@ -28,6 +28,7 @@ classifiers = [
     "Intended Audience :: Science/Research",
     "Topic :: Scientific/Engineering",
     "Topic :: Scientific/Engineering :: Mathematics",
+    "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
 ]
 
@@ -37,7 +38,10 @@ setup(
     author="John Goertz",
     author_email="",
     description=DESCRIPTION,
+    long_description_content_type="text/markdown",
     long_description=long_description,
+    url=URL,
+    license=LICENSE,
     python_requires='>=3.9',
     packages=find_packages(),
     package_data={'': ['*.pkl', '*.mplstyle']},

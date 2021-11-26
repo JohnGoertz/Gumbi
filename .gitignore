@@ -10,3 +10,5 @@ docs/source/gumbi
 htmlcov
 *_backup*
 nupack/*
+dist/*
+*.pub
