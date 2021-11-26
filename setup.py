@@ -11,12 +11,16 @@ LICENSE = ""
 
 PROJECT_ROOT = pl.Path(__file__).resolve().parent
 REQUIREMENTS = PROJECT_ROOT / "requirements.txt"
+README = PROJECT_ROOT / "README.md"
 
 with open(REQUIREMENTS) as f:
     install_reqs = f.read().splitlines()
 
+with open(README, 'r') as fh:
+    long_description = fh.read()
+
 classifiers = [
-    "Development Status :: 2 - Pre-Alpha",
+    "Development Status :: 4 - Beta",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.9",
@@ -28,13 +32,12 @@ classifiers = [
 ]
 
 setup(
-    # the name must match the folder name 'verysimplemodule'
     name=DISTNAME,
     version=VERSION,
     author="John Goertz",
     author_email="",
     description=DESCRIPTION,
-    #long_description=LONG_DESCRIPTION,
+    long_description=long_description,
     python_requires='>=3.9',
     packages=find_packages(),
     package_data={'': ['*.pkl', '*.mplstyle']},
