@@ -24,7 +24,7 @@ import gumbi as gmb
 # Use gumbi' plotting defaults for stylistic consistency, good dataviz practice, and aesthetics
 
 # %%
-plt.style.use(gmb.style.default)
+#plt.style.use(gmb.style.default)
 
 # %% [markdown]
 # ## Setup

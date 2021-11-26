@@ -28,7 +28,7 @@ import gumbi as gmb
 # Use gumbi's plotting defaults for stylistic consistency, good dataviz practice, and aesthetics. Use `gmb.style.default` if you don't have the Futura font installed.
 
 # %%
-plt.style.use(gmb.style.futura)
+#plt.style.use(gmb.style.futura)
 
 # %% [markdown]
 # ## Setup
