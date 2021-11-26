@@ -36,6 +36,8 @@ setup(
     description=DESCRIPTION,
     #long_description=LONG_DESCRIPTION,
     packages=find_packages(),
+    package_data={'': ['*.pkl', '*.mplstyle']},
+    include_package_data=True,
     install_requires=install_reqs,
     classifiers=classifiers,
     #keywords=['python'],
