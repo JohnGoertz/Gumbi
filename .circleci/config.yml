@@ -68,19 +68,6 @@ jobs:
       - persist_to_workspace:
           root: docs/build
           paths: html
-      # - add_ssh_keys:
-      #     fingerprints:
-      #       - "b8:0e:35:48:12:3b:b6:55:75:c4:18:25:75:c6:d5:78"
-      # - run:
-      #     name: Commit
-      #     command: |
-      #       git config user.email "docs.bot@gumbi.com"
-      #       git config user.name "Docs Bot"
-      #       git add --all
-      #       git commit -m "Update docs [ci skip]"
-      #       git pull origin main
-      #       git push origin main
-      #       # bash tag-stable.sh
       - run: echo "Docs created successfully"
   deploy-docs:
     docker:
@@ -100,10 +87,10 @@ jobs:
             git config user.name "Docs Bot"
       - add_ssh_keys:
           fingerprints:
-            - "b8:0e:35:48:12:3b:b6:55:75:c4:18:25:75:c6:d5:78"
+            - "ee:db:2d:7c:29:39:a8:8e:c8:f3:09:9a:9a:23:d7:ab"
       - run:
           name: Deploy docs to gh-pages branch
-          command: gh-pages --dotfiles --message "Deploy docs [ci skip]" --dist docs/build/html
+          command: gh-pages --dotfiles --message "Deploy docs [skip ci]" --dist docs/build/html
 
 
 # Invoke jobs via workflows
@@ -120,6 +107,6 @@ workflows:
           #   branches:
           #     only: main
 
-# config.yaml written using advice from:
+# config.yaml written using inspiration from:
 # https://circleci.com/blog/deploying-documentation-to-github-pages-with-continuous-integration/#c-consent-modal
 # https://github.com/GPflow/docs/blob/master/.circleci/config.yml
