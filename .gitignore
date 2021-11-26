@@ -4,9 +4,8 @@
 docs/build
 docs/source/gumbi
 *.ipynb_checkpoints*
-*.ipynb
 *__pycache__*
-*.ipynb
+#*.ipynb
 .coverage
 htmlcov
 *_backup*
