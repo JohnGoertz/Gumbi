@@ -1,0 +1,6 @@
+include *.pkl
+include *.mplstyle
+include *.txt
+include docs/source/conf.py
+include docs/source/*.rst
+include docs/source/notebooks/*.ipynb

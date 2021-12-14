@@ -1,7 +1,7 @@
 from setuptools import find_packages, setup
 import pathlib as pl
 
-VERSION = '0.1.1'
+VERSION = '0.1.2'
 DISTNAME = "gumbi"
 DESCRIPTION = "Gaussian Process Model Building Interface"
 AUTHOR = "John Goertz"
@@ -44,7 +44,6 @@ setup(
     license=LICENSE,
     python_requires='>=3.9',
     packages=find_packages(),
-    package_data={'': ['*.pkl', '*.mplstyle']},
     include_package_data=True,
     install_requires=install_reqs,
     classifiers=classifiers,
