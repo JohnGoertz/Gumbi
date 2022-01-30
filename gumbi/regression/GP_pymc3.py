@@ -209,6 +209,21 @@ class GP(Regressor):
         self.gp_dict = None
         self.MAP = None
 
+        self.continuous_kernel = 'ExpQuad'
+        self.heteroskedastic_inputs = False
+        self.heteroskedastic_outputs = True
+        self.sparse = False
+        self.n_u = 100
+
+        self.model_specs = {
+            'seed': self.seed,
+            'continuous_kernel': self.continuous_kernel,
+            'heteroskedastic_inputs': self.heteroskedastic_inputs,
+            'heteroskedastic_outputs': self.heteroskedastic_outputs,
+            'sparse': self.sparse,
+            'n_u': self.n_u,
+        }
+
     ################################################################################
     # Model building and fitting
     ################################################################################
@@ -323,6 +338,21 @@ class GP(Regressor):
         X, y = self.get_shaped_data('mean')
 
         seed = self.seed if seed is None else seed
+        self.seed = seed
+        self.continuous_kernel = continuous_kernel
+        self.heteroskedastic_inputs = heteroskedastic_inputs
+        self.heteroskedastic_outputs = heteroskedastic_outputs
+        self.sparse = sparse
+        self.n_u = n_u
+
+        self.model_specs = {
+            'seed': seed,
+            'continuous_kernel': continuous_kernel,
+            'heteroskedastic_inputs': heteroskedastic_inputs,
+            'heteroskedastic_outputs': heteroskedastic_outputs,
+            'sparse': sparse,
+            'n_u': n_u,
+        }
 
         n_l = len(self.linear_dims)
         n_s = len(self.continuous_dims)

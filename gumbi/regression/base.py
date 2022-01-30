@@ -800,7 +800,7 @@ class Regressor(ABC):
         train_obj = self.__class__(DataSet(train_df), outputs=self.outputs, seed=seed)
         train_obj.specify_model(**specifications)
         train_obj.filter_dims = self.filter_dims
-        train_obj.build_model()
+        train_obj.build_model(**self.model_specs)
         train_obj.find_MAP(**MAP_kws)
 
         # Get in-sample prediction metrics
