@@ -1,7 +1,9 @@
+import warnings
 from abc import ABC, abstractmethod
 import numpy as np
 import pandas as pd
 from scipy.interpolate import interpn
+from itertools import product
 
 from gumbi.utils.misc import assert_in, assert_is_subset
 from gumbi.utils.gp_utils import get_ℓ_prior
@@ -95,6 +97,7 @@ class Regressor(ABC):
         self.categorical_levels = {}
         self.categorical_coords = {}
         self.additive = False
+        self.model_specs = {}
 
         self.X = None
         self.y = None
@@ -303,7 +306,9 @@ class Regressor(ABC):
                 coords = {dim: {level: coord for level, coord in zip(levels[dim], coords)}}
             else:
                 raise TypeError('Coordinates must be of type list or dict')
-            if not all(isinstance(coord, (int, float)) for coord in coords.values()):
+            if not all(isinstance(coord, (int, float))
+                       for coord_dict in coords.values()
+                       for coord in coord_dict.values()):
                 raise TypeError('Coordinates must be numeric')
         elif dims is not None and levels is not None:
             coords = {dim: self._make_coordinates(dim, levels_list) for dim, levels_list in levels.items()}
@@ -355,7 +360,7 @@ class Regressor(ABC):
         return df[allowed] if not standardized else self.data.tidy.z[allowed]
 
     def get_structured_data(self, metric='mean'):
-        """Formats input tidy and observations as parrays
+        """Formats input data and observations as parrays
 
         Parameters
         ----------
@@ -384,7 +389,7 @@ class Regressor(ABC):
         # Extract the model dimensions from the dataframe for one of the parameters
         dims = set(self.dims) - set([self.out_col])
         dim_values = {dim: df[df[self.out_col] == self.outputs[0]].replace(self.coords)[dim].values for dim in dims}
-        X = self.parray(**dim_values, stdzd=False)[:, None]
+        X = self.parray(**dim_values, stdzd=False)
 
         # List of parrays for each output
         outputs = {output: df[df[self.out_col] == output]['Value'].values for output in self.outputs}
@@ -393,6 +398,25 @@ class Regressor(ABC):
         return X, y
 
     def get_shaped_data(self, metric='mean'):
+        """Formats input data and observations as plain numpy arrays
+
+        Parameters
+        ----------
+        metric : str, default 'mean'
+            Which summary statistic to return (must be a value in the `Metric` column)
+
+        Returns
+        -------
+        X : np.ndarray
+            A tall matrix of input coordinates with shape (n_obs, n_dims).
+        y : np.ndarray
+            A (1D) vector of observations
+
+        See Also
+        --------
+        :meth:`get_filtered_data`
+
+        """
 
         self.X, self.y = self.get_structured_data(metric=metric)
 
@@ -713,123 +737,228 @@ class Regressor(ABC):
     # Evaluation
     ################################################################################
 
-    def cross_validate(self, dims, n_train=None, pct_train=None, train_only=None, warm_start=None, seed=None,
-                       **MAP_kws):
+    def cross_validate(self, unit=None, *, n_train=None, pct_train=None, train_only=None, warm_start=True, seed=None,
+                       errors='natural', **MAP_kws):
         """Fits model on random subset of tidy and evaluates accuracy of predictions on remaining observations.
 
         This method finds unique combinations of values in the columns specified by ``dims``, takes a random subset of
         these for training, and evaluates the predictions made for the remaining tidy.
 
+        Notes
+        -----
+        :meth:`cross_validate` is *reproducibly random* by default. In order to evaluate different test/train subsets of
+        the same size, you will need to set the `seed` explicitly.
+
+        Specifying *unit* changes the interpretation of *n_train* and *pct_train*: rather than the number
+        or fraction of all individual observations to be included in the training set, these now represent the number
+        of distinct entities in the *unit* column from the wide-form dataset.
+
+        Criteria in *train_only* are enforced before grouping observations by *unit*. If *train_only* and *unit* are
+        both specified, but the *train_only* criteria encompass only some observations of a given entity in *unit*,
+        this could lead to expected behavior.
+
+        Similarly, if *warm_start* and *unit* are both specified, but a given entity appears in multiple categories
+        from any of the :attr:`categorical_dims`, this could lead to expected behavior. It is recommended to set
+        *warm_start* to `False` if this is the case.
+
         Parameters
         ----------
-        dims : list of str
-            Columns from which to take unique combinations as training and testing sets
+        unit : list of str
+            Columns from which to take unique combinations as training and testing sets. This could be useful when the
+            data contains multiple (noisy) observations for each of several distinct entities.
         n_train : int, optional
             Number of training points to use. Exactly one of `n_train` and `pct_train` must be specified.
         pct_train : float, optional
             Percent of training points to use. Exactly one of `n_train` and `pct_train` must be specified.
         train_only : dict, optional
-            Dimension and level names to be always included in the training set.
+            Specifications for observations to be always included in the training set. This will select all rows of the
+            wide-form dataset which *exactly* match *all* criteria.
         warm_start : bool, default True
             Whether to include a minimum of one observation for each level in each `categorical_dim` in the training set.
         seed : int, optional
             Random seed
+        errors : {'natural', 'standardized', 'transformed'}
+            "Space" in which to return prediction errors
         **MAP_kws
             Additional
 
         Returns
         -------
-
+        dict
+            Dictionary with nested dictionaries 'train' and 'test', both containing fields 'data', 'NLPDs', and 'errors'.
+            These fields contain the relevant subset of observations as a DataSet, an array of the negative log
+            posterior densities of observations given the predictions, and an array of the natural-space difference
+            between observations and prediction means, respectively.
         """
+
         if not (n_train is None) ^ (pct_train is None):
             raise ValueError('Exactly one of "n_train" and "pct_train" must be specified')
 
-        train_only = {} if train_only is None else train_only
+        if unit is not None:
+            if not isinstance(unit, str):
+                raise TypeError('Keyword "unit" must be a single string.')
+
+        assert_in('Keyword "errors"', errors, ['natural', 'standardized', 'transformed'])
+
         seed = self.seed if seed is None else seed
         rg = np.random.default_rng(seed)
 
-        df = self.get_filtered_data()
-        n_train = n_train if n_train is not None else len(df.set_index(dims).index.unique()) // pct_train
+        df = self.data.wide
+
+        n_entities = len(set(df.index)) if unit is None else len(set(df.set_index(unit).index))
+        n_train = n_train if n_train is not None else np.floor(n_entities * pct_train).astype(int)
+        if n_train <= 0:
+            raise ValueError('Size of training set must be strictly greater than zero.')
+        if n_train > n_entities:
+            raise ValueError('Size of training set must be not exceed number of observations or entities in dataset.')
 
         # Build up a list of dataframes that make up the training set
         train_list = []
 
-        # Ensure levels in train_only are lists
-        train_only = {dim: levels if isinstance(levels, list) else [levels] for dim, levels in train_only.items()}
+        if train_only is not None:
+            # Move items that match `train_only` criteria to training set
+            train_only_criteria = [df[dim] == level for dim, level in train_only.items()]
+            train_only_idxs = pd.concat(train_only_criteria, axis=1).all(axis=1).index
+            train_only_df = df.loc[train_only_idxs] if unit is None else df.loc[train_only_idxs].set_index(unit)
+            n_train -= len(set(train_only_df.index))
+            if n_train < 0:
+                raise ValueError('Adding `train_only` observations exceeded specified size of training set')
+            train_list.append(train_only_df)
+            df = df.drop(index=train_only_idxs)
 
-        # Move items in `train_only` to training set
-        for dim, levels in train_only.items():
-            for level in levels:
-                for_train = df[df[dim] == level]
-                train_list.append(for_train)
-                df = df[df[dim] != level]
-                n_train -= len(for_train.set_index(dims).index.unique())
-                if n_train <= 0:
-                    raise ValueError('Adding `train_only` observations exceeded specified size of training set')
+        # Group data by columns specified as "unit"
+        if unit is not None:
+            df = df.set_index(unit)
+            remaining_entities = set(df.index)
+            if len(train_list) > 1:
+                # Ensure train_only didn't partially slice a unique entity
+                train_only_entities = set(train_list[-1].index)
+                if len(train_only_entities.intersection(remaining_entities)) > 0:
+                    raise ValueError('Criteria in `train_only` partially sliced an entity specified by `unit`, which makes \
+                                      interpretation of `n_train` ambiguous.')
+
+        if n_train > len(df.index.unique()):
+            raise ValueError('Specified size of training set exceeds number of unique combinations found in `dims`')
 
         if warm_start:
             # Add one random item from each categorical level to the training set
-            for dim, levels in self.categorical_levels:
-                for level in levels:
-                    if level in train_only.get(dim, []):
-                        continue
-                    these = df[df[dim] == level].set_index(dims)
-                    for_train = these.loc[rg.choice(these.index.unique(), 1, replace=False)]
-                    train_list.append(for_train)
-                    df = df[df[dim] != level]
-                    n_train -= 1
-                    if n_train <= 0:
-                        raise ValueError('Adding `warm_start` observations exceeded specified size of training set')
+
+            if len(self.categorical_dims) > 0:
+                # Filter out any observations not in the specified categorical levels
+                level_combinations = list(product(*self.categorical_levels.values()))
+                cat_grps = (df
+                            .groupby(self.categorical_dims)
+                            .filter(lambda grp: grp.name not in level_combinations)
+                            .groupby(self.categorical_dims))
+
+                if cat_grps.ngroups == 0:
+                    raise ValueError(f'None of the combinations of categorical levels were found in data.\nCombinations:\n{level_combinations}')
+
+                # Randomly select one item from each group
+                warm_idxs = cat_grps.sample(1, random_state=seed).index
+                if len(set(warm_idxs)) != len(warm_idxs):
+                    warnings.warn('Duplicate entities specified by `unit` were selected during `warm_start`. This may lead to unexpected behavior.')
+                n_train -= len(set(warm_idxs))
+                if n_train < 0:
+                    raise ValueError('Adding `warm_start` observations exceeded specified size of training set')
+                train_list.append(df.loc[warm_idxs])
+                df = df.drop(index=warm_idxs)
 
         # Move a random subset of the remaining items to the training set
-        df = df.set_index(dims)
-        if n_train > len(df.index.unique()):
-            raise ValueError('Specified size of training set exceeds number of unique combinations found in `dims`')
         train_idxs = rg.choice(df.index.unique(), n_train, replace=False)
         for_train = df.loc[train_idxs]
         train_list.append(for_train)
-        train_df = pd.concat(train_list)
-        test_df = df.drop(train_idxs)
+        train_df = pd.concat(train_list).reset_index()
+        test_df = df.drop(train_idxs).reset_index()
+
+        categorical_dims = [dim for dim in self.categorical_dims if dim != self.out_col]
 
         specifications = dict(outputs=self.outputs, linear_dims=self.linear_dims, continuous_dims=self.continuous_dims,
                               continuous_levels=self.continuous_levels, continuous_coords=self.continuous_coords,
-                              categorical_dims=self.categorical_dims, categorical_levels=self.categorical_levels,
+                              categorical_dims=categorical_dims, categorical_levels=self.categorical_levels,
                               additive=self.additive)
 
+        train_specs = specifications | {
+            'continuous_levels': {dim: [lvl for lvl in lvls if lvl in train_df[dim].values]
+                                  for dim, lvls in self.continuous_levels.items()},
+            'categorical_levels': {dim: [lvl for lvl in lvls if lvl in train_df[dim].values]
+                                   for dim, lvls in self.categorical_levels.items()},
+            'continuous_coords': {dim: {lvl: coord for lvl, coord in coords.items() if lvl in train_df[dim].values}
+                                  for dim, coords in self.continuous_coords.items()}
+        }
+
+        test_specs = specifications | {
+            'continuous_levels': {dim: [lvl for lvl in lvls if lvl in test_df[dim].values]
+                                  for dim, lvls in self.continuous_levels.items()},
+            'categorical_levels': {dim: [lvl for lvl in lvls if lvl in test_df[dim].values]
+                                   for dim, lvls in self.categorical_levels.items()},
+            'continuous_coords': {dim: {lvl: coord for lvl, coord in coords.items() if lvl in test_df[dim].values}
+                                  for dim, coords in self.continuous_coords.items()}
+        }
+
+        dataset_specs = dict(outputs=self.data.outputs,
+                             names_column=self.data.names_column,
+                             values_column=self.data.values_column,
+                             log_vars=self.data.log_vars,
+                             logit_vars=self.data.logit_vars,
+                             stdzr=self.data.stdzr)
+
+        train_ds = DataSet(train_df, **dataset_specs)
+        test_ds = DataSet(test_df, **dataset_specs)
+
         # Build and fit a new object of the current class (GP, GLM, etc) with the training set
-        train_obj = self.__class__(DataSet(train_df), outputs=self.outputs, seed=seed)
-        train_obj.specify_model(**specifications)
+        train_obj = self.__class__(train_ds, outputs=self.outputs, seed=seed)
+        train_obj.specify_model(**train_specs)
         train_obj.filter_dims = self.filter_dims
         train_obj.build_model(**self.model_specs)
-        train_obj.find_MAP(**MAP_kws)
+        train_obj.find_MAP(**MAP_kws)  # TODO: make more general to allow alternative inference approaches
 
         # Get in-sample prediction metrics
         train_X, train_y = train_obj.get_structured_data()
         train_predictions = train_obj.predict_points(train_X)
-        train_nlpd = train_predictions.nlpd(train_y)
-        train_rmse = np.sqrt(np.mean(np.square(train_y.z - train_predictions.z.μ)))
+        train_nlpd = train_predictions.nlpd(train_y.values())
+        train_error = {
+            'natural': train_y.values() - train_predictions.μ,
+            'transformed': train_y.t.values() - train_predictions.t.μ,
+            'standardized': train_y.z.values() - train_predictions.z.μ,
+        }[errors]
 
         if len(test_df.index.unique()) > 0:
             # If there's anything left for a testing set, build and fit a new object with the testing set
-            test_obj = self.__class__(DataSet(test_df), outputs=self.outputs, seed=seed)
-            test_obj.specify_model(**specifications)
+            test_obj = self.__class__(test_ds, outputs=self.outputs, seed=seed)
+
+            # TODO: figure out why this was necessary and get rid of it
+            categorical_dims = [dim for dim in self.categorical_dims if dim != self.out_col]
+            test_specs['categorical_dims'] = categorical_dims
+            train_specs['categorical_dims'] = categorical_dims
+            test_obj.specify_model(**test_specs)
             test_obj.filter_dims = self.filter_dims
 
             # Get out-of-sample prediction metrics
             test_X, test_y = test_obj.get_structured_data()
             test_predictions = train_obj.predict_points(test_X)
-            test_nlpd = train_predictions.z.nlpd(test_y.z)
-            test_rmse = np.sqrt(np.mean(np.square(test_y.z - test_predictions.z.μ)))
+            test_nlpd = test_predictions.nlpd(test_y.values())
+            test_error = {
+                'natural': test_y.values() - test_predictions.μ,
+                'transformed': test_y.t.values() - test_predictions.t.μ,
+                'standardized': test_y.z.values() - test_predictions.z.μ,
+            }[errors]
         else:
             test_nlpd = np.nan
-            test_rmse = np.nan
+            test_error = np.nan
 
-        metrics = {'train': {'NLPD': train_nlpd,
-                             'RMSE': train_rmse},
-                   'test': {'NLPD': test_nlpd,
-                            'RMSE': test_rmse}}
+        result = {
+            'train': {
+                'data': train_ds,
+                'NLPDs': train_nlpd,
+                'errors': train_error},
+            'test': {
+                'data': test_ds,
+                'NLPDs': test_nlpd,
+                'errors': test_error}
+        }
 
-        return metrics
+        return result
 
     ################################################################################
     # Plotting
