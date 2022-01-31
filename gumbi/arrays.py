@@ -643,7 +643,7 @@ class UncertainArray(np.ndarray):
 
     def nlpd(self, target) -> float:
         """Negative log posterior density"""
-        return -np.log(self.predictions.dist.pdf(target))
+        return -np.log(self.dist.pdf(target))
 
     def EI(self, target, best_yet, k=1) -> float:
         """Expected improvement
