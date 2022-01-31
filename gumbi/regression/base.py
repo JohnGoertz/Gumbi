@@ -741,6 +741,11 @@ class Regressor(ABC):
         This method finds unique combinations of values in the columns specified by ``dims``, takes a random subset of
         these for training, and evaluates the predictions made for the remaining tidy.
 
+        Notes
+        -----
+        :meth:`cross_validate` is *reproducibly random* by default. In order to evaluate different test/train subsets of
+         the same size, you will need to set the `seed` explicitly.
+
         Parameters
         ----------
         by : list of str
@@ -766,6 +771,7 @@ class Regressor(ABC):
             These fields contain arrays of the negative log posterior densities of observations given the predictions
             and the natural-space difference between observations and prediction means, respectively.
         """
+
         if not (n_train is None) ^ (pct_train is None):
             raise ValueError('Exactly one of "n_train" and "pct_train" must be specified')
 
@@ -773,8 +779,6 @@ class Regressor(ABC):
             raise NotImplementedError('Keyword "by" is not yet supported')
         if train_only is not None:
             raise NotImplementedError('Keyword "train_only" is not yet supported')
-        if warm_start is not None:
-            raise NotImplementedError('Keyword "warm_start" is not yet supported')
 
         train_only = {} if train_only is None else train_only
         seed = self.seed if seed is None else seed
@@ -803,25 +807,29 @@ class Regressor(ABC):
         #             raise ValueError('Adding `train_only` observations exceeded specified size of training set')
         #
 
-        # if warm_start:
-        #     # Add one random item from each categorical level to the training set
-        #
-        #     if self.categorical_dims == []:
-        #         raise ValueError('`warm_start` only applies when categorical_dims are specified.')
-        #
-        #     # Filter out any observations not in the specified categorical levels
-        #     cat_grps = (df
-        #                 .groupby(self.categorical_dims)
-        #                 .filter(lambda grp: grp.name in product(*self.categorical_levels.values()))
-        #                 .groupby(self.categorical_dims))
-        #
-        #     n_train -= cat_grps.ngroups
-        #     if n_train <= 0:
-        #         raise ValueError('Adding `warm_start` observations exceeded specified size of training set')
-        #     # Randomly select one item from each group
-        #     warm_picks = cat_grps.sample(1)
-        #     train_list.append(warm_picks)
-        #     df = df.drop(index=warm_picks.index)
+        if warm_start:
+            # Add one random item from each categorical level to the training set
+
+            if self.categorical_dims == []:
+                raise ValueError('`warm_start` only applies when categorical_dims are specified.')
+
+            # Filter out any observations not in the specified categorical levels
+            level_combinations = list(product(*self.categorical_levels.values()))
+            cat_grps = (df
+                        .groupby(self.categorical_dims)
+                        .filter(lambda grp: grp.name not in level_combinations)
+                        .groupby(self.categorical_dims))
+
+            if cat_grps.ngroups == 0:
+                raise ValueError(f'None of the combinations of categorical levels were found in data.\nCombinations:\n{level_combinations}')
+
+            n_train -= cat_grps.ngroups
+            if n_train <= 0:
+                raise ValueError('Adding `warm_start` observations exceeded specified size of training set')
+            # Randomly select one item from each group
+            warm_picks = cat_grps.sample(1)
+            train_list.append(warm_picks)
+            df = df.drop(index=warm_picks.index)
 
         # # Move a random subset of the remaining items to the training set
         # df = df.set_index(dims)
