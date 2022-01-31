@@ -770,9 +770,10 @@ class Regressor(ABC):
         Returns
         -------
         dict
-            Dictionary with nested dictionaries 'train' and 'test', both containing fields 'NLPDs' and 'errors'.
-            These fields contain arrays of the negative log posterior densities of observations given the predictions
-            and the natural-space difference between observations and prediction means, respectively.
+            Dictionary with nested dictionaries 'train' and 'test', both containing fields 'data', 'NLPDs', and 'errors'.
+            These fields contain the relevant subset of observations as a DataSet, an array of the negative log
+            posterior densities of observations given the predictions, and an array of the natural-space difference
+            between observations and prediction means, respectively.
         """
 
         if not (n_train is None) ^ (pct_train is None):
@@ -815,26 +816,24 @@ class Regressor(ABC):
         if warm_start:
             # Add one random item from each categorical level to the training set
 
-            if self.categorical_dims == []:
-                raise warnings.warn('`warm_start` ignored unless categorical_dims are specified.')
+            if len(self.categorical_dims) > 0:
+                # Filter out any observations not in the specified categorical levels
+                level_combinations = list(product(*self.categorical_levels.values()))
+                cat_grps = (df
+                            .groupby(self.categorical_dims)
+                            .filter(lambda grp: grp.name not in level_combinations)
+                            .groupby(self.categorical_dims))
 
-            # Filter out any observations not in the specified categorical levels
-            level_combinations = list(product(*self.categorical_levels.values()))
-            cat_grps = (df
-                        .groupby(self.categorical_dims)
-                        .filter(lambda grp: grp.name not in level_combinations)
-                        .groupby(self.categorical_dims))
+                if cat_grps.ngroups == 0:
+                    raise ValueError(f'None of the combinations of categorical levels were found in data.\nCombinations:\n{level_combinations}')
 
-            if cat_grps.ngroups == 0:
-                raise ValueError(f'None of the combinations of categorical levels were found in data.\nCombinations:\n{level_combinations}')
-
-            n_train -= cat_grps.ngroups
-            if n_train <= 0:
-                raise ValueError('Adding `warm_start` observations exceeded specified size of training set')
-            # Randomly select one item from each group
-            warm_idxs = cat_grps.sample(1).index
-            train_list.append(df.loc[warm_idxs])
-            df = df.drop(index=warm_idxs)
+                n_train -= cat_grps.ngroups
+                if n_train <= 0:
+                    raise ValueError('Adding `warm_start` observations exceeded specified size of training set')
+                # Randomly select one item from each group
+                warm_idxs = cat_grps.sample(1).index
+                train_list.append(df.loc[warm_idxs])
+                df = df.drop(index=warm_idxs)
 
         # # Move a random subset of the remaining items to the training set
         # df = df.set_index(dims)
@@ -854,15 +853,21 @@ class Regressor(ABC):
                               additive=self.additive)
 
         train_specs = specifications | {
-            'continuous_levels': {dim: [lvl for lvl in lvls if lvl in train_df[dim].values] for dim, lvls in self.continuous_levels.items()},
-            'categorical_levels': {dim: [lvl for lvl in lvls if lvl in train_df[dim].values] for dim, lvls in self.categorical_levels.items()},
-            'continuous_coords': {dim: {lvl: coord for lvl, coord in coords.items() if lvl in train_df[dim].values} for dim, coords in self.continuous_coords.items()}
+            'continuous_levels': {dim: [lvl for lvl in lvls if lvl in train_df[dim].values]
+                                  for dim, lvls in self.continuous_levels.items()},
+            'categorical_levels': {dim: [lvl for lvl in lvls if lvl in train_df[dim].values]
+                                   for dim, lvls in self.categorical_levels.items()},
+            'continuous_coords': {dim: {lvl: coord for lvl, coord in coords.items() if lvl in train_df[dim].values}
+                                  for dim, coords in self.continuous_coords.items()}
         }
 
         test_specs = specifications | {
-            'continuous_levels': {dim: [lvl for lvl in lvls if lvl in test_df[dim].values] for dim, lvls in self.continuous_levels.items()},
-            'categorical_levels': {dim: [lvl for lvl in lvls if lvl in test_df[dim].values] for dim, lvls in self.categorical_levels.items()},
-            'continuous_coords': {dim: {lvl: coord for lvl, coord in coords.items() if lvl in test_df[dim].values} for dim, coords in self.continuous_coords.items()}
+            'continuous_levels': {dim: [lvl for lvl in lvls if lvl in test_df[dim].values]
+                                  for dim, lvls in self.continuous_levels.items()},
+            'categorical_levels': {dim: [lvl for lvl in lvls if lvl in test_df[dim].values]
+                                   for dim, lvls in self.categorical_levels.items()},
+            'continuous_coords': {dim: {lvl: coord for lvl, coord in coords.items() if lvl in test_df[dim].values}
+                                  for dim, coords in self.continuous_coords.items()}
         }
 
         dataset_specs = dict(outputs=self.data.outputs,
@@ -908,12 +913,18 @@ class Regressor(ABC):
             test_nlpd = np.nan
             test_error = np.nan
 
-        metrics = {'train': {'NLPDs': train_nlpd,
-                             'errors': train_error},
-                   'test': {'NLPDs': test_nlpd,
-                            'errors': test_error}}
+        result = {
+            'train': {
+                'data': train_ds,
+                'NLPDs': train_nlpd,
+                'errors': train_error},
+            'test': {
+                'data': test_ds,
+                'NLPDs': test_nlpd,
+                'errors': test_error}
+        }
 
-        return metrics
+        return result
 
     ################################################################################
     # Plotting
