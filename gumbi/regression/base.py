@@ -1,3 +1,4 @@
+import warnings
 from abc import ABC, abstractmethod
 import numpy as np
 import pandas as pd
@@ -736,7 +737,7 @@ class Regressor(ABC):
     # Evaluation
     ################################################################################
 
-    def cross_validate(self, by=None, *, n_train=None, pct_train=None, train_only=None, warm_start=None, seed=None,
+    def cross_validate(self, unit=None, *, n_train=None, pct_train=None, train_only=None, warm_start=True, seed=None,
                        **MAP_kws):
         """Fits model on random subset of tidy and evaluates accuracy of predictions on remaining observations.
 
@@ -750,7 +751,7 @@ class Regressor(ABC):
 
         Parameters
         ----------
-        by : list of str
+        unit : list of str
             Columns from which to take unique combinations as training and testing sets. Useful when the data contains
             multiple (noisy) observations of the same entity.
         n_train : int, optional
@@ -777,8 +778,6 @@ class Regressor(ABC):
         if not (n_train is None) ^ (pct_train is None):
             raise ValueError('Exactly one of "n_train" and "pct_train" must be specified')
 
-        if by is not None:
-            raise NotImplementedError('Keyword "by" is not yet supported')
         if train_only is not None:
             raise NotImplementedError('Keyword "train_only" is not yet supported')
 
@@ -787,8 +786,12 @@ class Regressor(ABC):
         rg = np.random.default_rng(seed)
 
         df = self.data.wide
+        if unit is not None:
+            if not isinstance(unit, str):
+                raise TypeError('Keyword "unit" must be a single string.')
+            df = df.set_index(unit)
 
-        choices = df.set_index(by).index.unique() if by is not None else df.index.unique()
+        choices = df.index.unique()
 
         n_train = n_train if n_train is not None else np.floor(len(choices) * pct_train).astype(int)
 
@@ -813,7 +816,7 @@ class Regressor(ABC):
             # Add one random item from each categorical level to the training set
 
             if self.categorical_dims == []:
-                raise ValueError('`warm_start` only applies when categorical_dims are specified.')
+                raise warnings.warn('`warm_start` ignored unless categorical_dims are specified.')
 
             # Filter out any observations not in the specified categorical levels
             level_combinations = list(product(*self.categorical_levels.values()))
@@ -829,9 +832,9 @@ class Regressor(ABC):
             if n_train <= 0:
                 raise ValueError('Adding `warm_start` observations exceeded specified size of training set')
             # Randomly select one item from each group
-            warm_picks = cat_grps.sample(1)
-            train_list.append(warm_picks)
-            df = df.drop(index=warm_picks.index)
+            warm_idxs = cat_grps.sample(1).index
+            train_list.append(df.loc[warm_idxs])
+            df = df.drop(index=warm_idxs)
 
         # # Move a random subset of the remaining items to the training set
         # df = df.set_index(dims)
