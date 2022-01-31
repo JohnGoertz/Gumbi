@@ -140,7 +140,7 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#gumbi.regression.Regressor.build_model" title="gumbi.regression.Regressor.build_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Regressor.build_model</span></code></a>(*args, **kwargs)</p></td>
 <td><p>Defined by subclass</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.regression.Regressor.cross_validate" title="gumbi.regression.Regressor.cross_validate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Regressor.cross_validate</span></code></a>(dims[, n_train, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.regression.Regressor.cross_validate" title="gumbi.regression.Regressor.cross_validate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Regressor.cross_validate</span></code></a>([unit, n_train, ...])</p></td>
 <td><p>Fits model on random subset of tidy and evaluates accuracy of predictions on remaining observations.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#gumbi.regression.Regressor.fit" title="gumbi.regression.Regressor.fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Regressor.fit</span></code></a>(*args, **kwargs)</p></td>
@@ -152,11 +152,11 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#gumbi.regression.Regressor.get_filtered_data" title="gumbi.regression.Regressor.get_filtered_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Regressor.get_filtered_data</span></code></a>([standardized, ...])</p></td>
 <td><p>The portion of the dataset under consideration</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Regressor.get_shaped_data</span></code>([metric])</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.regression.Regressor.get_shaped_data" title="gumbi.regression.Regressor.get_shaped_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Regressor.get_shaped_data</span></code></a>([metric])</p></td>
+<td><p>Formats input data and observations as plain numpy arrays</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#gumbi.regression.Regressor.get_structured_data" title="gumbi.regression.Regressor.get_structured_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Regressor.get_structured_data</span></code></a>([metric])</p></td>
-<td><p>Formats input tidy and observations as parrays</p></td>
+<td><p>Formats input data and observations as parrays</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.regression.Regressor.mvuparray" title="gumbi.regression.Regressor.mvuparray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Regressor.mvuparray</span></code></a>(*uparrays, cor, **kwargs)</p></td>
 <td><p>Creates a uparray with the current instance's stdzr attached</p></td>
@@ -431,21 +431,45 @@ level is treated as a filter dimension.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gumbi.regression.Regressor.cross_validate">
-<span class="sig-name descname"><span class="pre">cross_validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dims</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_train</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pct_train</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warm_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">MAP_kws</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.regression.Regressor.cross_validate" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">cross_validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_train</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pct_train</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warm_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">errors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'natural'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">MAP_kws</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.regression.Regressor.cross_validate" title="Permalink to this definition"></a></dt>
 <dd><p>Fits model on random subset of tidy and evaluates accuracy of predictions on remaining observations.</p>
 <p>This method finds unique combinations of values in the columns specified by <code class="docutils literal notranslate"><span class="pre">dims</span></code>, takes a random subset of
 these for training, and evaluates the predictions made for the remaining tidy.</p>
+<p class="rubric">Notes</p>
+<p><a class="reference internal" href="#gumbi.regression.Regressor.cross_validate" title="gumbi.regression.Regressor.cross_validate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">cross_validate()</span></code></a> is <em>reproducibly random</em> by default. In order to evaluate different test/train subsets of
+the same size, you will need to set the <cite>seed</cite> explicitly.</p>
+<p>Specifying <em>unit</em> changes the interpretation of <em>n_train</em> and <em>pct_train</em>: rather than the number
+or fraction of all individual observations to be included in the training set, these now represent the number
+of distinct entities in the <em>unit</em> column from the wide-form dataset.</p>
+<p>Criteria in <em>train_only</em> are enforced before grouping observations by <em>unit</em>. If <em>train_only</em> and <em>unit</em> are
+both specified, but the <em>train_only</em> criteria encompass only some observations of a given entity in <em>unit</em>,
+this could lead to expected behavior.</p>
+<p>Similarly, if <em>warm_start</em> and <em>unit</em> are both specified, but a given entity appears in multiple categories
+from any of the <a class="reference internal" href="#gumbi.regression.Regressor.categorical_dims" title="gumbi.regression.Regressor.categorical_dims"><code class="xref py py-attr docutils literal notranslate"><span class="pre">categorical_dims</span></code></a>, this could lead to expected behavior. It is recommended to set
+<em>warm_start</em> to <cite>False</cite> if this is the case.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>dims</strong> (<em>list of str</em>) – Columns from which to take unique combinations as training and testing sets</p></li>
+<li><p><strong>unit</strong> (<em>list of str</em>) – Columns from which to take unique combinations as training and testing sets. This could be useful when the
+data contains multiple (noisy) observations for each of several distinct entities.</p></li>
 <li><p><strong>n_train</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of training points to use. Exactly one of <cite>n_train</cite> and <cite>pct_train</cite> must be specified.</p></li>
 <li><p><strong>pct_train</strong> (<em>float</em><em>, </em><em>optional</em>) – Percent of training points to use. Exactly one of <cite>n_train</cite> and <cite>pct_train</cite> must be specified.</p></li>
-<li><p><strong>train_only</strong> (<em>dict</em><em>, </em><em>optional</em>) – Dimension and level names to be always included in the training set.</p></li>
+<li><p><strong>train_only</strong> (<em>dict</em><em>, </em><em>optional</em>) – Specifications for observations to be always included in the training set. This will select all rows of the
+wide-form dataset which <em>exactly</em> match <em>all</em> criteria.</p></li>
 <li><p><strong>warm_start</strong> (<em>bool</em><em>, </em><em>default True</em>) – Whether to include a minimum of one observation for each level in each <cite>categorical_dim</cite> in the training set.</p></li>
 <li><p><strong>seed</strong> (<em>int</em><em>, </em><em>optional</em>) – Random seed</p></li>
+<li><p><strong>errors</strong> (<em>{'natural'</em><em>, </em><em>'standardized'</em><em>, </em><em>'transformed'}</em>) – “Space” in which to return prediction errors</p></li>
 <li><p><strong>**MAP_kws</strong> – Additional</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Dictionary with nested dictionaries ‘train’ and ‘test’, both containing fields ‘data’, ‘NLPDs’, and ‘errors’.
+These fields contain the relevant subset of observations as a DataSet, an array of the negative log
+posterior densities of observations given the predictions, and an array of the natural-space difference
+between observations and prediction means, respectively.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
 </dd></dl>
@@ -514,9 +538,31 @@ unstandardized dataframe as indicated by the <cite>standardized</cite> input arg
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="gumbi.regression.Regressor.get_shaped_data">
+<span class="sig-name descname"><span class="pre">get_shaped_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mean'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.regression.Regressor.get_shaped_data" title="Permalink to this definition"></a></dt>
+<dd><p>Formats input data and observations as plain numpy arrays</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>metric</strong> (<em>str</em><em>, </em><em>default 'mean'</em>) – Which summary statistic to return (must be a value in the <cite>Metric</cite> column)</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>X</strong> (<em>np.ndarray</em>) – A tall matrix of input coordinates with shape (n_obs, n_dims).</p></li>
+<li><p><strong>y</strong> (<em>np.ndarray</em>) – A (1D) vector of observations</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#gumbi.regression.Regressor.get_filtered_data" title="gumbi.regression.Regressor.get_filtered_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_filtered_data()</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="gumbi.regression.Regressor.get_structured_data">
 <span class="sig-name descname"><span class="pre">get_structured_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mean'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.regression.Regressor.get_structured_data" title="Permalink to this definition"></a></dt>
-<dd><p>Formats input tidy and observations as parrays</p>
+<dd><p>Formats input data and observations as parrays</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>metric</strong> (<em>str</em><em>, </em><em>default 'mean'</em>) – Which summary statistic to return (must be a value in the <cite>Metric</cite> column)</p>

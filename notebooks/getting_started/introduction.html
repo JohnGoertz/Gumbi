@@ -17,8 +17,8 @@
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
         <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -299,7 +299,7 @@ div.nboutput.container div.output_area > div[class^='highlight']{
 }
 
 /* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
-.prompt a.copybtn {
+.prompt .copybtn {
     display: none;
 }
 
@@ -363,8 +363,7 @@ div.rendered_html tbody tr:hover {
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
 </pre></div>
 </div>
 </div>
@@ -379,8 +378,7 @@ prediction visualization. Gumbi is primarily built on top of <a class="reference
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">gumbi</span> <span class="k">as</span> <span class="nn">gmb</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">gumbi</span> <span class="k">as</span> <span class="nn">gmb</span>
 <span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
 <span class="n">cars</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="s1">&#39;mpg&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
 <span class="n">ds</span> <span class="o">=</span> <span class="n">gmb</span><span class="o">.</span><span class="n">DataSet</span><span class="p">(</span><span class="n">cars</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;mpg&#39;</span><span class="p">,</span> <span class="s1">&#39;acceleration&#39;</span><span class="p">],</span> <span class="n">log_vars</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;mpg&#39;</span><span class="p">,</span> <span class="s1">&#39;acceleration&#39;</span><span class="p">,</span> <span class="s1">&#39;horsepower&#39;</span><span class="p">])</span>
@@ -392,8 +390,7 @@ prediction visualization. Gumbi is primarily built on top of <a class="reference
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">gp</span> <span class="o">=</span> <span class="n">gmb</span><span class="o">.</span><span class="n">GP</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gp</span> <span class="o">=</span> <span class="n">gmb</span><span class="o">.</span><span class="n">GP</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
 <span class="n">gp</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;mpg&#39;</span><span class="p">],</span> <span class="n">continuous_dims</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;horsepower&#39;</span><span class="p">]);</span>
 </pre></div>
 </div>
@@ -432,8 +429,7 @@ prediction visualization. Gumbi is primarily built on top of <a class="reference
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">X</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">prepare_grid</span><span class="p">()</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">X</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">prepare_grid</span><span class="p">()</span>
 <span class="n">y</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">predict_grid</span><span class="p">()</span>
 <span class="n">gmb</span><span class="o">.</span><span class="n">ParrayPlotter</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
