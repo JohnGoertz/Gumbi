@@ -305,7 +305,9 @@ class Regressor(ABC):
                 coords = {dim: {level: coord for level, coord in zip(levels[dim], coords)}}
             else:
                 raise TypeError('Coordinates must be of type list or dict')
-            if not all(isinstance(coord, (int, float)) for coord in coords.values()):
+            if not all(isinstance(coord, (int, float))
+                       for coord_dict in coords.values()
+                       for coord in coord_dict.values()):
                 raise TypeError('Coordinates must be numeric')
         elif dims is not None and levels is not None:
             coords = {dim: self._make_coordinates(dim, levels_list) for dim, levels_list in levels.items()}
@@ -841,23 +843,23 @@ class Regressor(ABC):
         train_df = pd.concat(train_list)
         test_df = df.drop(train_idxs)
 
-        categorical_dims = [dim for dim in self.categorical_dims if dim!=self.out_col]
+        categorical_dims = [dim for dim in self.categorical_dims if dim != self.out_col]
 
         specifications = dict(outputs=self.outputs, linear_dims=self.linear_dims, continuous_dims=self.continuous_dims,
-                              continuous_levels=self.continuous_levels, #continuous_coords=self.continuous_coords,
+                              continuous_levels=self.continuous_levels, continuous_coords=self.continuous_coords,
                               categorical_dims=categorical_dims, categorical_levels=self.categorical_levels,
                               additive=self.additive)
 
         train_specs = specifications | {
             'continuous_levels': {dim: [lvl for lvl in lvls if lvl in train_df[dim].values] for dim, lvls in self.continuous_levels.items()},
             'categorical_levels': {dim: [lvl for lvl in lvls if lvl in train_df[dim].values] for dim, lvls in self.categorical_levels.items()},
-            # 'continuous_coords': {dim: {lvl: coord for lvl, coord in coords.items() if lvl in train_df[dim].values} for dim, coords in self.continuous_coords.items()}
+            'continuous_coords': {dim: {lvl: coord for lvl, coord in coords.items() if lvl in train_df[dim].values} for dim, coords in self.continuous_coords.items()}
         }
 
         test_specs = specifications | {
             'continuous_levels': {dim: [lvl for lvl in lvls if lvl in test_df[dim].values] for dim, lvls in self.continuous_levels.items()},
             'categorical_levels': {dim: [lvl for lvl in lvls if lvl in test_df[dim].values] for dim, lvls in self.categorical_levels.items()},
-            # 'continuous_coords': {dim: {lvl: coord for lvl, coord in coords.items() if lvl in test_df[dim].values} for dim, coords in self.continuous_coords.items()}
+            'continuous_coords': {dim: {lvl: coord for lvl, coord in coords.items() if lvl in test_df[dim].values} for dim, coords in self.continuous_coords.items()}
         }
 
         dataset_specs = dict(outputs=self.data.outputs,
