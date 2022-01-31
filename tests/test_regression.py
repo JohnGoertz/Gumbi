@@ -51,7 +51,7 @@ def test_gp_default_fit_parsing(example_gp):
 def test_gp_data_parsing(example_gp):
     gp = example_gp.specify_model(continuous_dims=['X', 'Y'])
     X, y = gp.get_structured_data()
-    assert X.shape == (66, 1)
+    assert X.shape == (66,)
     assert len(X.names) == 2
     assert y.shape == (66,)
 
@@ -64,7 +64,7 @@ def test_gp_numerical_continuous_fit_parsing(example_gp):
         assert len(gp.continuous_coords[dim].values()) == len(gp.continuous_levels[dim])
     assert gp.categorical_dims == []
     X, y = gp.get_structured_data()
-    assert X.shape == (66, 1)
+    assert X.shape == (66,)
     assert len(X.names) == 3
     assert y.shape == (66,)
 
@@ -77,7 +77,7 @@ def test_gp_categorical_continuous_fit_parsing(example_gp):
         assert len(gp.continuous_coords[dim].values()) == len(gp.continuous_levels[dim])
     assert gp.categorical_dims == []
     X, y = gp.get_structured_data()
-    assert X.shape == (66, 1)
+    assert X.shape == (66,)
     assert len(X.names) == 3
     assert y.shape == (66,)
 
@@ -89,7 +89,7 @@ def test_gp_params_fit_parsing(example_gp):
     assert gp.categorical_levels == {'Parameter': ['d', 'c']}
     assert gp.categorical_coords == {'Parameter': {'d': 1, 'c': 0}}
     X, y = gp.get_structured_data()
-    assert X.shape == (66,1)
+    assert X.shape == (66,)
     assert len(X.names) == 2
     assert y.shape == (66,)
     assert len(y.names) == 2
@@ -100,7 +100,7 @@ def test_gp_single_input_fit_parsing(example_gp):
     assert gp.continuous_dims == ['X', 'Y']
     assert gp.filter_dims == {'Name': ['intense-opportunity'], 'Parameter': ['d']}
     X, y = gp.get_structured_data()
-    assert X.shape == (7, 1)
+    assert X.shape == (7,)
     assert len(X.names) == 2
     assert y.shape == (7,)
 
