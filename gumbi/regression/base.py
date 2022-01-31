@@ -738,7 +738,7 @@ class Regressor(ABC):
     ################################################################################
 
     def cross_validate(self, unit=None, *, n_train=None, pct_train=None, train_only=None, warm_start=True, seed=None,
-                       **MAP_kws):
+                       errors='natural', **MAP_kws):
         """Fits model on random subset of tidy and evaluates accuracy of predictions on remaining observations.
 
         This method finds unique combinations of values in the columns specified by ``dims``, takes a random subset of
@@ -764,6 +764,8 @@ class Regressor(ABC):
             Whether to include a minimum of one observation for each level in each `categorical_dim` in the training set.
         seed : int, optional
             Random seed
+        errors : {'natural', 'standardized', 'transformed'}
+            "Space" in which to return prediction errors
         **MAP_kws
             Additional
 
@@ -781,6 +783,8 @@ class Regressor(ABC):
 
         if train_only is not None:
             raise NotImplementedError('Keyword "train_only" is not yet supported')
+
+        assert_in('Keyword "errors"', errors, ['natural', 'standardized', 'transformed'])
 
         train_only = {} if train_only is None else train_only
         seed = self.seed if seed is None else seed
@@ -891,7 +895,11 @@ class Regressor(ABC):
         train_X, train_y = train_obj.get_structured_data()
         train_predictions = train_obj.predict_points(train_X)
         train_nlpd = train_predictions.nlpd(train_y.values())
-        train_error = train_y.values() - train_predictions.μ
+        train_error = {
+            'natural': train_y.values() - train_predictions.μ,
+            'transformed': train_y.t.values() - train_predictions.t.μ,
+            'standardized': train_y.z.values() - train_predictions.z.μ,
+        }[errors]
 
         if len(test_df.index.unique()) > 0:
             # If there's anything left for a testing set, build and fit a new object with the testing set
@@ -908,7 +916,11 @@ class Regressor(ABC):
             test_X, test_y = test_obj.get_structured_data()
             test_predictions = train_obj.predict_points(test_X)
             test_nlpd = test_predictions.nlpd(test_y.values())
-            test_error = test_y.values() - test_predictions.μ
+            test_error = {
+                'natural': test_y.values() - test_predictions.μ,
+                'transformed': test_y.t.values() - test_predictions.t.μ,
+                'standardized': test_y.z.values() - test_predictions.z.μ,
+            }[errors]
         else:
             test_nlpd = np.nan
             test_error = np.nan
