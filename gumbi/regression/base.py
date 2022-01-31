@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 import numpy as np
 import pandas as pd
 from scipy.interpolate import interpn
+from itertools import product
 
 from gumbi.utils.misc import assert_in, assert_is_subset
 from gumbi.utils.gp_utils import get_ℓ_prior
@@ -95,6 +96,7 @@ class Regressor(ABC):
         self.categorical_levels = {}
         self.categorical_coords = {}
         self.additive = False
+        self.model_specs = {}
 
         self.X = None
         self.y = None
@@ -355,7 +357,7 @@ class Regressor(ABC):
         return df[allowed] if not standardized else self.data.tidy.z[allowed]
 
     def get_structured_data(self, metric='mean'):
-        """Formats input tidy and observations as parrays
+        """Formats input data and observations as parrays
 
         Parameters
         ----------
@@ -384,7 +386,7 @@ class Regressor(ABC):
         # Extract the model dimensions from the dataframe for one of the parameters
         dims = set(self.dims) - set([self.out_col])
         dim_values = {dim: df[df[self.out_col] == self.outputs[0]].replace(self.coords)[dim].values for dim in dims}
-        X = self.parray(**dim_values, stdzd=False)[:, None]
+        X = self.parray(**dim_values, stdzd=False)
 
         # List of parrays for each output
         outputs = {output: df[df[self.out_col] == output]['Value'].values for output in self.outputs}
@@ -393,6 +395,25 @@ class Regressor(ABC):
         return X, y
 
     def get_shaped_data(self, metric='mean'):
+        """Formats input data and observations as plain numpy arrays
+
+        Parameters
+        ----------
+        metric : str, default 'mean'
+            Which summary statistic to return (must be a value in the `Metric` column)
+
+        Returns
+        -------
+        X : np.ndarray
+            A tall matrix of input coordinates with shape (n_obs, n_dims).
+        y : np.ndarray
+            A (1D) vector of observations
+
+        See Also
+        --------
+        :meth:`get_filtered_data`
+
+        """
 
         self.X, self.y = self.get_structured_data(metric=metric)
 
@@ -713,7 +734,7 @@ class Regressor(ABC):
     # Evaluation
     ################################################################################
 
-    def cross_validate(self, dims, n_train=None, pct_train=None, train_only=None, warm_start=None, seed=None,
+    def cross_validate(self, by=None, *, n_train=None, pct_train=None, train_only=None, warm_start=None, seed=None,
                        **MAP_kws):
         """Fits model on random subset of tidy and evaluates accuracy of predictions on remaining observations.
 
@@ -722,8 +743,9 @@ class Regressor(ABC):
 
         Parameters
         ----------
-        dims : list of str
-            Columns from which to take unique combinations as training and testing sets
+        by : list of str
+            Columns from which to take unique combinations as training and testing sets. Useful when the data contains
+            multiple (noisy) observations of the same entity.
         n_train : int, optional
             Number of training points to use. Exactly one of `n_train` and `pct_train` must be specified.
         pct_train : float, optional
@@ -739,50 +761,70 @@ class Regressor(ABC):
 
         Returns
         -------
-
+        dict
+            Dictionary with nested dictionaries 'train' and 'test', both containing fields 'NLPDs' and 'errors'.
+            These fields contain arrays of the negative log posterior densities of observations given the predictions
+            and the natural-space difference between observations and prediction means, respectively.
         """
         if not (n_train is None) ^ (pct_train is None):
             raise ValueError('Exactly one of "n_train" and "pct_train" must be specified')
+
+        if by is not None:
+            raise NotImplementedError('Keyword "by" is not yet supported')
+        if train_only is not None:
+            raise NotImplementedError('Keyword "train_only" is not yet supported')
+        if warm_start is not None:
+            raise NotImplementedError('Keyword "warm_start" is not yet supported')
 
         train_only = {} if train_only is None else train_only
         seed = self.seed if seed is None else seed
         rg = np.random.default_rng(seed)
 
-        df = self.get_filtered_data()
-        n_train = n_train if n_train is not None else len(df.set_index(dims).index.unique()) // pct_train
+        df = self.data.wide
+
+        choices = df.set_index(by).index.unique() if by is not None else df.index.unique()
+
+        n_train = n_train if n_train is not None else np.floor(len(choices) * pct_train).astype(int)
 
         # Build up a list of dataframes that make up the training set
         train_list = []
 
-        # Ensure levels in train_only are lists
-        train_only = {dim: levels if isinstance(levels, list) else [levels] for dim, levels in train_only.items()}
+        # # Ensure levels in train_only are lists
+        # train_only = {dim: levels if isinstance(levels, list) else [levels] for dim, levels in train_only.items()}
 
-        # Move items in `train_only` to training set
-        for dim, levels in train_only.items():
-            for level in levels:
-                for_train = df[df[dim] == level]
-                train_list.append(for_train)
-                df = df[df[dim] != level]
-                n_train -= len(for_train.set_index(dims).index.unique())
-                if n_train <= 0:
-                    raise ValueError('Adding `train_only` observations exceeded specified size of training set')
+        # # Move items in `train_only` to training set
+        # for dim, levels in train_only.items():
+        #     for level in levels:
+        #         for_train = df[df[dim] == level]
+        #         train_list.append(for_train)
+        #         df = df[df[dim] != level]
+        #         n_train -= len(for_train.set_index(dims).index.unique())
+        #         if n_train <= 0:
+        #             raise ValueError('Adding `train_only` observations exceeded specified size of training set')
+        #
 
-        if warm_start:
-            # Add one random item from each categorical level to the training set
-            for dim, levels in self.categorical_levels:
-                for level in levels:
-                    if level in train_only.get(dim, []):
-                        continue
-                    these = df[df[dim] == level].set_index(dims)
-                    for_train = these.loc[rg.choice(these.index.unique(), 1, replace=False)]
-                    train_list.append(for_train)
-                    df = df[df[dim] != level]
-                    n_train -= 1
-                    if n_train <= 0:
-                        raise ValueError('Adding `warm_start` observations exceeded specified size of training set')
+        # if warm_start:
+        #     # Add one random item from each categorical level to the training set
+        #
+        #     if self.categorical_dims == []:
+        #         raise ValueError('`warm_start` only applies when categorical_dims are specified.')
+        #
+        #     # Filter out any observations not in the specified categorical levels
+        #     cat_grps = (df
+        #                 .groupby(self.categorical_dims)
+        #                 .filter(lambda grp: grp.name in product(*self.categorical_levels.values()))
+        #                 .groupby(self.categorical_dims))
+        #
+        #     n_train -= cat_grps.ngroups
+        #     if n_train <= 0:
+        #         raise ValueError('Adding `warm_start` observations exceeded specified size of training set')
+        #     # Randomly select one item from each group
+        #     warm_picks = cat_grps.sample(1)
+        #     train_list.append(warm_picks)
+        #     df = df.drop(index=warm_picks.index)
 
-        # Move a random subset of the remaining items to the training set
-        df = df.set_index(dims)
+        # # Move a random subset of the remaining items to the training set
+        # df = df.set_index(dims)
         if n_train > len(df.index.unique()):
             raise ValueError('Specified size of training set exceeds number of unique combinations found in `dims`')
         train_idxs = rg.choice(df.index.unique(), n_train, replace=False)
@@ -791,43 +833,72 @@ class Regressor(ABC):
         train_df = pd.concat(train_list)
         test_df = df.drop(train_idxs)
 
+        categorical_dims = [dim for dim in self.categorical_dims if dim!=self.out_col]
+
         specifications = dict(outputs=self.outputs, linear_dims=self.linear_dims, continuous_dims=self.continuous_dims,
-                              continuous_levels=self.continuous_levels, continuous_coords=self.continuous_coords,
-                              categorical_dims=self.categorical_dims, categorical_levels=self.categorical_levels,
+                              continuous_levels=self.continuous_levels, #continuous_coords=self.continuous_coords,
+                              categorical_dims=categorical_dims, categorical_levels=self.categorical_levels,
                               additive=self.additive)
 
+        train_specs = specifications | {
+            'continuous_levels': {dim: [lvl for lvl in lvls if lvl in train_df[dim].values] for dim, lvls in self.continuous_levels.items()},
+            'categorical_levels': {dim: [lvl for lvl in lvls if lvl in train_df[dim].values] for dim, lvls in self.categorical_levels.items()},
+            # 'continuous_coords': {dim: {lvl: coord for lvl, coord in coords.items() if lvl in train_df[dim].values} for dim, coords in self.continuous_coords.items()}
+        }
+
+        test_specs = specifications | {
+            'continuous_levels': {dim: [lvl for lvl in lvls if lvl in test_df[dim].values] for dim, lvls in self.continuous_levels.items()},
+            'categorical_levels': {dim: [lvl for lvl in lvls if lvl in test_df[dim].values] for dim, lvls in self.categorical_levels.items()},
+            # 'continuous_coords': {dim: {lvl: coord for lvl, coord in coords.items() if lvl in test_df[dim].values} for dim, coords in self.continuous_coords.items()}
+        }
+
+        dataset_specs = dict(outputs=self.data.outputs,
+                             names_column=self.data.names_column,
+                             values_column=self.data.values_column,
+                             log_vars=self.data.log_vars,
+                             logit_vars=self.data.logit_vars,
+                             stdzr=self.data.stdzr)
+
+        train_ds = DataSet(train_df, **dataset_specs)
+        test_ds = DataSet(test_df, **dataset_specs)
+
         # Build and fit a new object of the current class (GP, GLM, etc) with the training set
-        train_obj = self.__class__(DataSet(train_df), outputs=self.outputs, seed=seed)
-        train_obj.specify_model(**specifications)
+        train_obj = self.__class__(train_ds, outputs=self.outputs, seed=seed)
+        train_obj.specify_model(**train_specs)
         train_obj.filter_dims = self.filter_dims
         train_obj.build_model(**self.model_specs)
-        train_obj.find_MAP(**MAP_kws)
+        train_obj.find_MAP(**MAP_kws)  # TODO: make more general to allow alternative inference approaches
 
         # Get in-sample prediction metrics
         train_X, train_y = train_obj.get_structured_data()
         train_predictions = train_obj.predict_points(train_X)
-        train_nlpd = train_predictions.nlpd(train_y)
-        train_rmse = np.sqrt(np.mean(np.square(train_y.z - train_predictions.z.μ)))
+        train_nlpd = train_predictions.nlpd(train_y.values())
+        train_error = train_y.values() - train_predictions.μ
 
         if len(test_df.index.unique()) > 0:
             # If there's anything left for a testing set, build and fit a new object with the testing set
-            test_obj = self.__class__(DataSet(test_df), outputs=self.outputs, seed=seed)
-            test_obj.specify_model(**specifications)
+            test_obj = self.__class__(test_ds, outputs=self.outputs, seed=seed)
+
+            # TODO: figure out why this was necessary and get rid of it
+            categorical_dims = [dim for dim in self.categorical_dims if dim != self.out_col]
+            test_specs['categorical_dims'] = categorical_dims
+            train_specs['categorical_dims'] = categorical_dims
+            test_obj.specify_model(**test_specs)
             test_obj.filter_dims = self.filter_dims
 
             # Get out-of-sample prediction metrics
             test_X, test_y = test_obj.get_structured_data()
             test_predictions = train_obj.predict_points(test_X)
-            test_nlpd = train_predictions.z.nlpd(test_y.z)
-            test_rmse = np.sqrt(np.mean(np.square(test_y.z - test_predictions.z.μ)))
+            test_nlpd = test_predictions.nlpd(test_y.values())
+            test_error = test_y.values() - test_predictions.μ
         else:
             test_nlpd = np.nan
-            test_rmse = np.nan
+            test_error = np.nan
 
-        metrics = {'train': {'NLPD': train_nlpd,
-                             'RMSE': train_rmse},
-                   'test': {'NLPD': test_nlpd,
-                            'RMSE': test_rmse}}
+        metrics = {'train': {'NLPDs': train_nlpd,
+                             'errors': train_error},
+                   'test': {'NLPDs': test_nlpd,
+                            'errors': test_error}}
 
         return metrics
 
