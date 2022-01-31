@@ -747,19 +747,32 @@ class Regressor(ABC):
         Notes
         -----
         :meth:`cross_validate` is *reproducibly random* by default. In order to evaluate different test/train subsets of
-         the same size, you will need to set the `seed` explicitly.
+        the same size, you will need to set the `seed` explicitly.
+
+        Specifying *unit* changes the interpretation of *n_train* and *pct_train*: rather than the number
+        or fraction of all individual observations to be included in the training set, these now represent the number
+        of distinct entities in the *unit* column from the wide-form dataset.
+
+        Criteria in *train_only* are enforced before grouping observations by *unit*. If *train_only* and *unit* are
+        both specified, but the *train_only* criteria encompass only some observations of a given entity in *unit*,
+        this could lead to expected behavior.
+
+        Similarly, if *warm_start* and *unit* are both specified, but a given entity appears in multiple categories
+        from any of the :attr:`categorical_dims`, this could lead to expected behavior. It is recommended to set
+        *warm_start* to `False` if this is the case.
 
         Parameters
         ----------
         unit : list of str
-            Columns from which to take unique combinations as training and testing sets. Useful when the data contains
-            multiple (noisy) observations of the same entity.
+            Columns from which to take unique combinations as training and testing sets. This could be useful when the
+            data contains multiple (noisy) observations for each of several distinct entities.
         n_train : int, optional
             Number of training points to use. Exactly one of `n_train` and `pct_train` must be specified.
         pct_train : float, optional
             Percent of training points to use. Exactly one of `n_train` and `pct_train` must be specified.
         train_only : dict, optional
-            Dimension and level names to be always included in the training set.
+            Specifications for observations to be always included in the training set. This will select all rows of the
+            wide-form dataset which *exactly* match *all* criteria.
         warm_start : bool, default True
             Whether to include a minimum of one observation for each level in each `categorical_dim` in the training set.
         seed : int, optional
@@ -781,41 +794,51 @@ class Regressor(ABC):
         if not (n_train is None) ^ (pct_train is None):
             raise ValueError('Exactly one of "n_train" and "pct_train" must be specified')
 
-        if train_only is not None:
-            raise NotImplementedError('Keyword "train_only" is not yet supported')
+        if unit is not None:
+            if not isinstance(unit, str):
+                raise TypeError('Keyword "unit" must be a single string.')
 
         assert_in('Keyword "errors"', errors, ['natural', 'standardized', 'transformed'])
 
-        train_only = {} if train_only is None else train_only
         seed = self.seed if seed is None else seed
         rg = np.random.default_rng(seed)
 
         df = self.data.wide
-        if unit is not None:
-            if not isinstance(unit, str):
-                raise TypeError('Keyword "unit" must be a single string.')
-            df = df.set_index(unit)
 
-        choices = df.index.unique()
-
-        n_train = n_train if n_train is not None else np.floor(len(choices) * pct_train).astype(int)
+        n_entities = len(set(df.index)) if unit is None else len(set(df.set_index(unit).index))
+        n_train = n_train if n_train is not None else np.floor(n_entities * pct_train).astype(int)
+        if n_train <= 0:
+            raise ValueError('Size of training set must be strictly greater than zero.')
+        if n_train > n_entities:
+            raise ValueError('Size of training set must be not exceed number of observations or entities in dataset.')
 
         # Build up a list of dataframes that make up the training set
         train_list = []
 
-        # # Ensure levels in train_only are lists
-        # train_only = {dim: levels if isinstance(levels, list) else [levels] for dim, levels in train_only.items()}
+        if train_only is not None:
+            # Move items that match `train_only` criteria to training set
+            train_only_criteria = [df[dim] == level for dim, level in train_only.items()]
+            train_only_idxs = pd.concat(train_only_criteria, axis=1).all(axis=1).index
+            train_only_df = df.loc[train_only_idxs] if unit is None else df.loc[train_only_idxs].set_index(unit)
+            n_train -= len(set(train_only_df.index))
+            if n_train < 0:
+                raise ValueError('Adding `train_only` observations exceeded specified size of training set')
+            train_list.append(train_only_df)
+            df = df.drop(index=train_only_idxs)
 
-        # # Move items in `train_only` to training set
-        # for dim, levels in train_only.items():
-        #     for level in levels:
-        #         for_train = df[df[dim] == level]
-        #         train_list.append(for_train)
-        #         df = df[df[dim] != level]
-        #         n_train -= len(for_train.set_index(dims).index.unique())
-        #         if n_train <= 0:
-        #             raise ValueError('Adding `train_only` observations exceeded specified size of training set')
-        #
+        # Group data by columns specified as "unit"
+        if unit is not None:
+            df = df.set_index(unit)
+            remaining_entities = set(df.index)
+            if len(train_list) > 1:
+                # Ensure train_only didn't partially slice a unique entity
+                train_only_entities = set(train_list[-1].index)
+                if len(train_only_entities.intersection(remaining_entities)) > 0:
+                    raise ValueError('Criteria in `train_only` partially sliced an entity specified by `unit`, which makes \
+                                      interpretation of `n_train` ambiguous.')
+
+        if n_train > len(df.index.unique()):
+            raise ValueError('Specified size of training set exceeds number of unique combinations found in `dims`')
 
         if warm_start:
             # Add one random item from each categorical level to the training set
@@ -831,23 +854,22 @@ class Regressor(ABC):
                 if cat_grps.ngroups == 0:
                     raise ValueError(f'None of the combinations of categorical levels were found in data.\nCombinations:\n{level_combinations}')
 
-                n_train -= cat_grps.ngroups
-                if n_train <= 0:
-                    raise ValueError('Adding `warm_start` observations exceeded specified size of training set')
                 # Randomly select one item from each group
-                warm_idxs = cat_grps.sample(1).index
+                warm_idxs = cat_grps.sample(1, random_state=seed).index
+                if len(set(warm_idxs)) != len(warm_idxs):
+                    warnings.warn('Duplicate entities specified by `unit` were selected during `warm_start`. This may lead to unexpected behavior.')
+                n_train -= len(set(warm_idxs))
+                if n_train < 0:
+                    raise ValueError('Adding `warm_start` observations exceeded specified size of training set')
                 train_list.append(df.loc[warm_idxs])
                 df = df.drop(index=warm_idxs)
 
-        # # Move a random subset of the remaining items to the training set
-        # df = df.set_index(dims)
-        if n_train > len(df.index.unique()):
-            raise ValueError('Specified size of training set exceeds number of unique combinations found in `dims`')
+        # Move a random subset of the remaining items to the training set
         train_idxs = rg.choice(df.index.unique(), n_train, replace=False)
         for_train = df.loc[train_idxs]
         train_list.append(for_train)
-        train_df = pd.concat(train_list)
-        test_df = df.drop(train_idxs)
+        train_df = pd.concat(train_list).reset_index()
+        test_df = df.drop(train_idxs).reset_index()
 
         categorical_dims = [dim for dim in self.categorical_dims if dim != self.out_col]
 
