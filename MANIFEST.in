@@ -1,6 +1,8 @@
-include *.pkl
-include *.mplstyle
+recursive-include docs/source *.pkl *.ipynb
+recursive-include gumbi *.pkl *.mplstyle
+recursive-exclude docs/ *.ipynb_checkpoints/*
+
 include *.txt
+include docs/*.txt
 include docs/source/conf.py
 include docs/source/*.rst
-include docs/source/notebooks/*.ipynb
