@@ -22,7 +22,7 @@ copyright = '2021, John Goertz'
 author = 'John Goertz'
 
 # The full version, including alpha/beta/rc tags
-release = '0.1.4'
+release = '0.1.6'
 
 
 # -- General configuration ---------------------------------------------------
