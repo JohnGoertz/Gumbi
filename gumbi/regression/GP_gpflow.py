@@ -4,8 +4,7 @@ import tensorflow_probability as tfp
 from gumbi.utils.gp_utils import get_ℓ_prior
 from gumbi.aggregation import DataSet
 from gumbi.arrays import ParameterArray as parray
-from gumbi.regression import Regressor
-from gumbi import ParameterArray
+from gumbi.arrays import ParameterArray
 from typing import Optional
 import numpy as np
 import tensorflow as tf
@@ -24,7 +23,7 @@ from gpflow.models.util import data_input_to_tensor, inducingpoint_wrapper
 from gpflow.covariances.dispatch import Kuf, Kuu
 import matplotlib.pyplot as plt
 from matplotlib.patches import Ellipse
-
+from .base import Regressor
 
 
 class LVMOGP(GPModel, InternalDataTrainingLossMixin):
@@ -249,16 +248,16 @@ class LVMOGP(GPModel, InternalDataTrainingLossMixin):
         assert set(self.dims) - set(['Parameter']) == set(points.names), \
             'All model dimensions must be present in "points" parray.'
 
-        if 'Parameter' in self.coregion_dims:
+        if 'Parameter' in self.categorical_dims:
             # Multiple parameters are possible, determine which ones to predict
             if param is None:
                 # predict all parameters in model
-                param = self.coregion_levels['Parameter']
+                param = self.categorical_levels['Parameter']
             elif isinstance(param, list):
-                assert_is_subset('Parameters', param, self.coregion_levels['Parameter'])
+                assert_is_subset('Parameters', param, self.categorical_levels['Parameter'])
             elif isinstance(param, str):
                 param = [param]
-                assert_is_subset('Parameters', param, self.coregion_levels['Parameter'])
+                assert_is_subset('Parameters', param, self.categorical_levels['Parameter'])
             else:
                 raise ValueError('"param" must be list, string, or None')
 
@@ -268,7 +267,7 @@ class LVMOGP(GPModel, InternalDataTrainingLossMixin):
             # Convert input points to tall array and tile once for each parameter, adding the respective coordinate
             tall_points = parray.vstack([points.add_layers(Parameter=coord)[:, None] for coord in param_coords])
         else:
-            # If 'Parameter' is not in coregion_dims, it must be in filter_dims, and only one is possible
+            # If 'Parameter' is not in categorical_dims, it must be in filter_dims, and only one is possible
             param = self.filter_dims['Parameter']
             # Convert input points to tall array
 
@@ -276,11 +275,11 @@ class LVMOGP(GPModel, InternalDataTrainingLossMixin):
 
         points_array = np.hstack([tall_points[dim].z.values() for dim in self.dims])
 
-        idx_c = [self.dims.index(dim) for dim in self.coregion_dims]
+        idx_c = [self.dims.index(dim) for dim in self.categorical_dims]
         if hasattr(self, 'lvmogps'):
             test = [self.model.H_data_mean[int(point)] for point in points_array[:, 2]]
-            test2 = points_array[:, -1 * len(self.coregion_dims)]
-            points_array = np.hstack([points_array[:, -1 * len(self.coregion_dims)].reshape(1, 1),
+            test2 = points_array[:, -1 * len(self.categorical_dims)]
+            points_array = np.hstack([points_array[:, -1 * len(self.categorical_dims)].reshape(1, 1),
                                       np.array(
                                           [self.model.H_data_mean[int(point)] for point in points_array[:, 2]]).reshape(
                                           1, 2)])
@@ -348,7 +347,7 @@ class GP_gpflow(Regressor):
       level is treated as a filter dimension.
     * Spatial dimensions are treated as explicit coordinates and given a Radial Basis Function kernel
 
-      * Linear dimensions (which must be a subset of `spatial_dims`) have an additional linear kernel.
+      * Linear dimensions (which must be a subset of `continuous_dims`) have an additional linear kernel.
 
     * Coregion dimensions imply a distinct but correlated output for each level
 
@@ -360,7 +359,7 @@ class GP_gpflow(Regressor):
 
         y &\sim \text{Normal} \left( \mu, \sigma \right) \\
         mu &\sim \mathcal{GP} \left( K \right) \\
-        K &= \left( K^\text{spatial}+K^\text{lin} \right) K^\text{coreg}_\text{params} \prod_{n} K^\text{coreg}_{n} \\
+        K &= \left( K^\text{spatial}+K^\text{lin} \right) K^\text{coreg}_\text{outputs} \prod_{n} K^\text{coreg}_{n} \\
         K^\text{spatial} &= \text{RBF} \left( \ell_{i}, \eta \right) \\
         K^\text{lin} &= \text{LIN} \left( c_{j}, \tau \right) \\
         K^\text{coreg} &= \text{Coreg} \left( \boldsymbol{W}, \kappa \right) \\
@@ -376,12 +375,12 @@ class GP_gpflow(Regressor):
     .. math::
 
         mu &\sim \mathcal{GP}\left( K^\text{global} \right) + \sum_{n} \mathcal{GP}\left( K_{n} \right) \\
-        K^\text{global} &= \left( K^\text{spatial}+K^\text{lin} \right) K^\text{coreg}_\text{params} \\
-        K_{n} &= \left( K^\text{spatial}_{n}+K^\text{lin}_{n} \right) K^\text{coreg}_\text{params} K^\text{coreg}_{n} \\
+        K^\text{global} &= \left( K^\text{spatial}+K^\text{lin} \right) K^\text{coreg}_\text{outputs} \\
+        K_{n} &= \left( K^\text{spatial}_{n}+K^\text{lin}_{n} \right) K^\text{coreg}_\text{outputs} K^\text{coreg}_{n} \\
 
     Note that, in the additive model, :math:`K^\text{spatial}_{n}` and :math:`K^\text{lin}_{n}` still consist of
     only the spatial and linear dimensions, respectively, but have unique priors corresponding to each coregion
-    dimension. However, there is only one :math:`K^\text{coreg}_\text{params}` kernel.
+    dimension. However, there is only one :math:`K^\text{coreg}_\text{outputs}` kernel.
 
     Internally, GC content is always on [0, 1], though it may be plotted on [0,100].
 
@@ -389,7 +388,7 @@ class GP_gpflow(Regressor):
     ----------
    dataset : DataSet
         Data for fitting.
-    params : str or list of str, default "r"
+    outputs : str or list of str, default "r"
         Name(s) of parameter(s) to learn.
     seed : int
         Random seed
@@ -411,10 +410,10 @@ class GP_gpflow(Regressor):
     >>> gp.find_MAP()
 
     The model can be specified with various spatial, linear, and coregion dimensions.
-    `GC` and `BP` are always included in both ``spatial_dims`` and ``linear_dims``.
+    `GC` and `BP` are always included in both ``continuous_dims`` and ``linear_dims``.
 
-    >>> gp.specify_model(spatial_dims='lg10_Copies', linear_dims='lg10_Copies', coregion_dims='PrimerPair')
-    >>> GP_gpflow(ps).fit(spatial_dims='lg10_Copies', linear_dims='lg10_Copies', coregion_dims='PrimerPair')  # equivalent
+    >>> gp.specify_model(continuous_dims='lg10_Copies', linear_dims='lg10_Copies', categorical_dims='PrimerPair')
+    >>> GP_gpflow(ps).fit(continuous_dims='lg10_Copies', linear_dims='lg10_Copies', categorical_dims='PrimerPair')  # equivalent
 
     After the model is fit, define a grid of points at which to make predictions. The result is a
     :class:`ParameterArray`:
@@ -474,21 +473,21 @@ class GP_gpflow(Regressor):
     ----------
     data : DataSet
         Data for fitting.
-    params : list of str
+    outputs : list of str
         Name(s) of parameter(s) to learn.
     seed : int
         Random seed
-    spatial_dims : list of str
+    continuous_dims : list of str
         Columns of dataframe used as spatial dimensions
     linear_dims : list of str
         Subset of spatial dimensions to apply an additional linear kernel.
-    spatial_levels : dict
+    continuous_levels : dict
         Values considered within each spatial column as ``{dim: [level1, level2]}``
-    spatial_coords : dict
+    continuous_coords : dict
         Numerical coordinates of each spatial level within each spatial dimension as ``{dim: {level: coord}}``
-    coregion_dims : list of str
+    categorical_dims : list of str
         Columns of dataframe used as coregion dimensions
-    coregion_levels : dict
+    categorical_levels : dict
         Values considered within each coregion column as ``{dim: [level1, level2]}``
     coregion_coords : dict
         Numerical coordinates of each coregion level within each coregion dimension as ``{dim: {level: coord}}``
@@ -506,20 +505,34 @@ class GP_gpflow(Regressor):
         Dictionary of model GP objects. Contains at least 'total'.
     """
 
-    def __init__(self, dataset: DataSet, params='r', seed=2021):
-        super(GP_gpflow, self).__init__(dataset, params, seed)
+    def __init__(self, dataset: DataSet, outputs=None, seed=2021):
+        super(GP_gpflow, self).__init__(dataset, outputs, seed)
 
         self.model = None
         self.gp_dict = None
         self.MAP = None
-        self.linear_cov_type = None
+
+        self.continuous_kernel = 'ExpQuad'
+        self.heteroskedastic_inputs = False
+        self.heteroskedastic_outputs = True
+        self.sparse = False
+        self.n_u = 100
+
+        self.model_specs = {
+            'seed': self.seed,
+            'continuous_kernel': self.continuous_kernel,
+            'heteroskedastic_inputs': self.heteroskedastic_inputs,
+            'heteroskedastic_outputs': self.heteroskedastic_outputs,
+            'sparse': self.sparse,
+            'n_u': self.n_u,
+        }
 
     ################################################################################
     # Model building and fitting
     ################################################################################
 
-    def fit(self, params=None, linear_dims=None, spatial_dims=None, spatial_levels=None, spatial_coords=None,
-            coregion_dims=None, coregion_levels=None, additive=False, seed=None, heteroskedastic_inputs=False,
+    def fit(self, outputs=None, linear_dims=None, continuous_dims=None, continuous_levels=None, continuous_coords=None,
+            categorical_dims=None, categorical_levels=None, additive=False, seed=None, heteroskedastic_inputs=False,
             heteroskedastic_outputs=True, sparse=False, n_u=100, coregion_rank=None, **MAP_kwargs):
         """Fits a GP surface
 
@@ -541,22 +554,22 @@ class GP_gpflow(Regressor):
 
         Parameters
         ----------
-        params : str or list of str, default "r"
-            Name(s) of parameter(s) to learn. If ``None``, :attr:`params` is used.
+        outputs : str or list of str, default "r"
+            Name(s) of parameter(s) to learn. If ``None``, :attr:`outputs` is used.
         linear_dims : str or list of str, optional
             Subset of spatial dimensions to apply an additional linear kernel. If ``None``, defaults to ``['BP','GC']``.
-        spatial_dims : str or list of str, optional
+        continuous_dims : str or list of str, optional
             Columns of dataframe used as spatial dimensions.
-        spatial_levels : str, list, or dict, optional
+        continuous_levels : str, list, or dict, optional
             Values considered within each spatial column as ``{dim: [level1, level2]}``.
-        spatial_coords : list or dict, optional
+        continuous_coords : list or dict, optional
             Numerical coordinates of each spatial level within each spatial dimension as ``{dim: {level: coord}}``.
-        coregion_dims : str or list of str, optional
+        categorical_dims : str or list of str, optional
             Columns of dataframe used as coregion dimensions.
-        coregion_levels : str, list, or dict, optional
+        categorical_levels : str, list, or dict, optional
             Values considered within each coregion column as ``{dim: [level1, level2]}``.
         additive : bool, default False
-            Whether to treat coregion_dims as additive or joint (default).
+            Whether to treat categorical_dims as additive or joint (default).
         seed : int, optional.
             Random seed for model instantiation. If ``None``, :attr:`seed` is used.
         heteroskedastic_inputs: bool, default False
@@ -570,9 +583,9 @@ class GP_gpflow(Regressor):
         self : :class:`GP`
         """
 
-        self.specify_model(params=params, linear_dims=linear_dims, spatial_dims=spatial_dims,
-                           spatial_levels=spatial_levels, spatial_coords=spatial_coords,
-                           coregion_dims=coregion_dims, coregion_levels=coregion_levels,
+        self.specify_model(outputs=outputs, linear_dims=linear_dims, continuous_dims=continuous_dims,
+                           continuous_levels=continuous_levels, continuous_coords=continuous_coords,
+                           categorical_dims=categorical_dims, categorical_levels=categorical_levels,
                            additive=additive, coregion_rank=coregion_rank)
 
         self.build_model(seed=seed,
@@ -589,7 +602,7 @@ class GP_gpflow(Regressor):
                     linear_cov_type='gpflow_linear'):
         r"""Compile a gpflow model for the GP.
 
-        Each dimension in :attr:`spatial_dims` is combined in an ExpQuad kernel with a principled
+        Each dimension in :attr:`continuous_dims` is combined in an ExpQuad kernel with a principled
         :math:`\text{InverseGamma}` prior for each lengthscale (as `suggested by Michael Betancourt`_) and a
         :math:`\text{Gamma}\left(2, 1\right)` prior for variance.
 
@@ -608,42 +621,53 @@ class GP_gpflow(Regressor):
         -------
         self : :class:`GP`
         """
+
+        if heteroskedastic_inputs:
+            raise NotImplementedError('Heteroskedasticity over inputs is not yet implemented.')
+
+        seed = self.seed if seed is None else seed
+        self.seed = seed
+        self.heteroskedastic_inputs = heteroskedastic_inputs
+        self.heteroskedastic_outputs = heteroskedastic_outputs
+        self.sparse = sparse
+        self.n_u = n_u
+
+        n_l = len(self.linear_dims)
+        n_s = len(self.continuous_dims)
+        n_c = len(self.categorical_dims)
+        n_p = len(self.outputs)
+
+        self.model_specs = {
+            'seed': seed,
+            'heteroskedastic_inputs': heteroskedastic_inputs,
+            'heteroskedastic_outputs': heteroskedastic_outputs,
+            'sparse': sparse,
+            'n_u': n_u,
+        }
+
         self.linear_cov_type = linear_cov_type
-        self.X, self.y = self.get_shaped_data(metric='mean')
+        X, y = self.get_shaped_data(metric='mean')
+
+        D_in = len(self.dims)
+        assert X.shape[1] == D_in
+
+        idx_l = [self.dims.index(dim) for dim in self.linear_dims]  # linear (can ignore for now)
+        idx_s = [self.dims.index(dim) for dim in self.continuous_dims]  # spatial
+        idx_c = [self.dims.index(dim) for dim in self.categorical_dims]  # coregionalisation
+        idx_p = self.dims.index('Parameter') if 'Parameter' in self.dims else None
 
         if (linear_cov_type is None) & (self.linear_dims is not None):
             ValueError("Must specify the type of linear kernel out of 'gpflow_linear', "
                        "'linear+constant' and 'linear_offset'")
-
-        # Convert ParameterArray into plain numpy tall array
-        if 'Parameter' in self.dims:
-            ordered_params = {k: v for k, v in sorted(self.coords['Parameter'].items(), key=lambda item: item[1])}
-            y = np.hstack([self.y.z[param + '_z'].values() for param in ordered_params.keys()])
-            X = np.atleast_2d(self.X)
-            X = parray.vstack([X.add_layers(Parameter=coord) for coord in ordered_params.values()])
-            X = np.atleast_2d(np.column_stack([X[dim].z.values().squeeze() for dim in self.dims]))
-
-        else:
-            y = self.y.z.drop('lg10_Copies_z').values().squeeze()
-            X = np.atleast_2d(np.column_stack([self.X[dim].z.values().squeeze() for dim in self.dims]))
 
         if len(y.shape) == 1:
             y = y.reshape(len(y), 1)
 
         seed = self.seed if seed is None else seed
 
-        n_l = len(self.linear_dims)
-        n_s = len(self.spatial_dims)
-        n_c = len(self.coregion_dims)
-        n_p = len(self.params)
 
         D_in = len(self.dims)
         assert X.shape[1] == D_in
-
-        idx_l = [self.dims.index(dim) for dim in self.linear_dims]  # linear (can ignore for now)
-        idx_s = [self.dims.index(dim) for dim in self.spatial_dims]  # spatial
-        idx_c = [self.dims.index(dim) for dim in self.coregion_dims]  # coregionalisation
-        idx_p = self.dims.index('Parameter') if 'Parameter' in self.dims else None
 
         X_s = X[:, idx_s]
 
@@ -704,17 +728,17 @@ class GP_gpflow(Regressor):
         if n_l > 0:
             cov += linear_cov('total')
 
-        # Construct a coregion kernel for each coregion_dims
+        # Construct a coregion kernel for each categorical_dims
         if n_c > 0 and not self.additive:  # I think I can probably ignore this additive parameter
-            for dim, idx in zip(self.coregion_dims, idx_c):
+            for dim, idx in zip(self.categorical_dims, idx_c):
                 if dim == 'Parameter':
                     continue
-                D_out = len(self.coregion_levels[dim])
+                D_out = len(self.categorical_levels[dim])
                 cov = cov * coreg_cov(dim, D_out, idx)
 
         # Coregion kernel for parameters, if necessary
-        if 'Parameter' in self.coregion_dims:  # not sure what this is for
-            D_out = len(self.coregion_levels['Parameter'])
+        if 'Parameter' in self.categorical_dims:  # not sure what this is for
+            D_out = len(self.categorical_levels['Parameter'])
             cov_param = coreg_cov('Parameter', D_out, idx_p)
             cov *= cov_param
 
@@ -738,7 +762,7 @@ class GP_gpflow(Regressor):
         # Construct a spatial+coregion kernel for each coregion_dim, then combine them additively
         if self.additive:
             gp_dict['global'] = gp_dict['total']
-            for dim, idx in zip(self.coregion_dims, idx_c):
+            for dim, idx in zip(self.categorical_dims, idx_c):
                 if dim == 'Parameter':
                     continue
 
@@ -749,11 +773,11 @@ class GP_gpflow(Regressor):
                     cov += linear_cov(dim)
 
                 # Coregion kernel specific to this dimension
-                D_out = len(self.coregion_levels[dim])
+                D_out = len(self.categorical_levels[dim])
                 cov *= coreg_cov(dim, D_out, idx)
 
                 # Coregion kernel for parameters, if necessary
-                if 'Parameter' in self.coregion_dims:
+                if 'Parameter' in self.categorical_dims:
                     cov *= cov_param
 
                 # Combine GPs
@@ -773,8 +797,8 @@ class GP_gpflow(Regressor):
         # if heteroskedastic_inputs:
         #     raise NotImplementedError('Heteroskedasticity over inputs is not yet implemented')
         #     noise += spatial_cov('noise')
-        # if heteroskedastic_outputs and 'Parameter' in self.coregion_dims:
-        #     D_out = len(self.coregion_levels['Parameter'])
+        # if heteroskedastic_outputs and 'Parameter' in self.categorical_dims:
+        #     D_out = len(self.categorical_levels['Parameter'])
         #     noise *= coreg_cov('Parameter_noise', D_out, idx_p)
         #
         # if sparse:
@@ -839,15 +863,15 @@ class LVMOGP_GP(GP_gpflow):
         self.lvmogp_latent_dims = lvmogp_latent_dims
         self.data = self.lmc.data
         self.stdzr = self.lmc.stdzr
-        self.params = self.lmc.params
+        self.outputs = self.lmc.outputs
         self.seed = self.lmc.seed
 
-        self.spatial_dims = self.lmc.spatial_dims
+        self.continuous_dims = self.lmc.continuous_dims
         self.linear_dims = self.lmc.linear_dims
-        self.spatial_levels = self.lmc.spatial_levels
-        self.spatial_coords = self.lmc.spatial_coords
-        self.coregion_dims = self.lmc.coregion_dims
-        self.coregion_levels = self.lmc.coregion_levels
+        self.continuous_levels = self.lmc.continuous_levels
+        self.continuous_coords = self.lmc.continuous_coords
+        self.categorical_dims = self.lmc.categorical_dims
+        self.categorical_levels = self.lmc.categorical_levels
         self.coregion_coords = self.lmc.coregion_coords
         self.filter_dims = self.lmc.filter_dims
         self.linear_cov_type = self.lmc.linear_cov_type
@@ -861,8 +885,8 @@ class LVMOGP_GP(GP_gpflow):
         if lvmogp_latent_dims != self.lmc.coregion_rank:
             raise ValueError("LVMOGP latent dimensions and LMC rank are not equal")
 
-    def fit(self, params=None, linear_dims=None, spatial_dims=None, spatial_levels=None, spatial_coords=None,
-            coregion_dims=None, coregion_levels=None, additive=False, seed=None, heteroskedastic_inputs=False,
+    def fit(self, outputs=None, linear_dims=None, continuous_dims=None, continuous_levels=None, continuous_coords=None,
+            categorical_dims=None, categorical_levels=None, additive=False, seed=None, heteroskedastic_inputs=False,
             heteroskedastic_outputs=True, sparse=False, n_u=100, **MAP_kwargs):
 
         self.build_model(seed=seed, n_u=n_u)
@@ -872,10 +896,10 @@ class LVMOGP_GP(GP_gpflow):
                     plot_BGPLVM=False, n_restarts=4):
 
         if 'Parameter' in self.dims:
-            ordered_params = {k: v for k, v in sorted(self.coords['Parameter'].items(), key=lambda item: item[1])}
-            y = np.hstack([self.y.z[param + '_z'].values() for param in ordered_params.keys()])
+            ordered_outputs = {k: v for k, v in sorted(self.coords['Parameter'].items(), key=lambda item: item[1])}
+            y = np.hstack([self.y.z[param + '_z'].values() for param in ordered_outputs.keys()])
             X = np.atleast_2d(self.X)
-            X = parray.vstack([X.add_layers(Parameter=coord) for coord in ordered_params.values()])
+            X = parray.vstack([X.add_layers(Parameter=coord) for coord in ordered_outputs.values()])
             X = np.atleast_2d(np.column_stack([X[dim].z.values().squeeze() for dim in self.dims]))
 
         else:
@@ -885,16 +909,16 @@ class LVMOGP_GP(GP_gpflow):
         if len(y.shape) == 1:
             y = y.reshape(len(y), 1)
 
-        idx_s = [self.dims.index(dim) for dim in self.spatial_dims]
-        idx_c = [self.dims.index(dim) for dim in self.coregion_dims]
+        idx_s = [self.dims.index(dim) for dim in self.continuous_dims]
+        idx_c = [self.dims.index(dim) for dim in self.categorical_dims]
         X_s = X[:, idx_s]
 
         self.lmc.spatial_grid(resolution=50)
         means = []
-        key = list(self.lmc.coregion_levels.keys())[0]
-        for level in list(self.lmc.coregion_levels.values())[0]:
+        key = list(self.lmc.categorical_levels.keys())[0]
+        for level in list(self.lmc.categorical_levels.values())[0]:
             predictions = self.lmc.predict_grid(param='r',
-                                                coregion_levels={key: level})
+                                                categorical_levels={key: level})
             means.append(predictions['μ'])
 
         # fit GPLVM with restarts
@@ -930,9 +954,9 @@ class LVMOGP_GP(GP_gpflow):
                                                     X_data_var=H_var_init,
                                                     kernel=kernel_H,
                                                     num_inducing_variables=len(
-                                                        list(self.lmc.coregion_levels.values())[0]),
+                                                        list(self.lmc.categorical_levels.values())[0]),
                                                     X_prior_var=tf.ones(
-                                                        (len(list(self.lmc.coregion_levels.values())[0]),
+                                                        (len(list(self.lmc.categorical_levels.values())[0]),
                                                          self.lvmogp_latent_dims))
                                                     )
                 gplvm.likelihood.variance.prior = tfp.distributions.InverseGamma(to_default_float(2),

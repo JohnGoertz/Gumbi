@@ -171,7 +171,7 @@ class Regressor(ABC):
     ################################################################################
 
     def specify_model(self, outputs=None, linear_dims=None, continuous_dims=None, continuous_levels=None, continuous_coords=None,
-                      categorical_dims=None, categorical_levels=None, additive=False):
+                      categorical_dims=None, categorical_levels=None, coregion_rank=2, additive=False):
         """Checks for consistency among dimensions and levels and formats appropriately.
 
         Parameters
@@ -192,6 +192,7 @@ class Regressor(ABC):
             Values considered within each categorical column as ``{dim: [level1, level2]}``
         additive : bool, default False
             Whether to treat categorical_dims as additive or joint (default)
+        coregion_rank : the rank of the linear model of coregionalisation model
 
         Returns
         -------
@@ -202,6 +203,11 @@ class Regressor(ABC):
         outputs = outputs if outputs is not None else self.outputs
         assert_is_subset(self.out_col, outputs, self.data.outputs)
         self.outputs = outputs if isinstance(outputs, list) else [outputs]
+
+        if (categorical_dims is not None) & (coregion_rank is None):
+            self.coregion_rank = 2
+        else:
+            self.coregion_rank = coregion_rank
 
         # Ensure dimensions are valid and format as list
         self.continuous_dims = self._parse_dimensions(continuous_dims)
