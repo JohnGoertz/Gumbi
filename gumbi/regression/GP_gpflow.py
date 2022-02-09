@@ -5,24 +5,19 @@ from gumbi.utils.gp_utils import get_ℓ_prior
 from gumbi.aggregation import DataSet
 from gumbi.arrays import ParameterArray as parray
 from gumbi.regression import Regressor
-
-from gumbi.plotting import plot_uparray, contourf_uparray, unstandardize_axis_labels
-
+from gumbi import ParameterArray
 from typing import Optional
 import numpy as np
 import tensorflow as tf
-from gumbi.utils.misc import assert_in, assert_is_subset
+from gumbi.utils.misc import assert_is_subset
 from gpflow import covariances, kernels, likelihoods
 from gpflow.base import Parameter, _cast_to_dtype
 from gpflow.config import default_float, default_jitter
 from gpflow.expectations import expectation
 from gpflow.inducing_variables import InducingPoints
 from gpflow.kernels import Kernel
-from gpflow.mean_functions import MeanFunction, Zero
 from gpflow.probability_distributions import DiagonalGaussian
 from gpflow.utilities import positive, to_default_float, ops
-from gpflow.utilities.ops import pca_reduce
-from gpflow.models.gpr import GPR
 from gpflow.models.model import GPModel, MeanAndVariance
 from gpflow.models.training_mixins import InputData, InternalDataTrainingLossMixin, OutputData
 from gpflow.models.util import data_input_to_tensor, inducingpoint_wrapper
@@ -30,8 +25,6 @@ from gpflow.covariances.dispatch import Kuf, Kuu
 import matplotlib.pyplot as plt
 from matplotlib.patches import Ellipse
 
-
-# gpflow.config.set_default_jitter(tf.convert_to_tensor(1e-6, dtype=default_float()))
 
 
 class LVMOGP(GPModel, InternalDataTrainingLossMixin):
@@ -341,7 +334,7 @@ class GP_gpflow(Regressor):
     Notes
     -----
     This is the same as the GP class, expect it is implemented using GPflow rather than pymc3. The GP_gpflow
-     class is built from a dataframe in the form of a :class:`ParameterSet` object. This is stored as
+     class is built from a dataframe in the form of a :class:`DataSet` object. This is stored as
     :attr:`data`. The model inputs are constructed by filtering this dataframe, extracting column values, and
     converting these to numerical input coordinates. The main entry point will be :meth:`fit`, which parses the
     dimensions of the model with :meth:`specify_model`, extracts numerical input coordinates with
@@ -394,7 +387,7 @@ class GP_gpflow(Regressor):
 
     Parameters
     ----------
-    parameter_set : ParameterSet
+   dataset : DataSet
         Data for fitting.
     params : str or list of str, default "r"
         Name(s) of parameter(s) to learn.
@@ -403,11 +396,11 @@ class GP_gpflow(Regressor):
 
     Examples
     --------
-    A GP object is created from a :class:`ParameterSet` and can be fit immediately with the default dimension
+    A GP object is created from a :class:`DataSet` and can be fit immediately with the default dimension
     configuration (regressing `r` with RBF + linear kernels for `BP` and `GC`):
 
-    >>> from candas.learn import ParameterSet, GP
-    >>> ps = ParameterSet.load('my_ParameterSet.pkl')
+    >>> from candas.learn import DataSet, GP
+    >>> ps = DataSet.load('my_DataSet.pkl')
     >>> gp = GP_gpflow(ps).fit()
 
     Note that the last line is equivalent to
@@ -453,32 +446,33 @@ class GP_gpflow(Regressor):
            [-3.1875742 , -3.18617286, -3.18426272, ..., -3.18876906,
             -3.18878366, -3.18879081]])
 
-    Finally, plot the results:
+     Finally, plot the results:
 
-    >>> from candas.style import futura
     >>> import matplotlib.pyplot as plt
     >>>
-    >>> plt.style.use(str(futura))
-    >>> gp.plot_predictions()
+    >>> plt.style.use(str(gmb.style.futura))
+    >>> x_pa = gp.predictions_X
+    >>> y_upa = gp.predictions
+    >>> gmb.ParrayPlotter(x_pa, y_upa).plot()
 
     Plot a slice down the center of the prediction along each axis
 
-    >>> x_pa, y_upa = gp.get_conditional_prediction(BP=88)
+    >>> x_pa, y_upa = gp.get_conditional_prediction(Y=88)
     >>>
-    >>> ax = plot_uparray(x_pa, y_upa)
+    >>> ax = gmb.ParrayPlotter(x_pa, y_upa).plot()
     >>> ax.set_xticklabels([int(float(txt.get_text())*100) for txt in ax.get_xticklabels()]);
 
     Plot a slice down the center of the prediction along each axis
 
-    >>> x_pa, y_upa = gp.get_conditional_prediction(GC=0.5)
+    >>> x_pa, y_upa = gp.get_conditional_prediction(X=0.5)
     >>>
-    >>> ax = plot_uparray(x_pa, y_upa)
+    >>> ax = gmb.ParrayPlotter(x_pa, y_upa).plot()
     >>> ax.set_xticklabels([int(float(txt.get_text())*100) for txt in ax.get_xticklabels()]);
 
 
     Attributes
     ----------
-    data : ParameterSet
+    data : DataSet
         Data for fitting.
     params : list of str
         Name(s) of parameter(s) to learn.
@@ -512,8 +506,8 @@ class GP_gpflow(Regressor):
         Dictionary of model GP objects. Contains at least 'total'.
     """
 
-    def __init__(self, parameter_set: ParameterSet, params='r', seed=2021):
-        super(GP_gpflow, self).__init__(parameter_set, params, seed)
+    def __init__(self, dataset: DataSet, params='r', seed=2021):
+        super(GP_gpflow, self).__init__(dataset, params, seed)
 
         self.model = None
         self.gp_dict = None
@@ -729,12 +723,14 @@ class GP_gpflow(Regressor):
             pm_gp = gpflow.models.SGPR(data=(tf.convert_to_tensor(X, dtype=default_float()),
                                              tf.convert_to_tensor(y, dtype=default_float())), kernel=cov,
                                        inducing_variable=Z)
+            gp_kws = {'approx': "FITC"}
 
         else:
-            # pm_gp = gpflow.models.GPR(data=(tf.convert_to_tensor(X, dtype=default_float()),
-            #                                 tf.convert_to_tensor(y, dtype=default_float())), kernel=cov)
+
             pm_gp = gpflow.models.GPR(data=(tf.convert_to_tensor(X, dtype=default_float()),
                                             tf.convert_to_tensor(y, dtype=default_float())), kernel=cov)
+
+            gp_kws = {}
 
         pm_gp.likelihood.variance.prior = tfp.distributions.InverseGamma(to_default_float(2), to_default_float(1))
         gp_dict = {'total': pm_gp}
