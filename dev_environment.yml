@@ -1,4 +1,4 @@
-name: gumbi
+name: gumbi-dev
 channels:
   - defaults
   - conda-forge
@@ -16,4 +16,4 @@ dependencies:
   - mkl
   - pip
   - pip:
-    - gumbi
+    - .
