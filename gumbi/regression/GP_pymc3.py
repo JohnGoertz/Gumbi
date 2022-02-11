@@ -298,11 +298,39 @@ class GP(Regressor):
 
         return self
 
+    def _make_continuous_cov(self, continuous_cov_func, D_in, idx_s, n_s, ℓ_μ, ℓ_σ):
+
+        def continuous_cov(suffix):
+            ℓ = pm.InverseGamma(f'ℓ_{suffix}', mu=ℓ_μ, sigma=ℓ_σ, shape=n_s)
+            η = pm.Gamma(f'η_{suffix}', alpha=2, beta=1)
+            return η ** 2 * continuous_cov_func(input_dim=D_in, active_dims=idx_s, ls=ℓ)
+
+        return continuous_cov
+
+    def _make_linear_cov(self, D_in, idx_l, n_l):
+
+        def linear_cov(suffix):
+            c = pm.Normal(f'c_{suffix}', mu=0, sigma=10, shape=n_l)
+            τ = pm.HalfNormal(f'τ_{suffix}', sigma=10)
+            return τ * pm.gp.cov.Linear(input_dim=D_in, c=c, active_dims=idx_l)
+
+        return linear_cov
+
+    def _make_coreg_cov(self, D_in, seed):
+
+        def coreg_cov(suffix, D_out, idx):
+            testval = np.random.default_rng(seed).standard_normal(size=(D_out, 2))
+            W = pm.Normal(f"W_{suffix}", mu=0, sd=3, shape=(D_out, 2), testval=testval)
+            κ = pm.Gamma(f"κ_{suffix}", alpha=1.5, beta=1, shape=(D_out,))
+            return pm.gp.cov.Coregion(input_dim=D_in, active_dims=[idx], kappa=κ, W=W)
+
+        return coreg_cov
+
     # TODO: add full probabilistic model description to docstring
     # TODO: allow dimension-specific continuous kernel specification
     # TODO: allow single multi-dimensional continuous kernel rather than independent kernels per dimension
     def build_model(self, seed=None, continuous_kernel='ExpQuad', heteroskedastic_inputs=False, heteroskedastic_outputs=True, sparse=False, n_u=100):
-        r"""Compile a pymc3 model for the GP.
+        r"""Compile a marginalized pymc3 model for the GP.
 
         Each dimension in :attr:`continuous_dims` is combined in an ExpQuad kernel with a principled
         :math:`\text{InverseGamma}` prior for each lengthscale (as `suggested by Michael Betancourt`_) and a
@@ -336,6 +364,8 @@ class GP(Regressor):
             raise NotImplementedError('Heteroskedasticity over inputs is not yet implemented.')
 
         X, y = self.get_shaped_data('mean')
+        D_in = len(self.dims)
+        assert X.shape[1] == D_in
 
         seed = self.seed if seed is None else seed
         self.seed = seed
@@ -354,108 +384,15 @@ class GP(Regressor):
             'n_u': n_u,
         }
 
-        n_l = len(self.linear_dims)
-        n_s = len(self.continuous_dims)
-        n_c = len(self.categorical_dims)
-        n_p = len(self.outputs)
+        gp_dict = self._construct_kernels(X, continuous_kernel, seed, sparse, latent=False)
 
-        D_in = len(self.dims)
-        assert X.shape[1] == D_in
-
-        idx_l = [self.dims.index(dim) for dim in self.linear_dims]
-        idx_s = [self.dims.index(dim) for dim in self.continuous_dims]
-        idx_c = [self.dims.index(dim) for dim in self.categorical_dims]
-        idx_p = self.dims.index(self.out_col) if self.out_col in self.dims else None
-
-        X_s = X[:, idx_s]
-
-        ℓ_μ, ℓ_σ = [stat for stat in np.array([get_ℓ_prior(dim) for dim in X_s.T]).T]
-
-        continuous_kernels = ['ExpQuad', 'RatQuad', 'Matern32', 'Matern52', 'Exponential', 'Cosine']
-        assert_in('Continuous kernel', continuous_kernel, continuous_kernels)
-        continuous_cov_func = getattr(pm.gp.cov, continuous_kernel)
-
-        def continuous_cov(suffix):
-            ℓ = pm.InverseGamma(f'ℓ_{suffix}', mu=ℓ_μ, sigma=ℓ_σ, shape=n_s)
-            η = pm.Gamma(f'η_{suffix}', alpha=2, beta=1)
-            return η ** 2 * continuous_cov_func(input_dim=D_in, active_dims=idx_s, ls=ℓ)
-
-        def linear_cov(suffix):
-            c = pm.Normal(f'c_{suffix}', mu=0, sigma=10, shape=n_l)
-            τ = pm.HalfNormal(f'τ_{suffix}', sigma=10)
-            return τ * pm.gp.cov.Linear(input_dim=D_in, c=c, active_dims=idx_l)
-
-        def coreg_cov(suffix, D_out, idx):
-            testval = np.random.default_rng(seed).standard_normal(size=(D_out, 2))
-            W = pm.Normal(f"W_{suffix}", mu=0, sd=3, shape=(D_out, 2), testval=testval)
-            κ = pm.Gamma(f"κ_{suffix}", alpha=1.5, beta=1, shape=(D_out,))
-            return pm.gp.cov.Coregion(input_dim=D_in, active_dims=[idx], kappa=κ, W=W)
-
-        if sparse:
-            pm_gp = pm.gp.MarginalSparse
-            gp_kws = {'approx': "FITC"}
-        else:
-            pm_gp = pm.gp.Marginal
-            gp_kws = {}
-
-
-        with pm.Model() as self.model:
-            # μ = pm.Normal('μ', mu=0, sigma=10)
-            # β = pm.Normal('β', mu=0, sigma=10, shape=n_l)
-            # lin_mean = pm.gp.mean.Linear(coeffs=[β[i] if i in idx_l else 0 for i in range(D_in), intercept=μ)
-
-            # Define a "global" continuous kernel regardless of additive structure
-            cov = continuous_cov('total')
-            if n_l > 0:
-                cov += linear_cov('total')
-
-            # Construct a coregion kernel for each categorical_dims
-            if n_c > 0 and not self.additive:
-                for dim, idx in zip(self.categorical_dims, idx_c):
-                    if dim == self.out_col:
-                        continue
-                    D_out = len(self.categorical_levels[dim])
-                    cov *= coreg_cov(dim, D_out, idx)
-
-            # Coregion kernel for parameters, if necessary
-            if self.out_col in self.categorical_dims:
-                D_out = len(self.categorical_levels[self.out_col])
-                cov_param = coreg_cov(self.out_col, D_out, idx_p)
-                cov *= cov_param
-
-            gp_dict = {'total': pm_gp(cov_func=cov, **gp_kws)}
-
-            # Construct a continuous+coregion kernel for each categorical_dim, then combine them additively
-            if self.additive:
-                gp_dict['global'] = gp_dict['total']
-                for dim, idx in zip(self.categorical_dims, idx_c):
-                    if dim == self.out_col:
-                        continue
-
-                    # Continuous kernel specific to this dimension
-                    cov = continuous_cov(dim)
-                    # TODO: Decide if each additive dimension needs its own linear kernel
-                    if n_l > 0:
-                        cov += linear_cov(dim)
-
-                    # Coregion kernel specific to this dimension
-                    D_out = len(self.categorical_levels[dim])
-                    cov *= coreg_cov(dim, D_out, idx)
-
-                    # Coregion kernel for parameters, if necessary
-                    if self.out_col in self.categorical_dims:
-                        cov *= cov_param
-
-                    # Combine GPs
-                    gp_dict[dim] = pm_gp(cov_func=cov, **gp_kws)
-                    gp_dict['total'] += gp_dict[dim]
+        with self.model:
 
             # From https://docs.pymc.io/notebooks/GP-Marginal.html
             # OR a covariance function for the noise can be given
             # noise_l = pm.Gamma("noise_l", alpha=2, beta=2)
             # cov_func_noise = pm.gp.cov.Exponential(1, noise_l) + pm.gp.cov.WhiteNoise(sigma=0.1)
             # y_ = gp.marginal_likelihood("y", X=X, y=y, noise=cov_func_noise)
-
 
             # GP is heteroskedastic across outputs by default,
             # but homoskedastic across continuous dimensions
@@ -466,6 +403,8 @@ class GP(Regressor):
                 # noise += continuous_cov('noise')
             if heteroskedastic_outputs and self.out_col in self.categorical_dims:
                 D_out = len(self.categorical_levels[self.out_col])
+                coreg_cov = self._make_coreg_cov(D_in, seed)
+                idx_p = self._get_dim_indexes()['p']
                 noise *= coreg_cov('Output_noise', D_out, idx_p)
 
             if sparse:
@@ -478,6 +417,127 @@ class GP(Regressor):
 
         self.gp_dict = gp_dict
         return self
+
+    def _choose_implementation(self, sparse=False, latent=False):
+        if sparse and latent:
+            raise NotImplementedError('Sparse Latent GPs are not yet implemented.')
+
+        if sparse:
+            pm_gp = pm.gp.MarginalSparse
+            gp_kws = {'approx': "FITC"}
+        elif latent:
+            pm_gp = pm.gp.Latent
+            gp_kws = {}
+        else:
+            pm_gp = pm.gp.Marginal
+            gp_kws = {}
+
+        def implementation(*args, **kwargs):
+            return pm_gp(*args, **(kwargs | gp_kws))
+
+        return implementation
+
+    def _get_dim_counts(self):
+
+        dim_counts = {
+            'l': len(self.linear_dims),
+            's': len(self.continuous_dims),
+            'c': len(self.categorical_dims),
+            'p': len(self.outputs),
+        }
+
+        return dim_counts
+
+    def _get_dim_indexes(self):
+
+        dim_indexes = {
+            'l': [self.dims.index(dim) for dim in self.linear_dims],
+            's': [self.dims.index(dim) for dim in self.continuous_dims],
+            'c': [self.dims.index(dim) for dim in self.categorical_dims],
+            'p': self.dims.index(self.out_col) if self.out_col in self.dims else None,
+        }
+
+        return dim_indexes
+
+    def _prepare_lengthscales(self, X):
+
+        X_s = X[:, self._get_dim_indexes()['s']]
+
+        ℓ_μ, ℓ_σ = [stat for stat in np.array([get_ℓ_prior(dim) for dim in X_s.T]).T]
+        return ℓ_μ, ℓ_σ
+
+    def _construct_kernels(self, X, continuous_kernel, seed, sparse, latent):
+
+        continuous_kernels = ['ExpQuad', 'RatQuad', 'Matern32', 'Matern52', 'Exponential', 'Cosine']
+        assert_in('Continuous kernel', continuous_kernel, continuous_kernels)
+        continuous_cov_func = getattr(pm.gp.cov, continuous_kernel)
+
+        D_in = len(self.dims)
+
+        ns = self._get_dim_counts()
+        idxs = self._get_dim_indexes()
+        ℓ_μ, ℓ_σ = self._prepare_lengthscales(X)
+
+        continuous_cov = self._make_continuous_cov(continuous_cov_func, D_in, idxs['s'], ns['s'], ℓ_μ, ℓ_σ)
+        linear_cov = self._make_linear_cov(D_in, idxs['l'], ns['l'])
+        coreg_cov = self._make_coreg_cov(D_in, seed)
+
+        pm_gp = self._choose_implementation(sparse=sparse, latent=latent)
+
+        with pm.Model() as self.model:
+            # μ = pm.Normal('μ', mu=0, sigma=10)
+            # β = pm.Normal('β', mu=0, sigma=10, shape=n_l)
+            # lin_mean = pm.gp.mean.Linear(coeffs=[β[i] if i in idx_l else 0 for i in range(D_in), intercept=μ)
+
+            # Define a "global" continuous kernel regardless of additive structure
+            cov = continuous_cov('total')
+            if ns['l'] > 0:
+                cov += linear_cov('total')
+
+            # Construct a coregion kernel for each categorical_dims
+            if ns['c'] > 0 and not self.additive:
+                for dim, idx in zip(self.categorical_dims, idxs['c']):
+                    if dim == self.out_col:
+                        continue
+                    D_out = len(self.categorical_levels[dim])
+                    cov *= coreg_cov(dim, D_out, idx)
+
+            # Coregion kernel for parameters, if necessary
+            if self.out_col in self.categorical_dims:
+                D_out = len(self.categorical_levels[self.out_col])
+                cov_param = coreg_cov(self.out_col, D_out, idxs['p'])
+                cov *= cov_param
+
+            gp_dict = {'total': pm_gp(cov_func=cov)}
+
+            # Construct a continuous+coregion kernel for each categorical_dim, then combine them additively
+            if self.additive:
+                gp_dict['global'] = gp_dict['total']
+                for dim, idx in zip(self.categorical_dims, idxs['c']):
+                    if dim == self.out_col:
+                        continue
+
+                    # Continuous kernel specific to this dimension
+                    cov = continuous_cov(dim)
+                    # TODO: Decide if each additive dimension needs its own linear kernel
+                    if ns['l'] > 0:
+                        cov += linear_cov(dim)
+
+                    # Coregion kernel specific to this dimension
+                    D_out = len(self.categorical_levels[dim])
+                    cov *= coreg_cov(dim, D_out, idx)
+
+                    # Coregion kernel for parameters, if necessary
+                    if self.out_col in self.categorical_dims:
+                        cov *= cov_param
+
+                    # Combine GPs
+                    gp_dict[dim] = pm_gp(cov_func=cov)
+                    gp_dict['total'] += gp_dict[dim]
+
+        return gp_dict
+
+    # def build_latent(self):
 
     def find_MAP(self, *args, **kwargs):
         """Finds maximum a posteriori value for hyperparameters in model
