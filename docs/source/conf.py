@@ -12,8 +12,11 @@
 #
 import os
 import sys
+import pathlib as pl
 sys.path.insert(0, os.path.abspath('../../gumbi/'))
 
+PROJECT_ROOT = pl.Path(__file__).resolve().parent.parent.parent
+VERSION = PROJECT_ROOT / "VERSION"
 
 # -- Project information -----------------------------------------------------
 
@@ -22,7 +25,9 @@ copyright = '2021, John Goertz'
 author = 'John Goertz'
 
 # The full version, including alpha/beta/rc tags
-release = '0.1.7'
+with open(VERSION, encoding="utf-8") as f:
+    version = f.read().strip()
+release = version
 
 
 # -- General configuration ---------------------------------------------------

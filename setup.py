@@ -1,7 +1,6 @@
 from setuptools import find_packages, setup
 import pathlib as pl
 
-VERSION = '0.1.7'
 DISTNAME = "gumbi"
 DESCRIPTION = "Gaussian Process Model Building Interface"
 AUTHOR = "John Goertz"
@@ -12,12 +11,16 @@ LICENSE = "Apache 2.0"
 PROJECT_ROOT = pl.Path(__file__).resolve().parent
 REQUIREMENTS = PROJECT_ROOT / "requirements.txt"
 README = PROJECT_ROOT / "README.md"
+VERSION = PROJECT_ROOT / "VERSION"
 
 with open(REQUIREMENTS) as f:
     install_reqs = f.read().splitlines()
 
 with open(README, 'r') as fh:
     long_description = fh.read()
+
+with open(VERSION, encoding="utf-8") as f:
+    version = f.read().strip()
 
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -34,7 +37,7 @@ classifiers = [
 
 setup(
     name=DISTNAME,
-    version=VERSION,
+    version=version,
     author="John Goertz",
     author_email="",
     description=DESCRIPTION,
