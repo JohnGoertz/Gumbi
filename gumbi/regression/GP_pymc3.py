@@ -374,6 +374,7 @@ class GP(Regressor):
         self.heteroskedastic_outputs = heteroskedastic_outputs
         self.sparse = sparse
         self.n_u = n_u
+        self.latent = False
 
         self.model_specs = {
             'seed': seed,
@@ -415,7 +416,7 @@ class GP(Regressor):
             else:
                 _ = gp_dict['total'].marginal_likelihood('ml', X=X, y=y, noise=noise)
 
-        self.gp_dict = gp_dict
+        # self.gp_dict = gp_dict
         return self
 
     def _choose_implementation(self, sparse=False, latent=False):
@@ -535,9 +536,30 @@ class GP(Regressor):
                     gp_dict[dim] = pm_gp(cov_func=cov)
                     gp_dict['total'] += gp_dict[dim]
 
+        self.gp_dict = gp_dict
         return gp_dict
 
-    # def build_latent(self):
+    def build_latent(self, seed=None, continuous_kernel='ExpQuad', prior_name='latent_prior'):
+
+        if self.additive:
+            raise NotImplementedError('Additive/latent GPs are not yet implemented')
+
+        X, y = self.get_shaped_data('mean')
+        D_in = len(self.dims)
+        assert X.shape[1] == D_in
+
+        seed = self.seed if seed is None else seed
+        self.seed = seed
+        self.continuous_kernel = continuous_kernel
+        self.sparse = False
+        self.latent = True
+
+        gp_dict = self._construct_kernels(X, continuous_kernel, seed, sparse=False, latent=True)
+
+        with self.model:
+            self.prior = gp_dict['total'].prior(prior_name, X=X)
+
+        return self
 
     def find_MAP(self, *args, **kwargs):
         """Finds maximum a posteriori value for hyperparameters in model
