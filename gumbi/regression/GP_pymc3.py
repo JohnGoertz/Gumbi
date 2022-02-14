@@ -208,11 +208,13 @@ class GP(Regressor):
         self.model = None
         self.gp_dict = None
         self.MAP = None
+        self.trace = None
 
         self.continuous_kernel = 'ExpQuad'
         self.heteroskedastic_inputs = False
         self.heteroskedastic_outputs = True
         self.sparse = False
+        self.latent = False
         self.n_u = 100
 
         self.model_specs = {
@@ -301,7 +303,8 @@ class GP(Regressor):
     def _make_continuous_cov(self, continuous_cov_func, D_in, idx_s, n_s, ℓ_μ, ℓ_σ):
 
         def continuous_cov(suffix):
-            ℓ = pm.InverseGamma(f'ℓ_{suffix}', mu=ℓ_μ, sigma=ℓ_σ, shape=n_s)
+            # ℓ = pm.InverseGamma(f'ℓ_{suffix}', mu=ℓ_μ, sigma=ℓ_σ, shape=n_s)
+            ℓ = pm.Gamma(f'ℓ_{suffix}', alpha=2, beta=1)
             η = pm.Gamma(f'η_{suffix}', alpha=2, beta=1)
             return η ** 2 * continuous_cov_func(input_dim=D_in, active_dims=idx_s, ls=ℓ)
 
@@ -562,7 +565,7 @@ class GP(Regressor):
         return self
 
     def find_MAP(self, *args, **kwargs):
-        """Finds maximum a posteriori value for hyperparameters in model
+        """Finds maximum a posteriori value for hyperparameters in model.
 
         Parameters
         ----------
@@ -574,6 +577,30 @@ class GP(Regressor):
         assert self.model is not None
         with self.model:
             self.MAP = pm.find_MAP(*args, **kwargs)
+
+        return self.MAP
+
+    def sample(self, *args, **kwargs):
+        """Draws samples from the posterior for the hyperparameters in model.
+
+        Parameters
+        ----------
+        *args
+            Positional arguments passed to :func:`pm.sample`
+        **kwargs
+            Keyword arguments passed to :func:`pm.sample`
+        """
+
+        defaults = {
+            'return_inferencedata': True,
+            'random_seed': self.seed,
+        }
+
+        assert self.model is not None
+        with self.model:
+            self.trace = pm.sample(*args, **(defaults | kwargs))
+
+        return self.trace
 
     def predict(self, points_array, with_noise=True, additive_level='total', **kwargs):
         """Make predictions at supplied points using specified gp
