@@ -262,7 +262,7 @@ class LVMOGP(GPModel, InternalDataTrainingLossMixin):
                 raise ValueError('"param" must be list, string, or None')
 
             # Get model coordinates for each parameter to be predicted
-            param_coords = [self.coregion_coords['Parameter'][p] for p in param]
+            param_coords = [self.categorical_coords['Parameter'][p] for p in param]
 
             # Convert input points to tall array and tile once for each parameter, adding the respective coordinate
             tall_points = parray.vstack([points.add_layers(Parameter=coord)[:, None] for coord in param_coords])
@@ -418,7 +418,7 @@ class GP_gpflow(Regressor):
     After the model is fit, define a grid of points at which to make predictions. The result is a
     :class:`ParameterArray`:
 
-    >>> gp.spatial_grid()
+    >>> gp.prepare_grid()
     >>> gp.grid_points
     ('GC', 'BP'): [(0.075     ,  10.) (0.08358586,  10.) (0.09217172,  10.) ...
      (0.90782828, 800.) (0.91641414, 800.) (0.925     , 800.)]
@@ -489,7 +489,7 @@ class GP_gpflow(Regressor):
         Columns of dataframe used as coregion dimensions
     categorical_levels : dict
         Values considered within each coregion column as ``{dim: [level1, level2]}``
-    coregion_coords : dict
+    categorical_coords : dict
         Numerical coordinates of each coregion level within each coregion dimension as ``{dim: {level: coord}}``
     additive : bool
         Whether to treat coregion dimensions as additive or joint
@@ -865,6 +865,7 @@ class LVMOGP_GP(GP_gpflow):
         self.stdzr = self.lmc.stdzr
         self.outputs = self.lmc.outputs
         self.seed = self.lmc.seed
+        self.out_col = self.lmc.out_col
 
         self.continuous_dims = self.lmc.continuous_dims
         self.linear_dims = self.lmc.linear_dims
@@ -872,7 +873,7 @@ class LVMOGP_GP(GP_gpflow):
         self.continuous_coords = self.lmc.continuous_coords
         self.categorical_dims = self.lmc.categorical_dims
         self.categorical_levels = self.lmc.categorical_levels
-        self.coregion_coords = self.lmc.coregion_coords
+        self.categorical_coords = self.lmc.categorical_coords
         self.filter_dims = self.lmc.filter_dims
         self.linear_cov_type = self.lmc.linear_cov_type
         self.additive = False
@@ -913,7 +914,7 @@ class LVMOGP_GP(GP_gpflow):
         idx_c = [self.dims.index(dim) for dim in self.categorical_dims]
         X_s = X[:, idx_s]
 
-        self.lmc.spatial_grid(resolution=50)
+        self.lmc.prepare_grid(resolution=50)
         means = []
         key = list(self.lmc.categorical_levels.keys())[0]
         for level in list(self.lmc.categorical_levels.values())[0]:

@@ -521,6 +521,14 @@ class Regressor(ABC):
         # Combine standardized coordinates into an ordinary tall numpy array for prediction
         points_array = np.hstack([tall_points[dim].z.values() for dim in self.dims])
 
+        if hasattr(self, 'lvmogps'):
+            idx_c = [self.dims.index(dim) for dim in self.categorical_dims]
+            points_array = np.hstack(
+                [points_array[:, :-1 * len(self.categorical_dims)].reshape(len(points_array), len(self.continuous_dims)),
+                 np.array(
+                     [self.model.H_data_mean[int(point)] for point in points_array[:, len(self.continuous_dims)]]).reshape(
+                     len(points_array), self.lvmogp_latent_dims)])
+
         # Prediction means and variance as a list of numpy vectors
         pred_mean, pred_variance = self.predict(points_array, with_noise=with_noise, **kwargs)
         self.predictions_X = points
