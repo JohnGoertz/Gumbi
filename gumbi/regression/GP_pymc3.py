@@ -300,13 +300,16 @@ class GP(Regressor):
 
         return self
 
-    def _make_continuous_cov(self, continuous_cov_func, D_in, idx_s, n_s, ℓ_μ, ℓ_σ):
+    def _make_continuous_cov(self, continuous_cov_func, D_in, idx_s, n_s, ℓ_μ, ℓ_σ, stabilize=True, eps=1e-6):
 
         def continuous_cov(suffix):
             # ℓ = pm.InverseGamma(f'ℓ_{suffix}', mu=ℓ_μ, sigma=ℓ_σ, shape=n_s)
             ℓ = pm.Gamma(f'ℓ_{suffix}', alpha=2, beta=1)
             η = pm.Gamma(f'η_{suffix}', alpha=2, beta=1)
-            return η ** 2 * continuous_cov_func(input_dim=D_in, active_dims=idx_s, ls=ℓ)
+            cov = η ** 2 * continuous_cov_func(input_dim=D_in, active_dims=idx_s, ls=ℓ)
+            if stabilize:
+                cov += pm.gp.cov.WhiteNoise(eps)
+            return cov
 
         return continuous_cov
 
@@ -470,7 +473,7 @@ class GP(Regressor):
         ℓ_μ, ℓ_σ = [stat for stat in np.array([get_ℓ_prior(dim) for dim in X_s.T]).T]
         return ℓ_μ, ℓ_σ
 
-    def _construct_kernels(self, X, continuous_kernel, seed, sparse, latent):
+    def _construct_kernels(self, X, continuous_kernel, seed, sparse, latent, stabilize=True, eps=1e-6):
 
         continuous_kernels = ['ExpQuad', 'RatQuad', 'Matern32', 'Matern52', 'Exponential', 'Cosine']
         assert_in('Continuous kernel', continuous_kernel, continuous_kernels)
@@ -482,7 +485,8 @@ class GP(Regressor):
         idxs = self._get_dim_indexes()
         ℓ_μ, ℓ_σ = self._prepare_lengthscales(X)
 
-        continuous_cov = self._make_continuous_cov(continuous_cov_func, D_in, idxs['s'], ns['s'], ℓ_μ, ℓ_σ)
+        continuous_cov = self._make_continuous_cov(continuous_cov_func, D_in, idxs['s'], ns['s'], ℓ_μ, ℓ_σ,
+                                                   stabilize=stabilize, eps=eps)
         linear_cov = self._make_linear_cov(D_in, idxs['l'], ns['l'])
         coreg_cov = self._make_coreg_cov(D_in, seed)
 
@@ -542,7 +546,7 @@ class GP(Regressor):
         self.gp_dict = gp_dict
         return gp_dict
 
-    def build_latent(self, seed=None, continuous_kernel='ExpQuad', prior_name='latent_prior'):
+    def build_latent(self, seed=None, continuous_kernel='ExpQuad', prior_name='latent_prior', eps=1e-6):
 
         if self.additive:
             raise NotImplementedError('Additive/latent GPs are not yet implemented')
@@ -557,7 +561,7 @@ class GP(Regressor):
         self.sparse = False
         self.latent = True
 
-        gp_dict = self._construct_kernels(X, continuous_kernel, seed, sparse=False, latent=True)
+        gp_dict = self._construct_kernels(X, continuous_kernel, seed, sparse=False, latent=True, stabilize=True, eps=eps)
 
         with self.model:
             self.prior = gp_dict['total'].prior(prior_name, X=X)
