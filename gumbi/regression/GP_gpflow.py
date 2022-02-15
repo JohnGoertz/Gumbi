@@ -756,7 +756,7 @@ class GP_gpflow(Regressor):
 
             gp_kws = {}
 
-        pm_gp.likelihood.variance.prior = tfp.distributions.InverseGamma(to_default_float(2), to_default_float(1))
+        pm_gp.likelihood.variance.prior = tfp.distributions.Exponential(to_default_float(1))
         gp_dict = {'total': pm_gp}
         # So I think this is just adding dimensions Not sure why
         # Construct a spatial+coregion kernel for each coregion_dim, then combine them additively
@@ -960,8 +960,7 @@ class LVMOGP_GP(GP_gpflow):
                                                         (len(list(self.lmc.categorical_levels.values())[0]),
                                                          self.lvmogp_latent_dims))
                                                     )
-                gplvm.likelihood.variance.prior = tfp.distributions.InverseGamma(to_default_float(2),
-                                                                                 to_default_float(1))
+                gplvm.likelihood.variance.prior = tfp.distributions.Exponential(to_default_float(1))
                 opt = gpflow.optimizers.Scipy()
                 maxiter = ci_niter(2000)
                 res = opt.minimize(
@@ -1085,8 +1084,7 @@ class LVMOGP_GP(GP_gpflow):
                              inducing_variable=None,
                              H_prior_mean=None,
                              H_prior_var=None, )
-                lvm.likelihood.variance.prior = tfp.distributions.InverseGamma(to_default_float(2),
-                                                                               to_default_float(1))
+                lvm.likelihood.variance.prior = tfp.distributions.Exponential(to_default_float(1))
                 # gp_dict = {'total': lvm}
                 # self.gp_dict = gp_dict
                 # self.model = lvm
