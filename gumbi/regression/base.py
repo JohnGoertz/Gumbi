@@ -463,6 +463,51 @@ class Regressor(ABC):
         if self.predictions is None:
             raise ValueError('No predictions found. Run self.predict_grid or related method first.')
 
+    def _parse_prediction_output(self, output):
+        if self.out_col in self.categorical_dims:
+            # Multiple parameters are possible, determine which ones to predict
+            if output is None:
+                # predict all parameters in model
+                output = self.categorical_levels[self.out_col]
+            elif isinstance(output, list):
+                assert_is_subset('Outputs', output, self.categorical_levels[self.out_col])
+            elif isinstance(output, str):
+                output = [output]
+                assert_is_subset('Outputs', output, self.categorical_levels[self.out_col])
+            else:
+                raise ValueError('"output" must be list, string, or None')
+        else:
+            # If self.out_col is not in categorical_dims, it must be in filter_dims, and only one is possible
+            output = self.filter_dims[self.out_col]
+
+        return output
+
+    def _prepare_points_for_prediction(self, points: ParameterArray, output):
+
+        points = np.atleast_1d(points)
+        assert points.ndim == 1
+        assert set(self.dims) - set([self.out_col]) == set(points.names), \
+            'All model dimensions must be present in "points" parray.'
+
+        if self.out_col in self.categorical_dims:
+            # Multiple parameters are possible, determine which ones to predict
+
+            # Get model coordinates for each output to be predicted
+            param_coords = [self.categorical_coords[self.out_col][p] for p in output]
+
+            # Convert input points to tall array and tile once for each output, adding the respective coordinate
+            tall_points = parray.vstack([points.add_layers(**{self.out_col: coord})[:, None] for coord in param_coords])
+        else:
+            # If self.out_col is not in categorical_dims, it must be in filter_dims, and only one is possible
+            # Convert input points to tall array
+            param_coords = None
+            tall_points = points[:, None]
+
+        # Combine standardized coordinates into an ordinary tall numpy array for prediction
+        points_array = np.hstack([tall_points[dim].z.values() for dim in self.dims])
+
+        return points_array, tall_points, param_coords
+
     def predict_points(self, points, output=None, with_noise=True, **kwargs):
         """Make predictions at supplied points
 
@@ -483,37 +528,8 @@ class Regressor(ABC):
             Predictions as a `uparray`
         """
 
-        points = np.atleast_1d(points)
-        assert points.ndim == 1
-        assert set(self.dims) - set([self.out_col]) == set(points.names), \
-            'All model dimensions must be present in "points" parray.'
-
-        if self.out_col in self.categorical_dims:
-            # Multiple parameters are possible, determine which ones to predict
-            if output is None:
-                # predict all parameters in model
-                output = self.categorical_levels[self.out_col]
-            elif isinstance(output, list):
-                assert_is_subset('Outputs', output, self.categorical_levels[self.out_col])
-            elif isinstance(output, str):
-                output = [output]
-                assert_is_subset('Outputs', output, self.categorical_levels[self.out_col])
-            else:
-                raise ValueError('"output" must be list, string, or None')
-
-            # Get model coordinates for each output to be predicted
-            param_coords = [self.categorical_coords[self.out_col][p] for p in output]
-
-            # Convert input points to tall array and tile once for each output, adding the respective coordinate
-            tall_points = parray.vstack([points.add_layers(**{self.out_col: coord})[:, None] for coord in param_coords])
-        else:
-            # If self.out_col is not in categorical_dims, it must be in filter_dims, and only one is possible
-            output = self.filter_dims[self.out_col]
-            # Convert input points to tall array
-            tall_points = points[:, None]
-
-        # Combine standardized coordinates into an ordinary tall numpy array for prediction
-        points_array = np.hstack([tall_points[dim].z.values() for dim in self.dims])
+        output = self._parse_prediction_output(output)
+        points_array, tall_points, param_coords = self._prepare_points_for_prediction(points, output=output)
 
         # Prediction means and variance as a list of numpy vectors
         pred_mean, pred_variance = self.predict(points_array, with_noise=with_noise, **kwargs)
@@ -655,6 +671,8 @@ class Regressor(ABC):
 
         Parameters
         ----------
+        output : str or list of str, optional
+            Variable(s) for which to make predictions
         categorical_levels : dict, optional
             Level for each :attr:`categorical_dims` at which to make prediction
         with_noise : bool, default True

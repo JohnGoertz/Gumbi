@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 
 import pymc3 as pm
+import arviz as az
 import theano.tensor as tt
 
 from gumbi.utils.misc import assert_in, assert_is_subset
@@ -632,3 +633,98 @@ class GP(Regressor):
                                                            pred_noise=with_noise, **kwargs)
 
         return predictions
+
+    def draw_point_samples(self, points, source=None, output=None, var_name='posterior_samples', additive_level='total', increment_var=True):
+        """Draw posterior samples at supplied points
+
+        Parameters
+        ----------
+        points : ParameterArray
+            1-D ParameterArray vector of coordinates for prediction, must have one layer per ``self.dims``
+        output : str or list of str, optional
+            Variable for which to make predictions
+        source : {None, dict, az.data.inference_data.InferenceData}
+            GP parameters for which to draw samples. Should be the result of :meth:`find_MAP`, :meth:`sample`, or _None_.
+        var_name : str, default "posterior_samples"
+            Name to assign new variable to contain conditional predictions.
+        additive_level : str, default "total"
+            Level of additive GP at which to make predictions.
+        increment_var : bool, default True
+            Whether to append '_' to the end of _var_name_ if it already exists in model.
+
+        Returns
+        -------
+        samples : parray
+            Samples as a 'Parray'
+        """
+
+        output = self._parse_prediction_output(output)
+        if len(output) > 1:
+            raise NotImplementedError('Drawing correlated samples of multiple outputs is not yet implemented.')
+        points_array, tall_points, param_coords = self._prepare_points_for_prediction(points, output=output)
+
+        if source is None:
+            if self.trace is None and self.MAP is None:
+                raise ValueError('"Source" of predictions must be supplied if GP object has no trace or MAP stored.')
+            elif self.trace is not None and self.MAP is not None:
+                raise ValueError('"Source" of predictions must be supplied if GP object has both trace and MAP stored.')
+            elif self.MAP is not None:
+                source = [self.MAP]
+            elif self.trace is not None:
+                source = self.trace
+
+        if var_name in [v.name for v in self.model.vars]:
+            if increment_var:
+                var_name += '_'
+            else:
+                raise ValueError(f'The variable name "{var_name}" already exists in model.')
+
+        with self.model:
+            _ = self.gp_dict[additive_level].conditional(var_name, points_array)
+
+        with self.model:
+            samples = pm.sample_posterior_predictive(source, var_names=[var_name])
+
+        self.predictions = self.parray(**{var_name: samples[var_name]}, stdzd=True)
+        self.predictions_X = points
+
+        return self.predictions
+
+    def draw_grid_samples(self, source=None, output=None, categorical_levels=None, var_name='posterior_samples',
+                          additive_level='total', increment_var=True):
+        """Draw posterior samples at points defined by :meth:`prepare_grid`.
+
+        Parameters
+        ----------
+        source : {None, dict, az.data.inference_data.InferenceData}
+            GP parameters for which to draw samples. Should be the result of :meth:`find_MAP`, :meth:`sample`, or _None_.
+        output : str or list of str, optional
+            Variable(s) for which to make predictions
+        categorical_levels : dict, optional
+            Level for each :attr:`categorical_dims` at which to make prediction
+        var_name : str, default "posterior_samples"
+            Name to assign new variable to contain conditional predictions.
+        additive_level : str, default "total"
+            Level of additive GP at which to make predictions.
+        increment_var : bool, default True
+            Whether to append '_' to the end of _var_name_ if it already exists in model.
+
+        Returns
+        -------
+        samples : ParameterArray
+            Samples as a 'Parray' reshaped into a grid with _len(:attr:`continuous_dims`)_ dimensions
+        """
+
+        if self.grid_points is None:
+            raise ValueError('Grid must first be specified with `prepare_grid`')
+
+        points = self.grid_points
+        if self.categorical_dims:
+            points = self.append_categorical_points(points, categorical_levels=categorical_levels)
+
+        samples = self.draw_point_samples(points=points, output=output, source=source, var_name=var_name,
+                                          additive_level=additive_level, increment_var=increment_var)
+        self.predictions = samples.reshape(-1, *self.grid_parray.shape)
+        self.predictions_X = self.predictions_X.reshape(self.grid_parray.shape)
+
+        return self.predictions
