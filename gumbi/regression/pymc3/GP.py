@@ -15,7 +15,7 @@ from gumbi.arrays import ParameterArray as parray
 from gumbi.arrays import UncertainParameterArray as uparray
 from gumbi.arrays import MVUncertainParameterArray as mvuparray
 
-from .base import Regressor
+from ..base import Regressor
 
 __all__ = ['GP']
 
