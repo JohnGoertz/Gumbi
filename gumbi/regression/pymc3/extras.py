@@ -1,0 +1,45 @@
+from .GP import *
+
+import numpy as np
+import pandas as pd
+
+import pymc3 as pm
+import arviz as az
+
+from functools import wraps
+
+class GPC(GP):
+
+    @wraps(GP.build_model)
+    def build_model(self, seed=None, continuous_kernel='ExpQuad', heteroskedastic_inputs=False,
+                    heteroskedastic_outputs=False, sparse=False, n_u=100):
+
+        if heteroskedastic_inputs:
+            raise NotImplementedError('The GP Classifier does not support heteroskedastic inputs.')
+        if heteroskedastic_outputs:
+            raise NotImplementedError('The GP Classifier does not support heteroskedastic outputs.')
+        if sparse:
+            raise NotImplementedError('The GP Classifier does not support sparse structure (yet).')
+
+        self.build_latent(seed=seed, continuous_kernel=continuous_kernel)
+
+        _, y = self.get_shaped_data('mean')
+
+        with self.model:
+            f = self.prior
+
+            # logit link and Bernoulli likelihood
+            p = pm.Deterministic("p", pm.math.invlogit(f))
+            _ = pm.Bernoulli("y", p=p, observed=y)
+
+        return self
+
+    @wraps(GP.draw_point_samples)
+    def draw_point_samples(self, points, source=None, output=None, var_name='posterior_samples', additive_level='total',
+                           increment_var=True):
+
+        # A
+        self.stdzr.logit_vars += [var_name]
+
+        return super(GPC, self).draw_point_samples(points, source=source, output=output, var_name=var_name,
+                                                   additive_level=additive_level, increment_var=increment_var)
