@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # ---
 # jupyter:
 #   jupytext:
@@ -9,6 +10,10 @@
 #       format_name: percent
 #       format_version: '1.3'
 #       jupytext_version: 1.11.2
+#   kernelspec:
+#     display_name: Python [conda env:gumbi]
+#     language: python
+#     name: conda-env-gumbi-py
 # ---
 
 # %% [markdown]
@@ -142,10 +147,10 @@ samples_df = pd.concat(
     ignore_index=True)
 
 sns.pairplot(samples_df, hue='horsepower', kind='kde', corner=True, plot_kws={'levels': 1});
-        
+
 
 # %% [markdown]
-# ## Multi-output multi-input regression
+# ## Multi-input multi-output regression
 
 # %%
 gp.fit(outputs=['mpg', 'acceleration'], categorical_dims=['origin'], continuous_dims=['horsepower'], linear_dims=['horsepower']);

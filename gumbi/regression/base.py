@@ -424,7 +424,7 @@ class Regressor(ABC):
         if self.out_col in self.dims:
             ordered_outputs = {k: v for k, v in sorted(self.coords[self.out_col].items(), key=lambda item: item[1])}
             y = np.hstack([self.y.z[output+'_z'].values() for output in ordered_outputs.keys()])
-            X = np.atleast_2d(self.X)
+            X = self.X[:, None]  # convert to column vector
             X = parray.vstack([X.add_layers(**{self.out_col: coord}) for coord in ordered_outputs.values()])
             X = np.atleast_2d(np.column_stack([X[dim].z.values().squeeze() for dim in self.dims]))
         else:
