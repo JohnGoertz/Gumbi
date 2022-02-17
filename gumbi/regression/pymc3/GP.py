@@ -301,11 +301,12 @@ class GP(Regressor):
 
         return self
 
-    def _make_continuous_cov(self, continuous_cov_func, D_in, idx_s, n_s, ℓ_μ, ℓ_σ, stabilize=True, eps=1e-6):
+    def _make_continuous_cov(self, continuous_cov_func, D_in, idx_s, n_s, ℓ_μ, ℓ_σ, ARD=True, stabilize=True, eps=1e-6):
 
         def continuous_cov(suffix):
-            # ℓ = pm.InverseGamma(f'ℓ_{suffix}', mu=ℓ_μ, sigma=ℓ_σ, shape=n_s)
-            ℓ = pm.Gamma(f'ℓ_{suffix}', alpha=2, beta=1)
+            shape = n_s if ARD else 1
+            # ℓ = pm.InverseGamma(f'ℓ_{suffix}', mu=ℓ_μ, sigma=ℓ_σ, shape=shape)
+            ℓ = pm.Gamma(f'ℓ_{suffix}', alpha=2, beta=1, shape=shape)
             η = pm.Gamma(f'η_{suffix}', alpha=2, beta=1)
             cov = η ** 2 * continuous_cov_func(input_dim=D_in, active_dims=idx_s, ls=ℓ)
             if stabilize:
@@ -336,7 +337,8 @@ class GP(Regressor):
     # TODO: add full probabilistic model description to docstring
     # TODO: allow dimension-specific continuous kernel specification
     # TODO: allow single multi-dimensional continuous kernel rather than independent kernels per dimension
-    def build_model(self, seed=None, continuous_kernel='ExpQuad', heteroskedastic_inputs=False, heteroskedastic_outputs=True, sparse=False, n_u=100):
+    def build_model(self, seed=None, continuous_kernel='ExpQuad', heteroskedastic_inputs=False,
+                    heteroskedastic_outputs=True, sparse=False, n_u=100, ARD=True):
         r"""Compile a marginalized pymc3 model for the GP.
 
         Each dimension in :attr:`continuous_dims` is combined in an ExpQuad kernel with a principled
@@ -361,6 +363,10 @@ class GP(Regressor):
             Whether to use a `sparse approximation`_ to the GP.
         n_u: int, default 100
             Number of inducing points to use for the sparse approximation, if required.
+        ARD: bool, default True
+            Whether to use "Automatic Relevance Determination" in the continuous kernel. If _True_, each continuous
+            dimension receives its own lengthscale; otherwise a single lengthscale is used for all continuous
+            dimensions.
 
         Returns
         -------
@@ -392,7 +398,7 @@ class GP(Regressor):
             'n_u': n_u,
         }
 
-        gp_dict = self._construct_kernels(X, continuous_kernel, seed, sparse, latent=False)
+        gp_dict = self._construct_kernels(X, continuous_kernel, seed, sparse, latent=False, ARD=ARD)
 
         with self.model:
 
@@ -474,7 +480,7 @@ class GP(Regressor):
         ℓ_μ, ℓ_σ = [stat for stat in np.array([get_ℓ_prior(dim) for dim in X_s.T]).T]
         return ℓ_μ, ℓ_σ
 
-    def _construct_kernels(self, X, continuous_kernel, seed, sparse, latent, stabilize=True, eps=1e-6):
+    def _construct_kernels(self, X, continuous_kernel, seed, sparse, latent, ARD=True, stabilize=True, eps=1e-6):
 
         continuous_kernels = ['ExpQuad', 'RatQuad', 'Matern32', 'Matern52', 'Exponential', 'Cosine']
         assert_in('Continuous kernel', continuous_kernel, continuous_kernels)
@@ -487,7 +493,7 @@ class GP(Regressor):
         ℓ_μ, ℓ_σ = self._prepare_lengthscales(X)
 
         continuous_cov = self._make_continuous_cov(continuous_cov_func, D_in, idxs['s'], ns['s'], ℓ_μ, ℓ_σ,
-                                                   stabilize=stabilize, eps=eps)
+                                                   ARD=ARD, stabilize=stabilize, eps=eps)
         linear_cov = self._make_linear_cov(D_in, idxs['l'], ns['l'])
         coreg_cov = self._make_coreg_cov(D_in, seed)
 
@@ -547,7 +553,7 @@ class GP(Regressor):
         self.gp_dict = gp_dict
         return gp_dict
 
-    def build_latent(self, seed=None, continuous_kernel='ExpQuad', prior_name='latent_prior', eps=1e-6):
+    def build_latent(self, seed=None, continuous_kernel='ExpQuad', prior_name='latent_prior', ARD=True, eps=1e-6):
 
         if self.additive:
             raise NotImplementedError('Additive/latent GPs are not yet implemented')
@@ -562,7 +568,8 @@ class GP(Regressor):
         self.sparse = False
         self.latent = True
 
-        gp_dict = self._construct_kernels(X, continuous_kernel, seed, sparse=False, latent=True, stabilize=True, eps=eps)
+        gp_dict = self._construct_kernels(X, continuous_kernel, seed, sparse=False, latent=True, ARD=ARD,
+                                          stabilize=True, eps=eps)
 
         with self.model:
             self.prior = gp_dict['total'].prior(prior_name, X=X)
