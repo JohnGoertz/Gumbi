@@ -2,6 +2,7 @@ recursive-include docs/source *.pkl *.ipynb
 recursive-include gumbi *.pkl *.mplstyle
 recursive-exclude docs/ *.ipynb_checkpoints/*
 
+include VERSION
 include *.txt
 include docs/*.txt
 include docs/source/conf.py
