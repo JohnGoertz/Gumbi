@@ -233,7 +233,7 @@ class GP(Regressor):
 
     def fit(self, outputs=None, linear_dims=None, continuous_dims=None, continuous_levels=None, continuous_coords=None,
             categorical_dims=None, categorical_levels=None, additive=False, seed=None, heteroskedastic_inputs=False,
-            heteroskedastic_outputs=True, sparse=False, n_u=100, **MAP_kwargs):
+            heteroskedastic_outputs=True, sparse=False, n_u=100, ARD=True, **MAP_kwargs):
         """Fits a GP surface
 
         Parses inputs, compiles a Pymc3 model, then finds the MAP value for the hyperparameters. `{}_dims` arguments
@@ -281,6 +281,10 @@ class GP(Regressor):
             Number of inducing points to use for the sparse approximation, if required.
         **MAP_kwargs
             Additional keyword arguments passed to :func:`pm.find_MAP`.
+        ARD: bool, default True
+            Whether to use "Automatic Relevance Determination" in the continuous kernel. If _True_, each continuous
+            dimension receives its own lengthscale; otherwise a single lengthscale is used for all continuous
+            dimensions.
 
         Returns
         -------
@@ -295,7 +299,7 @@ class GP(Regressor):
         self.build_model(seed=seed,
                          heteroskedastic_inputs=heteroskedastic_inputs,
                          heteroskedastic_outputs=heteroskedastic_outputs,
-                         sparse=sparse, n_u=n_u)
+                         sparse=sparse, n_u=n_u, ARD=True)
 
         self.find_MAP(**MAP_kwargs)
 
@@ -303,8 +307,8 @@ class GP(Regressor):
 
     def _make_continuous_cov(self, continuous_cov_func, D_in, idx_s, n_s, ℓ_μ, ℓ_σ, ARD=True, stabilize=True, eps=1e-6):
 
+        shape = n_s if ARD else 1
         def continuous_cov(suffix):
-            shape = n_s if ARD else 1
             # ℓ = pm.InverseGamma(f'ℓ_{suffix}', mu=ℓ_μ, sigma=ℓ_σ, shape=shape)
             ℓ = pm.Gamma(f'ℓ_{suffix}', alpha=2, beta=1, shape=shape)
             η = pm.Gamma(f'η_{suffix}', alpha=2, beta=1)
