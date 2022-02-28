@@ -124,20 +124,21 @@ class Standardizer(dict):
             log_vars = [log_vars] if isinstance(log_vars, str) else log_vars
             if not isinstance(log_vars, list):
                 raise TypeError('log_vars must be a list or str')
-            self._transforms |= {var: [np.log, np.exp] for var in log_vars}
+            self._transforms.update({var: [np.log, np.exp] for var in log_vars})
         if logit_vars is not None:
             logit_vars = [logit_vars] if isinstance(logit_vars, str) else logit_vars
             if not isinstance(logit_vars, list):
                 raise TypeError('logit_vars must be a list or str')
-            self._transforms |= {var: [logit, expit] for var in logit_vars}
+            self._transforms.update({var: [logit, expit] for var in logit_vars})
         self._log_vars = log_vars if log_vars is not None else []
         self._logit_vars = logit_vars if logit_vars is not None else []
 
     def __or__(self, __dct) -> Standardizer:
-        new_dct = super().__or__(__dct)
+        # new_dct = super().__or__(__dct)  # Use when Python>=3.9
+        new_dct = {**self, **__dct}
         stdzr = Standardizer(**new_dct)
         if isinstance(__dct, Standardizer):
-            stdzr.transforms = self.transforms | __dct.transforms
+            stdzr.transforms = {**self.transforms, **__dct.transforms}  # Fix once Python >= 3.9
         else:
             stdzr.transforms = self.transforms
         return stdzr
@@ -167,7 +168,7 @@ class Standardizer(dict):
         if not isinstance(var_list, list):
             raise TypeError('log_vars must be a list or str')
         self._log_vars = var_list
-        self._transforms |= {var: [np.log, np.exp] for var in var_list}
+        self._transforms.update({var: [np.log, np.exp] for var in var_list})  # Fix once Python >= 3.9
 
     @property
     def logit_vars(self) -> list[str]:
@@ -180,7 +181,7 @@ class Standardizer(dict):
         if not isinstance(var_list, list):
             raise TypeError('logit_vars must be a list or str')
         self._logit_vars = var_list
-        self._transforms |= {var: [logit, expit] for var in var_list}
+        self._transforms.update({var: [logit, expit] for var in var_list})  # Fix once Python >= 3.9
 
     @property
     def transforms(self) -> dict:
@@ -232,7 +233,8 @@ class Standardizer(dict):
         float, tuple, or pd.Series
             Transformed parameter, (mean, variance) of untransformed distribution, or untransformed Series
         """
-        if isinstance(series := name, pd.Series):
+        if isinstance(name, pd.Series):
+            series=name
             return self._transform_value(series.name, series)
         elif μ is None:
             raise ValueError('μ cannot be None')
@@ -258,7 +260,8 @@ class Standardizer(dict):
         float, tuple, or pd.Series
             Untransformed parameter, (mean, variance) of untransformed distribution, or untransformed Series
         """
-        if isinstance(series := name, pd.Series):
+        if isinstance(name, pd.Series):
+            series = name
             return self._untransform_value(series.name, series)
         if σ2 is None:
             return self._untransform_value(name, μ)
@@ -283,7 +286,8 @@ class Standardizer(dict):
             Standardized parameter, (mean, variance) of standardized distribution, or standardized Series
         """
 
-        if isinstance(series := name, pd.Series):
+        if isinstance(name, pd.Series):
+            series = name
             return self._stdz_value(series.name, series)
         if σ2 is None:
             return self._stdz_value(name, μ)
@@ -308,7 +312,8 @@ class Standardizer(dict):
             Unstandardized parameter, (mean, variance) of unstandardized distribution, or unstandardized Series
         """
 
-        if isinstance(series := name, pd.Series):
+        if isinstance(name, pd.Series):
+            series = name
             return self._unstdz_value(series.name, series)
         if σ2 is None:
             return self._unstdz_value(name, μ)
@@ -766,4 +771,4 @@ class DataSet:
 
     def update_stdzr(self):
         """Updates internal :class:`Standardizer` with current data, :attr:`log_vars`, and :attr:`logit_vars`."""
-        self.stdzr |= Standardizer.from_DataFrame(self.wide, log_vars=self.log_vars, logit_vars=self.logit_vars)
+        self.stdzr.update(Standardizer.from_DataFrame(self.wide, log_vars=self.log_vars, logit_vars=self.logit_vars))  # Fix once Python >= 3.9
