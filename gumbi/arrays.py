@@ -235,7 +235,7 @@ class LayeredArray(np.ndarray):
         default = super().__getitem__(item)
         if isinstance(item, str):
             arrays = {item: default}
-        elif isinstance(item, int) or (isinstance(item, tuple) and all(isinstance(val, int) for val in item)):
+        elif isinstance(item, (int, np.int32, np.int64)) or (isinstance(item, tuple) and all(isinstance(val, int) for val in item)):
             arrays = {name: value for name, value in zip(default.dtype.names, default)}
         elif isinstance(item, slice):
             arrays = {layer.names[0]: layer.values() for layer in default.as_list()}
@@ -380,7 +380,7 @@ class ParameterArray(LayeredArray):
         default = super(LayeredArray, self).__getitem__(item)
         if isinstance(item, str):
             arrays = {item: default}
-        elif isinstance(item, int) or (isinstance(item, tuple) and all(isinstance(val, int) for val in item)):
+        elif isinstance(item, (int, np.int32, np.int64)) or (isinstance(item, tuple) and all(isinstance(val, int) for val in item)):
             arrays = {name: value for name, value in zip(default.dtype.names, default)}
         elif isinstance(item, slice):
             arrays = {layer.names[0]: layer.values() for layer in default.as_list()}
@@ -733,7 +733,7 @@ class UncertainArray(np.ndarray):
 
     def __getitem__(self, item):
         default = super().__getitem__(item)
-        if isinstance(item, int) or (isinstance(item, tuple) and all(isinstance(val, int) for val in item)):
+        if isinstance(item, (int, np.int32, np.int64)) or (isinstance(item, tuple) and all(isinstance(val, int) for val in item)):
             arrays = {name: value for name, value in zip(default.dtype.names, default)}
         elif isinstance(item, slice):
             # arrays = {layer.names[0]: layer.values() for layer in default.as_list()}
@@ -1077,7 +1077,7 @@ class UncertainParameterArray(UncertainArray):
 
     def __getitem__(self, item):
         default = super(UncertainArray, self).__getitem__(item)
-        if isinstance(item, int) or (isinstance(item, tuple) and all(isinstance(val, int) for val in item)):
+        if isinstance(item, (int, np.int32, np.int64)) or (isinstance(item, tuple) and all(isinstance(val, int) for val in item)):
             arrays = {name: value for name, value in zip(default.dtype.names, default)}
         elif isinstance(item, slice):
             # arrays = {layer.names[0]: layer.values() for layer in default.as_list()}
@@ -1257,7 +1257,7 @@ class MVUncertainParameterArray(np.ndarray):
 
     def __getitem__(self, item):
         default = super().__getitem__(item)
-        if isinstance(item, int) or (isinstance(item, tuple) and all(isinstance(val, int) for val in item)):
+        if isinstance(item, (int, np.int32, np.int64)) or (isinstance(item, tuple) and all(isinstance(val, int) for val in item)):
             arrays = [self.get(name)[item] for name in self.names]
         elif isinstance(item, slice):
             # arrays = [self.get(name)[item] for name in self.names]

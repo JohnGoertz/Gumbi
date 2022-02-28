@@ -233,7 +233,7 @@ class GP(Regressor):
 
     def fit(self, outputs=None, linear_dims=None, continuous_dims=None, continuous_levels=None, continuous_coords=None,
             categorical_dims=None, categorical_levels=None, additive=False, seed=None, heteroskedastic_inputs=False,
-            heteroskedastic_outputs=True, sparse=False, n_u=100, **MAP_kwargs):
+            heteroskedastic_outputs=True, sparse=False, n_u=100, ARD=True, **MAP_kwargs):
         """Fits a GP surface
 
         Parses inputs, compiles a Pymc3 model, then finds the MAP value for the hyperparameters. `{}_dims` arguments
@@ -279,8 +279,16 @@ class GP(Regressor):
             Whether to use a `sparse approximation`_ to the GP.
         n_u: int, default 100
             Number of inducing points to use for the sparse approximation, if required.
+        ARD: bool, default True
+            Whether to use "Automatic Relevance Determination" in the continuous kernel. If _True_, each continuous
+            dimension receives its own lengthscale; otherwise a single lengthscale is used for all continuous
+            dimensions.
         **MAP_kwargs
             Additional keyword arguments passed to :func:`pm.find_MAP`.
+        ARD: bool, default True
+            Whether to use "Automatic Relevance Determination" in the continuous kernel. If _True_, each continuous
+            dimension receives its own lengthscale; otherwise a single lengthscale is used for all continuous
+            dimensions.
 
         Returns
         -------
@@ -295,7 +303,7 @@ class GP(Regressor):
         self.build_model(seed=seed,
                          heteroskedastic_inputs=heteroskedastic_inputs,
                          heteroskedastic_outputs=heteroskedastic_outputs,
-                         sparse=sparse, n_u=n_u)
+                         sparse=sparse, n_u=n_u, ARD=ARD)
 
         self.find_MAP(**MAP_kwargs)
 
@@ -303,8 +311,8 @@ class GP(Regressor):
 
     def _make_continuous_cov(self, continuous_cov_func, D_in, idx_s, n_s, ℓ_μ, ℓ_σ, ARD=True, stabilize=True, eps=1e-6):
 
+        shape = n_s if ARD else 1
         def continuous_cov(suffix):
-            shape = n_s if ARD else 1
             # ℓ = pm.InverseGamma(f'ℓ_{suffix}', mu=ℓ_μ, sigma=ℓ_σ, shape=shape)
             ℓ = pm.Gamma(f'ℓ_{suffix}', alpha=2, beta=1, shape=shape)
             η = pm.Gamma(f'η_{suffix}', alpha=2, beta=1)
@@ -641,7 +649,17 @@ class GP(Regressor):
 
         return predictions
 
-    def draw_point_samples(self, points, source=None, output=None, var_name='posterior_samples', additive_level='total', increment_var=True):
+    def _recursively_append(self, var_name, suffix='_', increment_var=True):
+        if var_name in [v.name for v in self.model.vars]:
+            if increment_var:
+                var_name += suffix
+                return self._recursively_append(var_name)
+            else:
+                raise ValueError(f'The variable name "{var_name}" already exists in model.')
+        else:
+            return var_name
+
+    def draw_point_samples(self, points, *args, source=None, output=None, var_name='posterior_samples', additive_level='total', increment_var=True, **kwargs):
         """Draw posterior samples at supplied points
 
         Parameters
@@ -680,25 +698,21 @@ class GP(Regressor):
             elif self.trace is not None:
                 source = self.trace
 
-        if var_name in [v.name for v in self.model.vars]:
-            if increment_var:
-                var_name += '_'
-            else:
-                raise ValueError(f'The variable name "{var_name}" already exists in model.')
+        var_name = self._recursively_append(var_name, increment_var=increment_var)
 
         with self.model:
             _ = self.gp_dict[additive_level].conditional(var_name, points_array)
 
         with self.model:
-            samples = pm.sample_posterior_predictive(source, var_names=[var_name])
+            samples = pm.sample_posterior_predictive(*args, source, var_names=[var_name], **kwargs)
 
         self.predictions = self.parray(**{var_name: samples[var_name]}, stdzd=True)
         self.predictions_X = points
 
         return self.predictions
 
-    def draw_grid_samples(self, source=None, output=None, categorical_levels=None, var_name='posterior_samples',
-                          additive_level='total', increment_var=True):
+    def draw_grid_samples(self, *args, source=None, output=None, categorical_levels=None, var_name='posterior_samples',
+                          additive_level='total', increment_var=True, **kwargs):
         """Draw posterior samples at points defined by :meth:`prepare_grid`.
 
         Parameters
@@ -729,8 +743,8 @@ class GP(Regressor):
         if self.categorical_dims:
             points = self.append_categorical_points(points, categorical_levels=categorical_levels)
 
-        samples = self.draw_point_samples(points=points, output=output, source=source, var_name=var_name,
-                                          additive_level=additive_level, increment_var=increment_var)
+        samples = self.draw_point_samples(*args, points=points, output=output, source=source, var_name=var_name,
+                                          additive_level=additive_level, increment_var=increment_var, **kwargs)
         self.predictions = samples.reshape(-1, *self.grid_parray.shape)
         self.predictions_X = self.predictions_X.reshape(self.grid_parray.shape)
 
