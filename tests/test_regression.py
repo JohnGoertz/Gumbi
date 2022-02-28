@@ -106,11 +106,11 @@ def test_gp_single_input_fit_parsing(example_gp):
 
 # Model building
 
-def test_gp_build_model_simple(example_gp):
-    gp = example_gp.specify_model(continuous_dims=['X', 'Y'])
-    gp.build_model()
-    assert isinstance(gp.model, pm.model.Model)
-    assert isinstance(gp.gp_dict['total'], pm.gp.gp.Marginal)
+# def test_gp_build_model_simple(example_gp):
+#     gp = example_gp.specify_model(continuous_dims=['X', 'Y'])
+#     gp.build_model()
+#     assert isinstance(gp.model, pm.model.Model)
+#     assert isinstance(gp.gp_dict['total'], pm.gp.gp.Marginal)
 
 
 # Combinatorial gp objects with various parameterizations

@@ -45,7 +45,7 @@ setup(
     long_description=long_description,
     url=URL,
     license=LICENSE,
-    python_requires='>=3.9',
+    python_requires='>=3.7',
     packages=find_packages(),
     include_package_data=True,
     install_requires=install_reqs,

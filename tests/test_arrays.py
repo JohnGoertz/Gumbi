@@ -31,7 +31,6 @@ def test_parray():
     # Parameter found in stdzr
     # TODO: Update parray test when change stdzr defaults
     rpa = parray(d=np.arange(5, 10) / 10, stdzr=stdzr)
-    assert rpa
     assert np.allclose(rpa, np.arange(5, 10) / 10)
     assert np.allclose(rpa.values(), np.arange(5, 10) / 10)
     assert np.allclose(rpa.t, np.array([-0.69314718, -0.51082562, -0.35667494, -0.22314355, -0.10536052]))
