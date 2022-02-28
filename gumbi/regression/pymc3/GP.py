@@ -279,6 +279,10 @@ class GP(Regressor):
             Whether to use a `sparse approximation`_ to the GP.
         n_u: int, default 100
             Number of inducing points to use for the sparse approximation, if required.
+        ARD: bool, default True
+            Whether to use "Automatic Relevance Determination" in the continuous kernel. If _True_, each continuous
+            dimension receives its own lengthscale; otherwise a single lengthscale is used for all continuous
+            dimensions.
         **MAP_kwargs
             Additional keyword arguments passed to :func:`pm.find_MAP`.
         ARD: bool, default True
@@ -299,7 +303,7 @@ class GP(Regressor):
         self.build_model(seed=seed,
                          heteroskedastic_inputs=heteroskedastic_inputs,
                          heteroskedastic_outputs=heteroskedastic_outputs,
-                         sparse=sparse, n_u=n_u, ARD=True)
+                         sparse=sparse, n_u=n_u, ARD=ARD)
 
         self.find_MAP(**MAP_kwargs)
 
