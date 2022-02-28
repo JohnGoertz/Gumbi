@@ -645,7 +645,17 @@ class GP(Regressor):
 
         return predictions
 
-    def draw_point_samples(self, points, source=None, output=None, var_name='posterior_samples', additive_level='total', increment_var=True):
+    def _recursively_append(self, var_name, suffix='_', increment_var=True):
+        if var_name in [v.name for v in self.model.vars]:
+            if increment_var:
+                var_name += suffix
+                return self._recursively_append(var_name)
+            else:
+                raise ValueError(f'The variable name "{var_name}" already exists in model.')
+        else:
+            return var_name
+
+    def draw_point_samples(self, points, *args, source=None, output=None, var_name='posterior_samples', additive_level='total', increment_var=True, **kwargs):
         """Draw posterior samples at supplied points
 
         Parameters
@@ -684,25 +694,21 @@ class GP(Regressor):
             elif self.trace is not None:
                 source = self.trace
 
-        if var_name in [v.name for v in self.model.vars]:
-            if increment_var:
-                var_name += '_'
-            else:
-                raise ValueError(f'The variable name "{var_name}" already exists in model.')
+        var_name = self._recursively_append(var_name, increment_var=increment_var)
 
         with self.model:
             _ = self.gp_dict[additive_level].conditional(var_name, points_array)
 
         with self.model:
-            samples = pm.sample_posterior_predictive(source, var_names=[var_name])
+            samples = pm.sample_posterior_predictive(*args, source, var_names=[var_name], **kwargs)
 
         self.predictions = self.parray(**{var_name: samples[var_name]}, stdzd=True)
         self.predictions_X = points
 
         return self.predictions
 
-    def draw_grid_samples(self, source=None, output=None, categorical_levels=None, var_name='posterior_samples',
-                          additive_level='total', increment_var=True):
+    def draw_grid_samples(self, *args, source=None, output=None, categorical_levels=None, var_name='posterior_samples',
+                          additive_level='total', increment_var=True, **kwargs):
         """Draw posterior samples at points defined by :meth:`prepare_grid`.
 
         Parameters
@@ -733,8 +739,8 @@ class GP(Regressor):
         if self.categorical_dims:
             points = self.append_categorical_points(points, categorical_levels=categorical_levels)
 
-        samples = self.draw_point_samples(points=points, output=output, source=source, var_name=var_name,
-                                          additive_level=additive_level, increment_var=increment_var)
+        samples = self.draw_point_samples(*args, points=points, output=output, source=source, var_name=var_name,
+                                          additive_level=additive_level, increment_var=increment_var, **kwargs)
         self.predictions = samples.reshape(-1, *self.grid_parray.shape)
         self.predictions_X = self.predictions_X.reshape(self.grid_parray.shape)
 
