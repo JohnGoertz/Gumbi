@@ -144,7 +144,9 @@ class ParrayPlotter:
         """Wrapper for ``matplotlib.pyplot.colorbar``; adjusts ticks and labels according to plotter settings."""
         cbar = plt.colorbar(mappable=mappable, cax=cax, ax=ax, **kwargs)
 
-        self.zlabel = self.zlabel.removesuffix('_z').removesuffix('_t')
+        if self.zlabel.endswith('_z') or self.zlabel.endswith('_t'):
+            self.zlabel = self.zlabel[:-2]
+        # self.zlabel = self.zlabel.removesuffix('_z').removesuffix('_t')  # Use when Python>=3.7
         _reformat_tick_labels(cbar, 'c', self.zlabel, self.z_scale, self.z_tick_scale, self.stdzr)
 
         label = _augment_label(self.stdzr, self.zlabel, self.z_tick_scale)
@@ -184,8 +186,8 @@ class ParrayPlotter:
         line_defaults = dict(lw=2, color=palette[-2], zorder=0)
         ci_defaults = dict(lw=2, facecolor=palette[1], zorder=-1, alpha=0.5)
 
-        line_kws = line_defaults | line_kws
-        ci_kws = ci_defaults | ci_kws
+        line_kws = {**line_defaults, **line_kws}  # Fix once Python >= 3.9
+        ci_kws = {**ci_defaults, **ci_kws}  # Fix once Python >= 3.9
 
         ax = plt.gca() if ax is None else ax
         ax.plot(self.x_, self.y_, **line_kws)
@@ -298,8 +300,13 @@ def _parse_uparray(upa, scale) -> (UncertainParameterArray | UncertainArray, str
 
 
 def _format_parray_plot_labels(ax, stdzr, xlabel, x_scale, x_tick_scale, ylabel, y_scale, y_tick_scale):
-    xlabel = xlabel.removesuffix('_z').removesuffix('_t')
-    ylabel = ylabel.removesuffix('_z').removesuffix('_t')
+
+    if xlabel.endswith('_z') or xlabel.endswith('_t'):
+        xlabel = xlabel[:-2]
+    if ylabel.endswith('_z') or ylabel.endswith('_t'):
+        ylabel = ylabel[:-2]
+    # xlabel = xlabel.removesuffix('_z').removesuffix('_t')  # Use when Python>=3.9
+    # ylabel = ylabel.removesuffix('_z').removesuffix('_t')  # Use when Python>=3.9
     _reformat_tick_labels(ax, 'x', xlabel, x_scale, x_tick_scale, stdzr)
     _reformat_tick_labels(ax, 'y', ylabel, y_scale, y_tick_scale, stdzr)
 
@@ -325,7 +332,8 @@ def _reformat_tick_labels(ax, axis, name, current, new, stdzr, sigfigs=3):
     }
 
     if current != new:
-        if (tpl := (current, new)) not in tick_setters:
+        tpl = (current, new)
+        if tpl not in tick_setters:
             raise ValueError('Cannot convert ticks between {0} and {1}'.format(*tpl))
         else:
             tick_setter = tick_setters[tpl]

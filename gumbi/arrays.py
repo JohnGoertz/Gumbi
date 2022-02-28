@@ -287,7 +287,7 @@ class LayeredArray(np.ndarray):
     def add_layers(self, **arrays):
         """Add additional layers at each index."""
         arrays_ = arrays.as_dict() if isinstance(arrays, LayeredArray) else arrays
-        return LayeredArray(**(self.as_dict() | arrays_))
+        return LayeredArray(**{**self.as_dict(), **arrays_})  # Fix once Python >= 3.9
 
 
 class ParameterArray(LayeredArray):
@@ -744,14 +744,14 @@ class UncertainArray(np.ndarray):
 
     def sum(self, axis=None, dtype=None, out=None, keepdims=False, **kwargs) -> UncertainArray:
         """Summation with uncertainty propagation"""
-        kwargs |= dict(axis=axis, dtype=dtype, out=out, keepdims=keepdims)
+        kwargs.update(dict(axis=axis, dtype=dtype, out=out, keepdims=keepdims))  # Fix once Python >= 3.9
         new = self._as_uncarray.sum(**kwargs)
         extra = {dim: np.sum(self[dim]) for dim in self.fields if dim not in ['μ', 'σ2']}
         return self._from_uncarray(self.name, new, **extra)
 
     def mean(self, axis=None, dtype=None, out=None, keepdims=False, **kwargs) -> UncertainArray:
         """Mean with uncertainty propagation"""
-        kwargs |= dict(axis=axis, dtype=dtype, out=out, keepdims=keepdims)
+        kwargs.update(dict(axis=axis, dtype=dtype, out=out, keepdims=keepdims))  # Fix once Python >= 3.9
         new = self._as_uncarray.mean(**kwargs)
         extra = {dim: np.mean(self[dim]) for dim in self.fields if dim not in ['μ', 'σ2']}
         return self._from_uncarray(self.name, new, **extra)
@@ -1042,13 +1042,13 @@ class UncertainParameterArray(UncertainArray):
 
     def sum(self, axis=None, dtype=None, out=None, keepdims=False, **kwargs):
         self._warn_if_poorly_defined()
-        kwargs |= dict(axis=axis, dtype=dtype, out=out, keepdims=keepdims)
+        kwargs.update(dict(axis=axis, dtype=dtype, out=out, keepdims=keepdims))
         z = self.z.sum(**kwargs)
         return self._from_z(z)
 
     def mean(self, axis=None, dtype=None, out=None, keepdims=False, **kwargs):
         """The natural-space distribution parameters which represent the mean of the transformed-space distributions"""
-        kwargs |= dict(axis=axis, dtype=dtype, out=out, keepdims=keepdims)
+        kwargs.update(dict(axis=axis, dtype=dtype, out=out, keepdims=keepdims))
         z = self.z.mean(**kwargs)
         return self._from_z(z)
 
@@ -1091,7 +1091,7 @@ class UncertainParameterArray(UncertainArray):
         self._warn_if_poorly_defined()
         if isinstance(other, UncertainParameterArray):
             new = self._from_t(self.t.__add__(other.t))
-            new.stdzr = Standardizer(**(self.stdzr | other.stdzr))
+            new.stdzr = Standardizer(**{**self.stdzr, **other.stdzr})  # Fix once Python >= 3.9
         else:
             new = super().__add__(other)
         return new
@@ -1101,7 +1101,7 @@ class UncertainParameterArray(UncertainArray):
         self._warn_if_poorly_defined()
         if isinstance(other, UncertainParameterArray):
             new = self._from_t(self.t.__sub__(other.t))
-            new.stdzr = Standardizer(**(self.stdzr | other.stdzr))
+            new.stdzr = Standardizer(**{**self.stdzr, **other.stdzr})  # Fix once Python >= 3.9
         else:
             new = super().__sub__(other)
         return new
@@ -1111,7 +1111,7 @@ class UncertainParameterArray(UncertainArray):
         self._warn_if_poorly_defined()
         if isinstance(other, UncertainParameterArray):
             new = self._from_t(self.t.__rsub__(other.t))
-            new.stdzr = Standardizer(**(other.stdzr | self.stdzr))
+            new.stdzr = Standardizer(**{**other.stdzr, **self.stdzr})  # Fix once Python >= 3.9
         else:
             new = super().__rsub__(other)
         return new

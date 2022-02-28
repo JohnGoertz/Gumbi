@@ -451,7 +451,7 @@ class GP(Regressor):
             gp_kws = {}
 
         def implementation(*args, **kwargs):
-            return pm_gp(*args, **(kwargs | gp_kws))
+            return pm_gp(*args, **{**kwargs, **gp_kws})  # Fix once Python >= 3.9
 
         return implementation
 
@@ -614,7 +614,7 @@ class GP(Regressor):
 
         assert self.model is not None
         with self.model:
-            self.trace = pm.sample(*args, **(defaults | kwargs))
+            self.trace = pm.sample(*args, **{**defaults, **kwargs})
 
         return self.trace
 

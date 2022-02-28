@@ -159,12 +159,12 @@ class Regressor(ABC):
     @property
     def levels(self) -> dict:
         """Dictionary of values considered within each dimension as ``{dim: [level1, level2]}``"""
-        return self.continuous_levels | self.categorical_levels
+        return {**self.continuous_levels, **self.categorical_levels}  # Fix once Python >= 3.9
 
     @property
     def coords(self) -> dict:
         """ Dictionary of numerical coordinates of each level within each dimension as ``{dim: {level: coord}}``"""
-        return self.continuous_coords | self.categorical_coords
+        return {**self.continuous_coords, **self.categorical_coords}  # Fix once Python >= 3.9
 
     ################################################################################
     # Preprocessing
@@ -273,13 +273,15 @@ class Regressor(ABC):
                     if not isinstance(v, list):
                         levels[d] = [v]
                 # Ensure each dimension specified by levels is valid
-                if (bad := [dim for dim in levels.keys() if dim not in dims]):
+                bad = [dim for dim in levels.keys() if dim not in dims]
+                if bad:
                     raise KeyError(f'Dimensions {bad} specified in *levels not found in *dims')
                 # Ensure each level is valid
-                if (bad := {k: v for k, vs in levels.items() for v in vs if v not in self.data.tidy[k].unique()}):
+                bad = {k: v for k, vs in levels.items() for v in vs if v not in self.data.tidy[k].unique()}
+                if bad:
                     raise ValueError(f'Values specified in *levels not found in tidy: {bad}')
                 # Use all levels of remaining dims
-                levels |= {dim: list(self.data.tidy[dim].unique()) for dim in dims if dim not in levels.keys()}
+                levels.update({dim: list(self.data.tidy[dim].unique()) for dim in dims if dim not in levels.keys()})  # Fix once Python >= 3.9
             else:
                 raise TypeError('`levels` must be of type str, list, or dict')
 
@@ -896,23 +898,23 @@ class Regressor(ABC):
                               categorical_dims=categorical_dims, categorical_levels=self.categorical_levels,
                               additive=self.additive)
 
-        train_specs = specifications | {
+        train_specs = {**specifications, ** {
             'continuous_levels': {dim: [lvl for lvl in lvls if lvl in train_df[dim].values]
                                   for dim, lvls in self.continuous_levels.items()},
             'categorical_levels': {dim: [lvl for lvl in lvls if lvl in train_df[dim].values]
                                    for dim, lvls in self.categorical_levels.items()},
             'continuous_coords': {dim: {lvl: coord for lvl, coord in coords.items() if lvl in train_df[dim].values}
                                   for dim, coords in self.continuous_coords.items()}
-        }
+        }}  # Fix once Python >= 3.9
 
-        test_specs = specifications | {
+        test_specs = {**specifications, ** {
             'continuous_levels': {dim: [lvl for lvl in lvls if lvl in test_df[dim].values]
                                   for dim, lvls in self.continuous_levels.items()},
             'categorical_levels': {dim: [lvl for lvl in lvls if lvl in test_df[dim].values]
                                    for dim, lvls in self.categorical_levels.items()},
             'continuous_coords': {dim: {lvl: coord for lvl, coord in coords.items() if lvl in test_df[dim].values}
                                   for dim, coords in self.continuous_coords.items()}
-        }
+        }}  # Fix once Python >= 3.9
 
         dataset_specs = dict(outputs=self.data.outputs,
                              names_column=self.data.names_column,
