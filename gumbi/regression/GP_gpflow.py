@@ -676,13 +676,13 @@ class GP_gpflow(Regressor):
 
         # these 3 functions define the different possible covariance matrices. One for X, one for linear (that can be ignored) and one for coreg
         def spatial_cov(suffix):
-
-            lengthscales = tf.convert_to_tensor(ℓ_μ, dtype=default_float(), name='X_lengthscales')
-
-            alphas = [mean ** 2 / ℓ_σ[i] + 2 for i, mean in enumerate(ℓ_μ)]
-            betas = [mean * (mean ** 2 / ℓ_σ[i] + 1) for i, mean in enumerate(ℓ_μ)]
+            Ls = [ℓ_σ[i]/5 for i, mean in enumerate(ℓ_μ)]
+            lengthscales = tf.convert_to_tensor(Ls, dtype=default_float(), name='X_lengthscales')
+            alphas = [mean ** 2 / ℓ_σ[i]**2 + 2 for i, mean in enumerate(ℓ_μ)]
+            betas = [mean * (mean ** 2 / ℓ_σ[i]**2 + 1) for i, mean in enumerate(ℓ_μ)]
             k = gpflow.kernels.RBF(lengthscales=lengthscales, active_dims=idx_s)
             k.lengthscales.prior = tfp.distributions.InverseGamma(to_default_float(alphas), to_default_float(betas))
+            k.lengthscales.prior = tfp.distributions.InverseGamma(to_default_float(2), to_default_float(1))
             k.variance.prior = tfp.distributions.Gamma(to_default_float(2), to_default_float(1))
             return k
 
@@ -757,6 +757,7 @@ class GP_gpflow(Regressor):
             gp_kws = {}
 
         pm_gp.likelihood.variance.prior = tfp.distributions.Exponential(to_default_float(1))
+        pm_gp.likelihood.variance.assign(to_default_float(np.mean(ℓ_σ) / 100))
         gp_dict = {'total': pm_gp}
         # So I think this is just adding dimensions Not sure why
         # Construct a spatial+coregion kernel for each coregion_dim, then combine them additively
@@ -784,31 +785,6 @@ class GP_gpflow(Regressor):
                 gp_dict[dim] = pm_gp(cov_func=cov, **gp_kws)
                 gp_dict['total'] += gp_dict[dim]
 
-        # From https://docs.pymc.io/notebooks/GP-Marginal.html
-        # OR a covariance function for the noise can be given
-        # noise_l = pm.Gamma("noise_l", alpha=2, beta=2)
-        # cov_func_noise = pm.gp.cov.Exponential(1, noise_l) + pm.gp.cov.WhiteNoise(sigma=0.1)
-        # y_ = gp.marginal_likelihood("y", X=X, y=y, noise=cov_func_noise)
-
-        # GP is heteroskedastic across Parameter outputs by default,
-        # but homoskedastic across spatial dimensions
-        # ? = pm.Exponential('?', lam=1)  # noise
-        # noise = pm.gp.cov.WhiteNoise(sigma=?)
-        # if heteroskedastic_inputs:
-        #     raise NotImplementedError('Heteroskedasticity over inputs is not yet implemented')
-        #     noise += spatial_cov('noise')
-        # if heteroskedastic_outputs and 'Parameter' in self.categorical_dims:
-        #     D_out = len(self.categorical_levels['Parameter'])
-        #     noise *= coreg_cov('Parameter_noise', D_out, idx_p)
-        #
-        # if sparse:
-        #     Xu = pm.gp.util.kmeans_inducing_points(n_u, X)  # inducing points
-        #     if heteroskedastic_outputs:
-        #         warnings.warn('Heteroskedasticity over outputs is not yet implemented for sparse GP. Reverting to scalar-valued noise.')
-        #     _ = gp_dict['total'].marginal_likelihood('ml', X=X, Xu=Xu, y=y, noise=?)
-        # else:
-        #     _ = gp_dict['total'].marginal_likelihood('ml', X=X, y=y, noise=noise)
-
         self.gp_dict = gp_dict
         self.model = pm_gp
         return self
@@ -820,6 +796,7 @@ class GP_gpflow(Regressor):
         assert self.model is not None
 
         maxiter = ci_niter(2000)
+
         res_LMC = gpflow.optimizers.Scipy().minimize(
             self.model.training_loss, self.model.trainable_variables, options=dict(maxiter=maxiter), method="L-BFGS-B",
         )
@@ -948,7 +925,7 @@ class LVMOGP_GP(GP_gpflow):
 
                 H_mean_init = ops.pca_reduce(tf.convert_to_tensor(lmc_means, dtype=default_float()),
                                              self.lvmogp_latent_dims)
-                H_var_init = tf.ones((len(lmc_means), self.lvmogp_latent_dims), dtype=default_float())
+                H_var_init = tf.ones((len(lmc_means), self.lvmogp_latent_dims), dtype=default_float())*0.1
 
                 gplvm = gpflow.models.BayesianGPLVM(tf.convert_to_tensor(lmc_means, dtype=default_float()),
                                                     X_data_mean=H_mean_init,
@@ -961,6 +938,7 @@ class LVMOGP_GP(GP_gpflow):
                                                          self.lvmogp_latent_dims))
                                                     )
                 gplvm.likelihood.variance.prior = tfp.distributions.Exponential(to_default_float(1))
+                gplvm.likelihood.variance.assign(to_default_float(0.01))
                 opt = gpflow.optimizers.Scipy()
                 maxiter = ci_niter(2000)
                 res = opt.minimize(
@@ -1084,7 +1062,141 @@ class LVMOGP_GP(GP_gpflow):
                              inducing_variable=None,
                              H_prior_mean=None,
                              H_prior_var=None, )
+                lvm.likelihood.variance.assign(to_default_float(np.mean(ℓ_σ) / 100))
                 lvm.likelihood.variance.prior = tfp.distributions.Exponential(to_default_float(1))
+                # gp_dict = {'total': lvm}
+                # self.gp_dict = gp_dict
+                # self.model = lvm
+                self.lvmogps.append(lvm)
+            except:
+                ValueError('LVMOGP failed to build')
+
+        if plot_BGPLVM:
+            plt.show()
+
+
+    def build_model_noGPLVM(self, seed=None, heteroskedastic_inputs=False, heteroskedastic_outputs=True, sparse=False, n_u=100,
+                    plot_BGPLVM=False, n_restarts=4):
+
+        if 'Parameter' in self.dims:
+            ordered_outputs = {k: v for k, v in sorted(self.coords['Parameter'].items(), key=lambda item: item[1])}
+            y = np.hstack([self.y.z[param + '_z'].values() for param in ordered_outputs.keys()])
+            X = np.atleast_2d(self.X)
+            X = parray.vstack([X.add_layers(Parameter=coord) for coord in ordered_outputs.values()])
+            X = np.atleast_2d(np.column_stack([X[dim].z.values().squeeze() for dim in self.dims]))
+
+        else:
+            y = self.y.z.drop('lg10_Copies_z').values().squeeze()
+            X = np.atleast_2d(np.column_stack([self.X[dim].z.values().squeeze() for dim in self.dims]))
+
+        if len(y.shape) == 1:
+            y = y.reshape(len(y), 1)
+
+        idx_s = [self.dims.index(dim) for dim in self.continuous_dims]
+        idx_c = [self.dims.index(dim) for dim in self.categorical_dims]
+        X_s = X[:, idx_s]
+
+        W = self.lmc.model.kernel.kernels[1].W.numpy()
+        kappa = self.lmc.model.kernel.kernels[1].kappa
+        B = np.dot(W, W.T) + np.diag(kappa)
+        eig_valsB, eig_vecB = np.linalg.eig(B)
+        idx_B = np.flip(np.abs(eig_valsB).argsort())
+        eig_val_reducedB = np.real(eig_valsB[idx_B][:2])
+        feature_vectorB = np.array([eig_vecB[:, i] for i in idx_B[:self.lvmogp_latent_dims]]).T
+        # v_mean = np.mean(feature_vectorB[:, 0])
+        # h_mean = np.mean(feature_vectorB[:, 1])
+        means_vector = np.mean(feature_vectorB, axis=0)
+        feature_vectorB = feature_vectorB - means_vector
+
+        for j in range(n_restarts):
+            try:
+                H_mean = tf.convert_to_tensor(feature_vectorB,
+                                                   dtype=default_float())  # initalise the latent coordinate means
+                H_var = tf.ones((len(H_mean), self.lvmogp_latent_dims), dtype=default_float())*np.random.uniform(0.001, 1.0)
+
+
+                Z = tf.random.shuffle(X)[:n_u]
+                inducing_variable = InducingPoints(Z)
+
+                if len(self.linear_dims) == 0:
+
+                    Ls = self.lmc.model.kernel.kernels[0].lengthscales.numpy().ravel().tolist() \
+                         + [np.random.uniform(0.01, 0.5)]*self.lvmogp_latent_dims
+                    lengthscales = tf.convert_to_tensor(Ls,
+                                                        dtype=default_float(), name='H_lengthscales')
+
+                else:
+
+                    Ls = self.lmc.model.kernel.kernels[0].kernels[0].lengthscales.numpy().ravel().tolist() \
+                         + [np.random.uniform(0.01, 1.5)]*self.lvmogp_latent_dims
+                    lengthscales = tf.convert_to_tensor(Ls,
+                                                        dtype=default_float(), name='H_lengthscales')
+
+                k_s = gpflow.kernels.RBF(lengthscales=lengthscales)
+
+                ℓ_μ, ℓ_σ = [stat for stat in
+                            np.array(
+                                [get_ℓ_prior(dim) for dim in X_s.T]).T]  # this gets the values for the prior on X dims
+
+                alphas = [mean ** 2 / ℓ_σ[i] + 2 for i, mean in enumerate(ℓ_μ)] + [2] * self.lvmogp_latent_dims
+                betas = [mean * (mean ** 2 / ℓ_σ[i] + 1) for i, mean in enumerate(ℓ_μ)] + [1] * self.lvmogp_latent_dims
+
+                # k_s.lengthscales.prior = tfp.distributions.InverseGamma(to_default_float(alphas),
+                #                                                         to_default_float(betas))
+                k_s.lengthscales.prior = tfp.distributions.InverseGamma(to_default_float(2),
+                                                                        to_default_float(1))
+                k_s.variance.prior = tfp.distributions.InverseGamma(to_default_float(2), to_default_float(1))
+
+                if len(self.linear_dims) > 0:
+
+                    linear_variances = self.lmc.model.kernel.kernels[0].kernels[1].variance.numpy().ravel().tolist()
+                    variances = linear_variances + [1e-3] * self.lvmogp_latent_dims
+
+                    if self.linear_cov_type == 'gpflow_linear':
+                        k_l = gpflow.kernels.Linear(variance=variances)
+                        k_l.variance.prior = tfp.distributions.HalfNormal(scale=to_default_float(10.0))
+
+                    if self.linear_cov_type == 'linear+constant':
+                        k_l = gpflow.kernels.Linear(variance=variances)
+                        k_l.variance.prior = tfp.distributions.HalfNormal(scale=to_default_float(10.0))
+
+                        c = self.lmc.model.kernel.kernels[0].kernels[2].variance.numpy().ravel().tolist()
+                        k_c = gpflow.kernels.Constant(variance=c)
+                        k_c.variance.prior = tfp.distributions.Normal(to_default_float(0.0), to_default_float(10.0))
+
+                        k_l = k_l + k_c
+
+                    if self.linear_cov_type == 'linear_offset':
+                        linear_offsets = self.lmc.model.kernel.kernels[0].kernels[1].offset.numpy().ravel().tolist()
+                        offsets = linear_offsets + [1e-3] * self.lvmogp_latent_dims
+                        k_l = kernels.Linear_offset(variance=variances, offset=offsets)
+                        k_l.variance.prior = tfp.distributions.HalfNormal(scale=to_default_float(10.0))
+                        k_l.offset.prior = tfp.distributions.Normal(to_default_float(0.0), to_default_float(10.0))
+
+                    else:
+                        ValueError('linear kernel type must be specified')
+
+                    kern = k_s + k_l
+
+                else:
+                    kern = k_s
+
+                lvm = LVMOGP(data=y,
+                             X_data=X[:, :(len(self.dims) - 1)],
+                             X_data_fn=X[:, -1],
+                             H_data_mean=H_mean,
+                             H_data_var=H_var,
+                             kernel=kern,
+                             num_inducing_variables=n_u,
+                             inducing_variable=None,
+                             H_prior_mean=None,
+                             H_prior_var=None )
+                # lvm.likelihood.variance.assign(to_default_float(np.mean(ℓ_σ) / 100))
+                # gpflow.set_trainable(lvm.kernel.lengthscales, False)
+                # lvm.likelihood.variance.assign(to_default_float(np.random.uniform(0.0001, 0.01)))
+                lvm.likelihood.variance.assign(to_default_float(0.01))
+                # lvm.likelihood.variance.prior = tfp.distributions.Exponential(to_default_float(2))
+                gpflow.set_trainable(lvm.likelihood.variance, False)
                 # gp_dict = {'total': lvm}
                 # self.gp_dict = gp_dict
                 # self.model = lvm
