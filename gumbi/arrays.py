@@ -774,7 +774,7 @@ class UncertainArray(np.ndarray):
         new = self._as_uncarray
         if isinstance(other, UncertainArray):
             new -= other._as_uncarray
-            name = self.name if self.name == other.name else f'({self.name}+{other.name})'
+            name = self.name if self.name == other.name else f'({self.name}-{other.name})'
         else:
             new -= other
             name = self.name
@@ -784,11 +784,47 @@ class UncertainArray(np.ndarray):
     def __rsub__(self, other):
         if isinstance(other, UncertainArray):
             new = other._as_uncarray
-            name = self.name if self.name == other.name else f'({self.name}+{other.name})'
+            name = self.name if self.name == other.name else f'({other.name}-{self.name})'
         else:
             new = copy.copy(other)
             name = self.name
         new -= self._as_uncarray
+        extra = {dim: np.mean(self[dim]) for dim in self.fields if dim not in ['μ', 'σ2']}
+        return self._from_uncarray(name, new, **extra)
+
+    def __mul__(self, other):
+        new = self._as_uncarray
+        if isinstance(other, UncertainArray):
+            new *= other._as_uncarray
+            name = self.name if self.name == other.name else f'({self.name}*{other.name})'
+        else:
+            new *= other
+            name = self.name
+        extra = {dim: np.mean(self[dim]) for dim in self.fields if dim not in ['μ', 'σ2']}
+        return self._from_uncarray(name, new, **extra)
+
+    def __rmul__(self, other):
+        return self.__mul__(other)
+
+    def __truediv__(self, other):
+        new = self._as_uncarray
+        if isinstance(other, UncertainArray):
+            new /= other._as_uncarray
+            name = self.name if self.name == other.name else f'({self.name}/{other.name})'
+        else:
+            new /= other
+            name = self.name
+        extra = {dim: np.mean(self[dim]) for dim in self.fields if dim not in ['μ', 'σ2']}
+        return self._from_uncarray(name, new, **extra)
+
+    def __pow__(self, other):
+        new = self._as_uncarray
+        if isinstance(other, UncertainArray):
+            new **= other._as_uncarray
+            name = self.name if self.name == other.name else f'({self.name}**{other.name})'
+        else:
+            new **= other
+            name = f'({self.name}**{other})'
         extra = {dim: np.mean(self[dim]) for dim in self.fields if dim not in ['μ', 'σ2']}
         return self._from_uncarray(name, new, **extra)
 
