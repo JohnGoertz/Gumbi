@@ -649,7 +649,8 @@ class Regressor(ABC):
             for dim in limit_dims}
 
         # Create a single n-layer n-dimensional parray for all evaluation points
-        grids = np.meshgrid(*[grid_vectors[dim] for dim in self.dims if dim in limit_dims])
+        grids = np.meshgrid(*[grid_vectors[dim] for dim in self.dims if dim in limit_dims], indexing='ij')
+        # grids[0], grids[1] = grids[1], grids[0]
         grid_parray = self.parray(**{array.names[0]: array.values() for array in grids})
 
         # Add values specified in "at" to all locations in grid_parray
@@ -664,6 +665,27 @@ class Regressor(ABC):
         self.grid_points = self.grid_parray.ravel()
 
         return grid_parray
+
+    def marginal_grids(self, *dims):
+        """Get grids corresponding to only specified dimensions
+
+        Parameters
+        ----------
+        *dims : str
+            Named dimensions along which to extract marginal grid. Must be a subset of :attr:`prediction_dims`.
+
+        Returns
+        -------
+        *grids : ParameterArray
+            Grid for each named dimension specified, in the order supplied, each with `len(dims)` dimensions.
+        """
+        if self.grid_points is None:
+            raise ValueError('Grid must first be specified with `prepare_grid`')
+        assert_is_subset('GP dims', dims, self.prediction_dims)
+
+        ordered_dims = [dim for dim in self.dims if dim in dims]
+        grids = np.meshgrid(*[self.grid_vectors[dim] for dim in ordered_dims], indexing='ij')
+        return [grids[ordered_dims.index(dim)] for dim in dims]
 
     def predict_grid(self, output=None, categorical_levels=None, with_noise=True, **kwargs):
         """Make predictions and reshape into grid.
@@ -1020,7 +1042,7 @@ class Regressor(ABC):
         kept_margins = [all_margins[dim] for dim in self.prediction_dims if dim in keep]
 
         # parray grid of original points along all "kept" dimensions
-        conditional_grid = self.parray(**{array.names[0]: array.values() for array in np.meshgrid(*kept_margins)})
+        conditional_grid = self.parray(**{array.names[0]: array.values() for array in np.meshgrid(*kept_margins, indexing='ij')})
         # Add specified value for each remaining dimension at all points, then unravel
         xi_parray = conditional_grid.add_layers(
             **{dim: np.full(conditional_grid.shape, value) for dim, value in dim_values.items()}
@@ -1030,11 +1052,13 @@ class Regressor(ABC):
         xi_pts = np.column_stack([xi_parray[dim].z.values() for dim in self.dims if dim in xi_parray.names])
 
         # Interpolate the mean and variance of the predictions
-        # Swapping the first two axes is necessary because grids were generated using meshgrid's default "ij" indexing
+        # Swapping the first two axes is necessary because grids were generated using meshgrid's "ij" indexing
         # but interpn expects "xy" indexing
-        μ_arr = np.swapaxes(self.predictions.μ, 0, 1)
+        # μ_arr = np.swapaxes(self.predictions.μ, 0, 1)
+        μ_arr = self.predictions.μ
         μi = interpn([all_margins[dim].z.values() for dim in self.dims if dim in self.prediction_dims], μ_arr, xi_pts)
-        σ2_arr = np.swapaxes(self.predictions.σ2, 0, 1)
+        # σ2_arr = np.swapaxes(self.predictions.σ2, 0, 1)
+        σ2_arr = self.predictions.σ2
         σ2i = interpn([all_margins[dim].z.values() for dim in self.dims if dim in self.prediction_dims], σ2_arr, xi_pts)
 
         conditional_prediction = self.uparray(self.predictions.name, μ=μi, σ2=σ2i).reshape(*conditional_grid.shape)
