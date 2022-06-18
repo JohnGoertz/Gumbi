@@ -1,18 +1,16 @@
 import warnings
+
 import numpy as np
-import pandas as pd
-
 import pymc3 as pm
-import arviz as az
-import theano.tensor as tt
 
-from gumbi.utils.misc import assert_in, assert_is_subset
-from gumbi.utils.gp_utils import get_ℓ_prior
 from gumbi.aggregation import DataSet
-from gumbi.arrays import *
-from gumbi.arrays import ParameterArray as parray
-from gumbi.arrays import UncertainParameterArray as uparray
-from gumbi.arrays import MVUncertainParameterArray as mvuparray
+from gumbi.arrays import (  # noqa: F401
+    MVUncertainParameterArray,
+    ParameterArray,
+    UncertainParameterArray,
+)
+from gumbi.utils.gp_utils import get_ℓ_prior
+from gumbi.utils.misc import assert_in
 
 from ..base import Regressor
 
@@ -28,20 +26,20 @@ class GP(Regressor):
 
     Notes
     -----
-    The GP class is built from a dataframe in the form of a :class:`DataSet` object. The output(s) are
-    taken from :attr:`DataSet.outputs` and the corresponding column in the tidy data frame taken from
-    :attr:`DataSet.names_column`. This column will be generically referred to as the `output_column` in this documentation,
-    but can take any value specifed when the :class:`DataSet` is constructed. The model inputs are constructed by
-    filtering this dataframe, extracting column values, and converting these to numerical input coordinates. The main
-    entry point will be :meth:`fit`, which parses the dimensions of the model with :meth:`specify_model`,
-    extracts numerical input coordinates with :meth:`get_structured_data`, compiles the Pymc3 model with
-    :meth:`build_model`, and finally learns the hyperparameters with :meth:`find_MAP`.
+    The GP class is built from a dataframe in the form of a :class:`DataSet` object. The output(s) are taken from
+    :attr:`DataSet.outputs` and the corresponding column in the tidy data frame taken from :attr:`DataSet.names_column`.
+    This column will be generically referred to as the `output_column` in this documentation, but can take any value
+    specifed when the :class:`DataSet` is constructed. The model inputs are constructed by filtering this dataframe,
+    extracting column values, and converting these to numerical input coordinates. The main entry point will be
+    :meth:`fit`, which parses the dimensions of the model with :meth:`specify_model`, extracts numerical input
+    coordinates with :meth:`get_structured_data`, compiles the Pymc3 model with :meth:`build_model`, and finally learns
+    the hyperparameters with :meth:`find_MAP`.
 
     Dimensions fall into several categories:
 
     * Filter dimensions, those with only one level, are used to subset the dataframe but are not included as explicit
-      inputs to the model. These are not specified explicitly, but rather any continuous or categorical dimension with only
-      one level is treated as a filter dimension.
+      inputs to the model. These are not specified explicitly, but rather any continuous or categorical dimension with
+      only one level is treated as a filter dimension.
 
     * Continuous dimensions are treated as explicit coordinates and given a Radial Basis Function kernel
 
@@ -55,29 +53,27 @@ class GP(Regressor):
 
     .. math::
 
-        y &\sim \text{Normal} \left( \mu, \sigma \right) \\
-        mu &\sim \mathcal{GP} \left( K \right) \\
-        K &= \left( K^\text{cont}+K^\text{lin} \right) K^\text{coreg}_\text{outputs} \prod_{n} K^\text{coreg}_{n} \\
-        K^\text{cont} &= \text{RBF} \left( \ell_{i}, \eta \right) \\
-        K^\text{lin} &= \text{LIN} \left( c_{j}, \tau \right) \\
-        K^\text{coreg} &= \text{Coreg} \left( \boldsymbol{W}, \kappa \right) \\
-        \sigma &\sim \text{Exponential} \left( 1 \right) \\
+        y &\sim \text{Normal} \left( \mu, \sigma \right) \\ mu &\sim \mathcal{GP} \left( K \right) \\ K &= \left(
+        K^\text{cont}+K^\text{lin} \right) K^\text{coreg}_\text{outputs} \prod_{n} K^\text{coreg}_{n} \\ K^\text{cont}
+        &= \text{RBF} \left( \ell_{i}, \eta \right) \\ K^\text{lin} &= \text{LIN} \left( c_{j}, \tau \right) \\
+        K^\text{coreg} &= \text{Coreg} \left( \boldsymbol{W}, \kappa \right) \\ \sigma &\sim \text{Exponential} \left( 1
+        \right) \\
 
     Where :math:`i` denotes a continuous dimension, :math:`j` denotes a linear dimension, and :math:`n` denotes a
-    categorical dimension (excluding the `output_column`). :math:`K^\text{cont}` and :math:`K^\text{lin}` each consist of a
-    joint kernel encompassing all continuous and linear dimensions, respectively, whereas :math:`K^\text{coreg}_{n}` is
-    a distinct kernel for a given categorical dimension.
+    categorical dimension (excluding the `output_column`). :math:`K^\text{cont}` and :math:`K^\text{lin}` each consist
+    of a joint kernel encompassing all continuous and linear dimensions, respectively, whereas
+    :math:`K^\text{coreg}_{n}` is a distinct kernel for a given categorical dimension.
 
     The additive model has the form:
 
     .. math::
 
         mu &\sim \mathcal{GP}\left( K^\text{global} \right) + \sum_{n} \mathcal{GP}\left( K_{n} \right) \\
-        K^\text{global} &= \left( K^\text{cont}+K^\text{lin} \right) K^\text{coreg}_\text{outputs} \\
-        K_{n} &= \left( K^\text{cont}_{n}+K^\text{lin}_{n} \right) K^\text{coreg}_\text{outputs} K^\text{coreg}_{n} \\
+        K^\text{global} &= \left( K^\text{cont}+K^\text{lin} \right) K^\text{coreg}_\text{outputs} \\ K_{n} &= \left(
+        K^\text{cont}_{n}+K^\text{lin}_{n} \right) K^\text{coreg}_\text{outputs} K^\text{coreg}_{n} \\
 
-    Note that, in the additive model, :math:`K^\text{cont}_{n}` and :math:`K^\text{lin}_{n}` still consist of only
-    the continuous and linear dimensions, respectively, but have unique priors corresponding to each categorical dimension.
+    Note that, in the additive model, :math:`K^\text{cont}_{n}` and :math:`K^\text{lin}_{n}` still consist of only the
+    continuous and linear dimensions, respectively, but have unique priors corresponding to each categorical dimension.
     However, there is only one :math:`K^\text{coreg}_\text{outputs}` kernel.
 
     Parameters
@@ -91,8 +87,8 @@ class GP(Regressor):
 
     Examples
     --------
-    A GP object is created from a :class:`DataSet` and can be fit immediately with the default dimension
-    configuration (regressing `r` with RBF + linear kernels for `X` and `Y`):
+    A GP object is created from a :class:`DataSet` and can be fit immediately with the default dimension configuration
+    (regressing `r` with RBF + linear kernels for `X` and `Y`):
 
     >>> import gumbi as gmb
     >>> df = pd.read_pickle(gmb.data.example_dataset)
@@ -107,8 +103,8 @@ class GP(Regressor):
     >>> gp.build_model()
     >>> gp.find_MAP()
 
-    The model can be specified with various continuous, linear, and categorical dimensions.
-    `X` and `Y` are always included in both ``continuous_dims`` and ``linear_dims``.
+    The model can be specified with various continuous, linear, and categorical dimensions. `X` and `Y` are always
+    included in both ``continuous_dims`` and ``linear_dims``.
 
     >>> gp.specify_model(continuous_dims='lg10_Z', linear_dims='lg10_Z', categorical_dims='Pair')
     >>> gmb.GP(ds).fit(continuous_dims='lg10_Z', linear_dims='lg10_Z', categorical_dims='Pair')  # equivalent
@@ -256,11 +252,11 @@ class GP(Regressor):
         those columns are to be included (``None`` implies all values).
 
         If ``additive==True``, the model is constructed as the sum of a global GP and a distinct GP for each categorical
-        dimension. Each of these GPs, including the global GP, consists of an RBF+linear kernel multiplied by a
-        coregion kernel for the `output_column` if necessary. Although the same continuous kernel structure is used for each
-        GP in this model, unique priors are assigned to each distinct kernel. However, there is always only one
-        coregion kernel for the `output_column`. The kernel for each dimension-specific GP is further multiplied by a
-        coregion kernel that provides an output for each level in that dimension.
+        dimension. Each of these GPs, including the global GP, consists of an RBF+linear kernel multiplied by a coregion
+        kernel for the `output_column` if necessary. Although the same continuous kernel structure is used for each GP
+        in this model, unique priors are assigned to each distinct kernel. However, there is always only one coregion
+        kernel for the `output_column`. The kernel for each dimension-specific GP is further multiplied by a coregion
+        kernel that provides an output for each level in that dimension.
 
         See Also
         --------
@@ -271,13 +267,15 @@ class GP(Regressor):
         outputs : str or list of str, default None
             Name(s) of output(s) to learn. If ``None``, :attr:`outputs` is used.
         linear_dims : str or list of str, optional
-            Subset of continuous dimensions to apply an additional linear kernel. If ``None``, defaults to ``['Y','X']``.
+            Subset of continuous dimensions to apply an additional linear kernel. If ``None``, defaults to
+            ``['Y','X']``.
         continuous_dims : str or list of str, optional
             Columns of dataframe used as continuous dimensions.
         continuous_levels : str, list, or dict, optional
             Values considered within each continuous column as ``{dim: [level1, level2]}``.
         continuous_coords : list or dict, optional
-            Numerical coordinates of each continuous level within each continuous dimension as ``{dim: {level: coord}}``.
+            Numerical coordinates of each continuous level within each continuous dimension as ``{dim: {level:
+            coord}}``.
         categorical_dims : str or list of str, optional
             Columns of dataframe used as categorical dimensions.
         categorical_levels : str, list, or dict, optional
@@ -353,7 +351,7 @@ class GP(Regressor):
             # ℓ = pm.InverseGamma(f'ℓ_{suffix}', mu=ℓ_μ, sigma=ℓ_σ, shape=shape)
             ℓ = pm.Gamma(f"ℓ_{suffix}", alpha=2, beta=1, shape=shape)
             η = pm.Gamma(f"η_{suffix}", alpha=2, beta=1)
-            cov = η ** 2 * continuous_cov_func(input_dim=D_in, active_dims=idx_s, ls=ℓ)
+            cov = η**2 * continuous_cov_func(input_dim=D_in, active_dims=idx_s, ls=ℓ)
             if stabilize:
                 cov += pm.gp.cov.WhiteNoise(eps)
             return cov
@@ -377,9 +375,8 @@ class GP(Regressor):
 
         return coreg_cov
 
-    # TODO: add full probabilistic model description to docstring
-    # TODO: allow dimension-specific continuous kernel specification
-    # TODO: allow single multi-dimensional continuous kernel rather than independent kernels per dimension
+    # TODO: add full probabilistic model description to docstring TODO: allow dimension-specific continuous kernel
+    # specification TODO: allow single multi-dimensional continuous kernel rather than independent kernels per dimension
     def build_model(
         self,
         seed=None,
@@ -396,9 +393,9 @@ class GP(Regressor):
         :math:`\text{InverseGamma}` prior for each lengthscale (as `suggested by Michael Betancourt`_) and a
         :math:`\text{Gamma}\left(2, 1\right)` prior for variance.
 
-        .. _suggested by Michael Betancourt: https://betanalpha.github.io/assets/case_studies/gp_part3/part3.html#4_adding_an_informative_prior_for_the_length_scale
+        .. _suggested by Michael Betancourt: https://betanalpha.github.io/assets/case_studies/gp_part3/part3.html#4_adding_an_informative_prior_for_the_length_scale  # noqa: E501
         .. _pymc3 docs: https://docs.pymc.io/en/v3/api/gp/cov.html
-        .. _sparse approximation: https://docs.pymc.io/en/v3/pymc-examples/examples/gaussian_processes/GP-SparseApprox.html
+        .. _sparse approximation: https://docs.pymc.io/en/v3/pymc-examples/examples/gaussian_processes/GP-SparseApprox.html  # noqa: E501
 
         Parameters
         ----------
@@ -409,7 +406,8 @@ class GP(Regressor):
         heteroskedastic_inputs: bool, default False
             Whether to allow heteroskedasticity along continuous dimensions (input-dependent noise).
         heteroskedastic_outputs: bool, default True
-            Whether to allow heteroskedasticity between multiple outputs (output-dependent noise). `Not yet implemented`.
+            Whether to allow heteroskedasticity between multiple outputs (output-dependent noise). `Not yet
+            implemented`.
         sparse: bool, default False
             Whether to use a `sparse approximation`_ to the GP.
         n_u: int, default 100
@@ -457,14 +455,11 @@ class GP(Regressor):
 
         with self.model:
 
-            # From https://docs.pymc.io/notebooks/GP-Marginal.html
-            # OR a covariance function for the noise can be given
-            # noise_l = pm.Gamma("noise_l", alpha=2, beta=2)
-            # cov_func_noise = pm.gp.cov.Exponential(1, noise_l) + pm.gp.cov.WhiteNoise(sigma=0.1)
-            # y_ = gp.marginal_likelihood("y", X=X, y=y, noise=cov_func_noise)
+            # From https://docs.pymc.io/notebooks/GP-Marginal.html OR a covariance function for the noise can be given
+            # noise_l = pm.Gamma("noise_l", alpha=2, beta=2) cov_func_noise = pm.gp.cov.Exponential(1, noise_l) +
+            # pm.gp.cov.WhiteNoise(sigma=0.1) y_ = gp.marginal_likelihood("y", X=X, y=y, noise=cov_func_noise)
 
-            # GP is heteroskedastic across outputs by default,
-            # but homoskedastic across continuous dimensions
+            # GP is heteroskedastic across outputs by default, but homoskedastic across continuous dimensions
             σ = pm.Exponential("σ", lam=1)
             noise = pm.gp.cov.WhiteNoise(sigma=σ)
             if heteroskedastic_inputs:
@@ -482,7 +477,8 @@ class GP(Regressor):
                 Xu = pm.gp.util.kmeans_inducing_points(n_u, X)
                 if heteroskedastic_outputs:
                     warnings.warn(
-                        "Heteroskedasticity over outputs is not yet implemented for sparse GP. Reverting to scalar-valued noise."
+                        "Heteroskedasticity over outputs is not yet implemented for sparse GP. \
+                            Reverting to scalar-valued noise."
                     )
                 _ = gp_dict["total"].marginal_likelihood("ml", X=X, Xu=Xu, y=y, noise=σ)
             else:
@@ -585,9 +581,8 @@ class GP(Regressor):
         pm_gp = self._choose_implementation(sparse=sparse, latent=latent)
 
         with pm.Model() as self.model:
-            # μ = pm.Normal('μ', mu=0, sigma=10)
-            # β = pm.Normal('β', mu=0, sigma=10, shape=n_l)
-            # lin_mean = pm.gp.mean.Linear(coeffs=[β[i] if i in idx_l else 0 for i in range(D_in), intercept=μ)
+            # μ = pm.Normal('μ', mu=0, sigma=10) β = pm.Normal('β', mu=0, sigma=10, shape=n_l) lin_mean =
+            # pm.gp.mean.Linear(coeffs=[β[i] if i in idx_l else 0 for i in range(D_in), intercept=μ)
 
             # Define a "global" continuous kernel regardless of additive structure
             cov = continuous_cov("total")
@@ -719,8 +714,7 @@ class GP(Regressor):
 
         Parameters
         ----------
-        output : str
-        points : ParameterArray
+        output : str points : ParameterArray
             Tall ParameterArray vector of coordinates for prediction, must have one layer per ``self.dims``
         with_noise : bool, default True
             Whether to incorporate aleatoric uncertainty into prediction error
@@ -776,7 +770,8 @@ class GP(Regressor):
         output : str or list of str, optional
             Variable for which to make predictions
         source : {None, dict, az.data.inference_data.InferenceData}
-            GP parameters for which to draw samples. Should be the result of :meth:`find_MAP`, :meth:`sample`, or _None_.
+            GP parameters for which to draw samples. Should be the result of :meth:`find_MAP`, :meth:`sample`, or
+            _None_.
         var_name : str, default "posterior_samples"
             Name to assign new variable to contain conditional predictions.
         additive_level : str, default "total"
@@ -844,7 +839,8 @@ class GP(Regressor):
         Parameters
         ----------
         source : {None, dict, az.data.inference_data.InferenceData}
-            GP parameters for which to draw samples. Should be the result of :meth:`find_MAP`, :meth:`sample`, or _None_.
+            GP parameters for which to draw samples. Should be the result of :meth:`find_MAP`, :meth:`sample`, or
+            _None_.
         output : str or list of str, optional
             Variable(s) for which to make predictions
         categorical_levels : dict, optional

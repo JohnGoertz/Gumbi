@@ -4,7 +4,7 @@ import pymc3 as pm
 
 
 def nc_Normal(name: str, mu: float, sigma: float, **kws):
-    """Constructs non-centered normal distribution via :math:`\mathcal{N}(0,1)\cdot\sigma+\mu`
+    r"""Constructs non-centered normal distribution via :math:`\mathcal{N}(0,1)\cdot\sigma+\mu`
 
     Parameters
     ----------
@@ -32,7 +32,7 @@ def nc_Normal(name: str, mu: float, sigma: float, **kws):
 
 
 def sc_Exponential(name: str, mu: float, **kws):
-    """Scaled Exponential distribution: :math:`\text{Exponential}(1)\cdot\mu
+    r"""Scaled Exponential distribution: :math:`\text{Exponential}(1)\cdot\mu
 
     Parameters
     ----------

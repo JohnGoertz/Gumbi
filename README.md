@@ -4,13 +4,13 @@
 
 ## Overview
 
-Gumbi simplifies the steps needed to build a Gaussian Process model from tabular data. It takes care of shaping, 
-transforming, and standardizing data as necessary while applying best practices and sensible defaults to the 
-construction of the GP model itself. Taking inspiration from popular packages such as 
-__[Bambi](https://bambinos.github.io/bambi/main/index.html)__ and __[Seaborn](https://seaborn.pydata.org/index.html)__, 
-Gumbi's aim is to allow quick iteration on both model structure and prediction visualization. Gumbi is primarily built 
+Gumbi simplifies the steps needed to build a Gaussian Process model from tabular data. It takes care of shaping,
+transforming, and standardizing data as necessary while applying best practices and sensible defaults to the
+construction of the GP model itself. Taking inspiration from popular packages such as
+__[Bambi](https://bambinos.github.io/bambi/main/index.html)__ and __[Seaborn](https://seaborn.pydata.org/index.html)__,
+Gumbi's aim is to allow quick iteration on both model structure and prediction visualization. Gumbi is primarily built
 on top of __[PyMC3](https://docs.pymc.io/)__, though additional support for __[GPflow](https://gpflow.readthedocs.io/)__
-is planned. 
+is planned.
 
 ## Quickstart
 
@@ -56,11 +56,11 @@ More complex GPs are also possible, such as correlated multi-input and multi-out
   * `git clone https://gitlab.com/JohnGoertz/gumbi gumbi`
   * `cd gumbi`
 * Create a new conda environment using mamba
-  * `conda install mamba` 
+  * `conda install mamba`
   * `mamba install -f dev_environment.yaml`
 * Install `gumbi` via `pip` in editable/development mode
-  * From within the `gumbi` repo 
+  * From within the `gumbi` repo
   * `pip install --editable ./`
 * To update the `gumbi` module
-  * From within the `gumbi` repo 
+  * From within the `gumbi` repo
   * `git pull`

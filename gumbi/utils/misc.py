@@ -1,8 +1,8 @@
 """Internal utility functions, not intended for public consumption"""
 from functools import wraps
-import numpy as np
-
 from typing import Iterable
+
+import numpy as np
 
 
 def skip(x):

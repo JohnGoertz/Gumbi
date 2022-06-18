@@ -17,21 +17,21 @@
 # Gumbi simplifies the steps needed to build a Gaussian Process model from tabular data. It takes care of shaping,
 # transforming, and standardizing data as necessary while applying best practices and sensible defaults to the
 # construction of the GP model itself. Taking inspiration from popular packages such as
-# __[Bambi](https://bambinos.github.io/bambi/main/index.html)__ and __[Seaborn](https://seaborn.pydata.org/index.html)__,
-# Gumbi's aim is to allow quick iteration on both model structure and prediction visualization. Gumbi is primarily built
-# on top of __[PyMC3](https://docs.pymc.io/)__, though additional support for __[GPflow](https://gpflow.readthedocs.io/)__
-# is planned.
+# __[Bambi](https://bambinos.github.io/bambi/main/index.html)__ and
+# __[Seaborn](https://seaborn.pydata.org/index.html)__, Gumbi's aim is to allow quick iteration on both model structure
+# and prediction visualization. Gumbi is primarily built on top of __[PyMC3](https://docs.pymc.io/)__, though additional
+# support for __[GPflow](https://gpflow.readthedocs.io/)__ is planned.
 
 # %% [markdown]
 # ## Quickstart
 
-# %% [markdown]
-# Read in some data and store it as a Gumbi `DataSet`:
+# %% [markdown] Read in some data and store it as a Gumbi `DataSet`:
 #
+
+import seaborn as sns
 
 # %%
 import gumbi as gmb
-import seaborn as sns
 
 cars = sns.load_dataset("mpg").dropna()
 ds = gmb.DataSet(
@@ -62,7 +62,8 @@ sns.scatterplot(
 
 # %% [markdown]
 #
-# More complex GPs are also possible, such as correlated multi-input and multi-output systems, demonstrated in the example notebooks.
+# More complex GPs are also possible, such as correlated multi-input and multi-output systems, demonstrated in the
+# example notebooks.
 
 # %% [markdown]
 # ## Installation

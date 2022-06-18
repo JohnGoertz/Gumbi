@@ -1,11 +1,8 @@
-from __future__ import (
+from __future__ import (  # Necessary for self-type annotations until Python >3.10
     annotations,
-)  # Necessary for self-type annotations until Python >3.10
+)
 
-import pickle
-import warnings
 from abc import ABC, abstractmethod
-from collections import namedtuple
 from dataclasses import dataclass
 
 import numpy as np
@@ -158,7 +155,7 @@ class Standardizer(dict):
         summary = (
             "\n\t".join(
                 [
-                    f"Standardizer:",
+                    "Standardizer:",
                     f"log_vars: {self.log_vars}",
                     f"logit_vars: {self.logit_vars}",
                 ]
@@ -488,7 +485,11 @@ class MetaFrame(pd.DataFrame, ABC):
 
         summary = (
             "\n\t".join(
-                [f"{cls}:", f"outputs: {self.outputs}", f"inputs: {self.inputs}",]
+                [
+                    f"{cls}:",
+                    f"outputs: {self.outputs}",
+                    f"inputs: {self.inputs}",
+                ]
             )
             + "\n\n"
             + df_repr

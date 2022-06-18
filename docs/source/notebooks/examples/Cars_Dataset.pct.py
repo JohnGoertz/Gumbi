@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # ---
 # jupyter:
 #   jupytext:
@@ -20,18 +19,20 @@
 # # The Cars Dataset
 # Here we'll use the classic Cars dataset to illustrate different ways Gumbi can be used.
 
-# %%
-import gumbi as gmb
-import seaborn as sns
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import seaborn as sns
 
-import matplotlib.pyplot as plt
+# %%
+from matplotlib.colors import Normalize
+
+# %%
+import gumbi as gmb
 
 plt.style.use(gmb.style.breve)
 
-# %% [markdown]
-# Read in some data and store it as a Gumbi `DataSet`:
+# %% [markdown] Read in some data and store it as a Gumbi `DataSet`:
 
 # %%
 cars = sns.load_dataset("mpg").dropna().astype({"weight": float, "model_year": float})
@@ -42,14 +43,12 @@ ds = gmb.DataSet(
     log_vars=["mpg", "acceleration", "weight", "horsepower", "displacement"],
 )
 
-# %% [markdown]
-# Create a Gumbi `GP` object:
+# %% [markdown] Create a Gumbi `GP` object:
 
 # %%
 gp = gmb.GP(ds)
 
-# %% [markdown]
-# Now we're ready to fit, predict, and plot against various dimensions in our datset.
+# %% [markdown] Now we're ready to fit, predict, and plot against various dimensions in our datset.
 
 # %% [markdown]
 # ## Simple regression
@@ -67,8 +66,10 @@ sns.scatterplot(
     data=cars, x="horsepower", y="mpg", color=sns.cubehelix_palette()[-1], alpha=0.5
 )
 
-# %% [markdown]
-# Note that, despite the error bands appearing wider at lower values of *horsepower*, this actually is a homoskedastic model; i.e., predicted noise does not depend on the input value. However, because we declared *mpg* among the `log_vars` when we defined our `DataSet`, the model is homoskedastic in *log space*. Let's plot `log(mpg)` to illustrate this:
+# %% [markdown] Note that, despite the error bands appearing wider at lower values of *horsepower*, this actually is a
+# homoskedastic model; i.e., predicted noise does not depend on the input value. However, because we declared *mpg*
+# among the `log_vars` when we defined our `DataSet`, the model is homoskedastic in *log space*. Let's plot `log(mpg)`
+# to illustrate this:
 
 # %%
 pp.y_scale = "transformed"
@@ -84,8 +85,8 @@ sns.scatterplot(
     alpha=0.5,
 )
 
-# %% [markdown]
-# We declared `horsepower` to be a *log_var* as well. Let's view both `mpg` and `horsepower` in log-space, but retain the natural-space tick labels for easier interpretation.
+# %% [markdown] We declared `horsepower` to be a *log_var* as well. Let's view both `mpg` and `horsepower` in log-space,
+# but retain the natural-space tick labels for easier interpretation.
 
 # %%
 pp.y_tick_scale = "natural"
@@ -232,8 +233,6 @@ for i, (row, origin) in enumerate(zip(axs.T, cars.origin.unique())):
 # %% [markdown]
 # ## Multi-dimensional regression
 
-# %%
-from matplotlib.colors import Normalize
 
 norm = Normalize()
 norm(ds.wide.mpg)
@@ -241,8 +240,8 @@ norm(ds.wide.mpg)
 # %% [markdown]
 # ### 2D regression with and without linear kernel
 
-# %% [markdown]
-# Note that here we plot the coefficient of variation (with respect to aleatoric and epistemic uncertainty together) as dashed lines.
+# %% [markdown] Note that here we plot the coefficient of variation (with respect to aleatoric and epistemic uncertainty
+# together) as dashed lines.
 
 # %%
 axs = plt.subplots(1, 2, figsize=(12, 4.5))[1]
@@ -289,8 +288,7 @@ plt.tight_layout()
 # %% [markdown]
 # ### 3D regression with 2D predictions
 
-# %% [markdown]
-# Note that here we plot the epistemic uncertainty as dashed lines.
+# %% [markdown] Note that here we plot the epistemic uncertainty as dashed lines.
 
 # %%
 cylinders = cars.cylinders.unique()

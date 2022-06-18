@@ -14,7 +14,7 @@ orbs:
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
-  build-docs: 
+  build-docs:
     docker:
       - image: cimg/python:3.9
     # Checkout the code as the first step. This is a dedicated CircleCI step.

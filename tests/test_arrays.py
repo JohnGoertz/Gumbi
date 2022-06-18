@@ -1,25 +1,24 @@
 """Tests behavior of structured arrays"""
 
-import pytest
-import numpy as np
 import pathlib as pl
 
-from gumbi import Standardizer
-from gumbi import parray, uarray, uparray, mvuparray
+import numpy as np
+
+from gumbi import Standardizer, mvuparray, parray, uarray, uparray
 
 test_dir = pl.Path(__file__).resolve().parent
 test_data = test_dir / "test_data"
 
 example_stdzr = {
-    "a": {"μ": -0.762, "σ2": 1.258 ** 2},
-    "b": {"μ": -0.0368, "σ2": 0.351 ** 2},
-    "c": {"μ": -5.30, "σ2": 0.582 ** 2},
-    "d": {"μ": -0.307, "σ2": 0.158 ** 2},
-    "e": {"μ": -1.056, "σ2": 0.398 ** 2},
-    "f": {"μ": 3.34, "σ2": 0.1501 ** 2},
-    "X": {"μ": -0.282, "σ2": 1 ** 2},
-    "Y": {"μ": 4.48, "σ2": 0.75 ** 2},
-    "lg10_Z": {"μ": 5, "σ2": 2 ** 2},
+    "a": {"μ": -0.762, "σ2": 1.258**2},
+    "b": {"μ": -0.0368, "σ2": 0.351**2},
+    "c": {"μ": -5.30, "σ2": 0.582**2},
+    "d": {"μ": -0.307, "σ2": 0.158**2},
+    "e": {"μ": -1.056, "σ2": 0.398**2},
+    "f": {"μ": 3.34, "σ2": 0.1501**2},
+    "X": {"μ": -0.282, "σ2": 1**2},
+    "Y": {"μ": 4.48, "σ2": 0.75**2},
+    "lg10_Z": {"μ": 5, "σ2": 2**2},
 }
 
 log_vars = ["d", "f", "b", "c", "Y"]

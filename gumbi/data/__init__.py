@@ -1,5 +1,5 @@
-import pathlib as pl
 import os
+import pathlib as pl
 
 data_dir = pl.Path(__file__).resolve().parent
 

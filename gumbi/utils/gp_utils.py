@@ -1,6 +1,4 @@
-import numpy as np
 from scipy.spatial.distance import pdist
-from scipy.stats import ncx2
 
 
 def get_ℓ_prior(points):

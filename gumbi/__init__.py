@@ -1,13 +1,12 @@
 """Gaussian Process Model Building Interface"""
 
-from .versions import __version__
+from gumbi import data, style, utils
 
-from .regression import *
 from .aggregation import *
 from .arrays import *
 from .plotting import *
-
-from gumbi import style, utils, data
+from .regression import *
+from .versions import __version__
 
 # Aliases
 parray = ParameterArray

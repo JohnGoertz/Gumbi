@@ -14,6 +14,9 @@ dependencies:
   - uncertainties
   - ipympl
   - mkl
+  - black
+  - isort
+  - pre-commit
   - pip
   - pip:
     - .

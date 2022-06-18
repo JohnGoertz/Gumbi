@@ -1,18 +1,19 @@
-from __future__ import (
+from __future__ import (  # Necessary for self-type annotations until Python >3.10
     annotations,
-)  # Necessary for self-type annotations until Python >3.10
-from dataclasses import dataclass
-from typing import Callable
-import warnings
+)
 
+import warnings
+from dataclasses import dataclass
+from typing import Callable, Tuple
+
+import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
-import matplotlib.pyplot as plt
 from scipy.special import logit
 
 from gumbi.aggregation import *
 from gumbi.arrays import *
-from gumbi.utils import round_to_n, Trigger
+from gumbi.utils import round_to_n
 
 __all__ = ["ParrayPlotter"]
 
@@ -21,16 +22,16 @@ __all__ = ["ParrayPlotter"]
 class ParrayPlotter:
     r"""Wrapper for a ``matplotlib.pyplot`` function; adjusts ticks and labels according to plotter settings.
 
-    Provides a consistent interface to matplotlib plotting functions that allows easy iteration between permutations
-    of plotting and tick labeling in  natural, transformed, standardized space. When called on a plotting function,
-    a :class:`ParrayPlotter` instance passes pre-formated x and y (and z) arrays to the function as positional
-    arguments, along with any additional keyword arguments supplied. :class:`ParrayPlotter` then adjusts tick labels
-    according to its *\*_tick_scale* arguments.
+    Provides a consistent interface to matplotlib plotting functions that allows easy iteration between permutations of
+    plotting and tick labeling in  natural, transformed, standardized space. When called on a plotting function, a
+    :class:`ParrayPlotter` instance passes pre-formated x and y (and z) arrays to the function as positional arguments,
+    along with any additional keyword arguments supplied. :class:`ParrayPlotter` then adjusts tick labels according to
+    its *\*_tick_scale* arguments.
 
     Passing a ``.t`` or ``.z`` child of a parray automatically overrides the respective *_scale* argument. This is
     achieved by inspecting the variable name for a ``'_t'`` or ``'_z'`` suffix, so avoiding using variable names with
-    those suffixes to avoid confusion. Note that not all permutations of *\*_scale* and *\*_tick_scale* are
-    permitted: *_tick_scale* should generally either match the respective *_scale* argument or be ``'natural'``.
+    those suffixes to avoid confusion. Note that not all permutations of *\*_scale* and *\*_tick_scale* are permitted:
+    *_tick_scale* should generally either match the respective *_scale* argument or be ``'natural'``.
 
     :class:`ParrayPlotter` also provides a :meth:`colorbar` method that adds a colorbar and reformats its ticks and
     labels according to the *z_scale* and *z_tick_scale* attributes.
@@ -40,7 +41,8 @@ class ParrayPlotter:
     x_pa, y_pa: ParameterArray | LayeredArray | np.ndarray
         X and Y arrays. If *z_pa* or *stdzr* are not supplied, x_pa or y_pa must contain a Standardizer instance.
     z_pa: ParameterArray | LayeredArray | np.ndarray, optional
-        Z array for 2D plots. If *stdzr* is not supplied, *z_pa*, *x_pa*, or *y_pa* must contain a Standardizer instance.
+        Z array for 2D plots. If *stdzr* is not supplied, *z_pa*, *x_pa*, or *y_pa* must contain a Standardizer
+        instance.
     stdzr: Standardizer, optional
         Standardizer for converting ticks. Only optional if *z_pa*, *x_pa*, or *y_pa* contain a Standardizer instance.
     x_scale, y_scale, z_scale : {'natural', 'transformed', 'standardized'}
@@ -73,9 +75,9 @@ class ParrayPlotter:
     >>> pcm = pp(plt.pcolormesh, shading='gouraud')
     >>> cbar = pp.colorbar(pcm, ax=plt.gca())
 
-    Make a filled contour plot with *x* plotted in natural-space and *x* tick labels displayed in natural-space,
-    *y* plotted in transformed space but *y* tick lables displayed in natural-space, and *z* plotted in standardized
-    space with a colorbar displaying standardized-space tick labels:
+    Make a filled contour plot with *x* plotted in natural-space and *x* tick labels displayed in natural-space, *y*
+    plotted in transformed space but *y* tick lables displayed in natural-space, and *z* plotted in standardized space
+    with a colorbar displaying standardized-space tick labels:
 
     >>> pp = ParrayPlotter(xyz['x'], xyz['y'].t, xyz['z'], z_scale='standardized', z_tick_scale='standardized')
     >>> cs = pp(plt.contourf)
@@ -83,7 +85,9 @@ class ParrayPlotter:
     """
     x: ParameterArray | LayeredArray | np.ndarray
     y: UncertainParameterArray | UncertainArray | ParameterArray | LayeredArray | np.ndarray
-    z: UncertainParameterArray | UncertainArray | ParameterArray | LayeredArray | np.ndarray = None
+    z: UncertainParameterArray | UncertainArray | ParameterArray | LayeredArray | np.ndarray = (
+        None
+    )
     stdzr: Standardizer = None
     x_scale: str = "natural"
     x_tick_scale: str = "natural"
@@ -257,16 +261,16 @@ class ParrayPlotter:
 
         y, *_ = _parse_uparray(self.y, self.y_scale)
 
-        l = y.dist.ppf((1 - ci) / 2)
+        b = y.dist.ppf((1 - ci) / 2)
         m = y.dist.ppf(0.5) if center == "median" else y.μ
         u = y.dist.ppf((1 + ci) / 2)
 
         fill_between_styles = ["fill", "band"]
         errorbar_styles = ["errorbar", "bar"]
         if ci_style in fill_between_styles:
-            ax.fill_between(self.x_, l, u, **kwargs)
+            ax.fill_between(self.x_, b, u, **kwargs)
         elif ci_style in errorbar_styles:
-            ax.errorbar(self.x_, m, m - l, u - m, **kwargs)
+            ax.errorbar(self.x_, m, m - b, u - m, **kwargs)
         else:
             return ValueError(
                 f"ci_style must be one of {fill_between_styles + errorbar_styles}"
@@ -274,7 +278,7 @@ class ParrayPlotter:
         return ax
 
 
-def _parse_array(array, scale) -> (np.ndarray, str, str):
+def _parse_array(array, scale) -> Tuple[np.ndarray, str, str]:
     if isinstance(array, (UncertainParameterArray, UncertainArray)):
         array, label, scale = _parse_uparray(array, scale)
         array = array.μ
@@ -286,7 +290,9 @@ def _parse_array(array, scale) -> (np.ndarray, str, str):
     return array, label, scale
 
 
-def _parse_parray(pa, scale) -> (ParameterArray | LayeredArray | np.ndarray, str, str):
+def _parse_parray(
+    pa, scale
+) -> Tuple[ParameterArray | LayeredArray | np.ndarray, str, str]:
     if isinstance(pa, ParameterArray):
         if scale == "standardized":
             array = pa.z
@@ -308,7 +314,9 @@ def _parse_parray(pa, scale) -> (ParameterArray | LayeredArray | np.ndarray, str
     return array, label, scale
 
 
-def _parse_uparray(upa, scale) -> (UncertainParameterArray | UncertainArray, str, str):
+def _parse_uparray(
+    upa, scale
+) -> Tuple[UncertainParameterArray | UncertainArray, str, str]:
     if isinstance(upa, UncertainParameterArray):
         if scale == "standardized":
             array = upa.z
@@ -339,8 +347,8 @@ def _format_parray_plot_labels(
         xlabel = xlabel[:-2]
     if ylabel.endswith("_z") or ylabel.endswith("_t"):
         ylabel = ylabel[:-2]
-    # xlabel = xlabel.removesuffix('_z').removesuffix('_t')  # Use when Python>=3.9
-    # ylabel = ylabel.removesuffix('_z').removesuffix('_t')  # Use when Python>=3.9
+    # xlabel = xlabel.removesuffix('_z').removesuffix('_t')  # Use when Python>=3.9 ylabel =
+    # ylabel.removesuffix('_z').removesuffix('_t')  # Use when Python>=3.9
     _reformat_tick_labels(ax, "x", xlabel, x_scale, x_tick_scale, stdzr)
     _reformat_tick_labels(ax, "y", ylabel, y_scale, y_tick_scale, stdzr)
 
@@ -365,8 +373,7 @@ def _augment_label(stdzr, label, tick_scale):
 
 def _reformat_tick_labels(ax, axis, name, current, new, stdzr, sigfigs=3):
     tick_setters = {
-        # ('natural', 'standardized'): _n_ticks_z_labels,
-        # ('natural', 'transformed'): _n_ticks_t_labels,
+        # ('natural', 'standardized'): _n_ticks_z_labels, ('natural', 'transformed'): _n_ticks_t_labels,
         ("standardized", "natural"): _z_ticks_n_labels,
         ("transformed", "natural"): _t_ticks_n_labels,
     }
@@ -383,24 +390,24 @@ def _reformat_tick_labels(ax, axis, name, current, new, stdzr, sigfigs=3):
 def _get_ticks_setter(ax, axis):
     if axis == "x":
         ticks = ax.get_xticks()
-        set_ticks = ax.set_xticks
+        # set_ticks = ax.set_xticks
         set_labels = ax.set_xticklabels
     elif axis == "y":
         ticks = ax.get_yticks()
-        set_ticks = ax.set_yticks
+        # set_ticks = ax.set_yticks
         set_labels = ax.set_yticklabels
     elif axis == "z":
         ticks = ax.get_zticks()
-        set_ticks = ax.set_zticks
+        # set_ticks = ax.set_zticks
         set_labels = ax.set_zticklabels
     elif axis == "c":
         ticks = ax.get_ticks()
-        set_ticks = ax.set_ticks
+        # set_ticks = ax.set_ticks
         set_labels = ax.set_ticklabels
 
     def setter(*args, **kwargs):
-        # TODO: Find a better way to set tick labels
-        # Setting only labels throws a FixedLocator warning, but setting ticks first extends the plot area excessively
+        # TODO: Find a better way to set tick labels Setting only labels throws a FixedLocator warning, but setting
+        # ticks first extends the plot area excessively
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             set_labels(*args, **kwargs)

@@ -1,5 +1,6 @@
-from setuptools import find_packages, setup
 import pathlib as pl
+
+from setuptools import find_packages, setup
 
 DISTNAME = "gumbi"
 DESCRIPTION = "Gaussian Process Model Building Interface"

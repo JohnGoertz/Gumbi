@@ -11,8 +11,8 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os
-import sys
 import pathlib as pl
+import sys
 
 sys.path.insert(0, os.path.abspath("../../gumbi/"))
 
@@ -40,10 +40,10 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "sphinx.ext.mathjax",
-    #'sphinxcontrib.rsvgconverter',
-    #'numpydoc',
+    # 'sphinxcontrib.rsvgconverter',
+    # 'numpydoc',
     "sphinx.ext.napoleon",
-    #'sphinx_copybutton',
+    # 'sphinx_copybutton',
     "nbsphinx",
 ]
 # numpydoc_show_class_members = True

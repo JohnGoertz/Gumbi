@@ -1,8 +1,8 @@
 """Tests behavior of structured arrays"""
 
-import pytest
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+
 from gumbi import *
 
 
@@ -83,6 +83,8 @@ def test_2d_array_plotting():
     )
     cs = pp(plt.contourf)
 
+    cs
+
 
 def test_colorbar():
     c = np.arange(1, 10, 0.25)
@@ -96,7 +98,7 @@ def test_colorbar():
         log_vars=["d", "c"],
         logit_vars=["z"],
     )
-    mrz = ParameterArray(c=c, d=d, z=Z ** 2, stdzr=stdzr)
+    mrz = ParameterArray(c=c, d=d, z=Z**2, stdzr=stdzr)
 
     pp = ParrayPlotter(mrz["c"], mrz["d"], mrz["z"])
     cs = pp(plt.contourf)
@@ -125,3 +127,5 @@ def test_colorbar():
     pp = ParrayPlotter(mrz["c"], mrz["d"], mrz["z"], z_scale="standardized")
     cs = pp(plt.contourf)
     cbar = pp.colorbar(cs)
+
+    cbar

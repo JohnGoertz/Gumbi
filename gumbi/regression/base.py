@@ -1,17 +1,19 @@
 import warnings
 from abc import ABC, abstractmethod
+from itertools import product
+
 import numpy as np
 import pandas as pd
 from scipy.interpolate import interpn
-from itertools import product
 
-from gumbi.utils.misc import assert_in, assert_is_subset
-from gumbi.utils.gp_utils import get_ℓ_prior
 from gumbi.aggregation import DataSet
-from gumbi.arrays import *
+from gumbi.arrays import MVUncertainParameterArray as mvuparray
 from gumbi.arrays import ParameterArray as parray
 from gumbi.arrays import UncertainParameterArray as uparray
-from gumbi.arrays import MVUncertainParameterArray as mvuparray
+from gumbi.arrays import *
+from gumbi.utils.misc import assert_in, assert_is_subset
+
+# from gumbi.utils.gp_utils import get_ℓ_prior
 
 __all__ = ["Regressor"]
 
@@ -19,16 +21,16 @@ __all__ = ["Regressor"]
 class Regressor(ABC):
     r"""Surface learning and prediction.
 
-    A Regressor is built from a dataframe in the form of a :class:`DataSet` object. This is stored as
-    :attr:`tidy`. The model inputs are constructed by filtering this dataframe, extracting column values, and
-    converting these to numerical input coordinates. Each subclass defines at least `build_model`, `fit`, and `predict_points`
-    methods in addition to subclass-specific methods.
+    A Regressor is built from a dataframe in the form of a :class:`DataSet` object. This is stored as :attr:`tidy`. The
+    model inputs are constructed by filtering this dataframe, extracting column values, and converting these to
+    numerical input coordinates. Each subclass defines at least `build_model`, `fit`, and `predict_points` methods in
+    addition to subclass-specific methods.
 
     Dimensions fall into several categories:
 
     * Filter dimensions, those with only one level, are used to subset the dataframe but are not included as explicit
-      inputs to the model. These are not specified explicitly, but rather any continuous or categorical dimension with only one
-      level is treated as a filter dimension.
+      inputs to the model. These are not specified explicitly, but rather any continuous or categorical dimension with
+      only one level is treated as a filter dimension.
     * Continuous dimensions are treated as explicit coordinates and given a Radial Basis Function kernel
 
       * Linear dimensions (which must be a subset of `continuous_dims`) have an additional linear kernel.
@@ -121,8 +123,7 @@ class Regressor(ABC):
 
         See Also
         --------
-        :meth:`GP.fit`
-        :meth:`GLM.fit`
+        :meth:`GP.fit` :meth:`GLM.fit`
         """
         pass
 
@@ -132,8 +133,7 @@ class Regressor(ABC):
 
         See Also
         --------
-        :meth:`GP.build_model`
-        :meth:`GLM.build_model`
+        :meth:`GP.build_model` :meth:`GLM.build_model`
         """
         pass
 
@@ -168,7 +168,7 @@ class Regressor(ABC):
 
     @property
     def coords(self) -> dict:
-        """ Dictionary of numerical coordinates of each level within each dimension as ``{dim: {level: coord}}``"""
+        """Dictionary of numerical coordinates of each level within each dimension as ``{dim: {level: coord}}``"""
         return {
             **self.continuous_coords,
             **self.categorical_coords,
@@ -196,7 +196,8 @@ class Regressor(ABC):
         outputs : str or list of str, default None
             Name(s) of output(s) to learn. If ``None``, :attr:`outputs` is used.
         linear_dims : str or list of str, optional
-            Subset of continuous dimensions to apply an additional linear kernel. If ``None``, defaults to ``['Y','X']``.
+            Subset of continuous dimensions to apply an additional linear kernel. If ``None``, defaults to
+            ``['Y','X']``.
         continuous_dims : str or list of str, optional
             Columns of dataframe used as continuous dimensions
         continuous_levels : str, list, or dict, optional
@@ -264,14 +265,13 @@ class Regressor(ABC):
             self.categorical_dims, self.categorical_levels, None
         )
 
-        # Add 'X' and 'Y' to the beginning of the continuous list
-        # if 'Y' not in self.continuous_dims:
-        #     self.continuous_dims = ['Y'] + self.continuous_dims
-        # if 'X' not in self.continuous_dims:
-        #     self.continuous_dims = ['X'] + self.continuous_dims
+        # Add 'X' and 'Y' to the beginning of the continuous list if 'Y' not in self.continuous_dims:
+        # self.continuous_dims = ['Y'] + self.continuous_dims if 'X' not in self.continuous_dims: self.continuous_dims =
+        #     ['X'] + self.continuous_dims
 
         # self.continuous_levels | {dim: self.tidy.tidy[dim].unique() for dim in ['X', 'Y']} | self.continuous_levels}
-        # self.continuous_coords | {dim: {level: level for level in self.continuous_levels[dim]} for dim in ['X', 'Y']} | self.continuous_coords}
+        # self.continuous_coords | {dim: {level: level for level in self.continuous_levels[dim]} for dim in ['X', 'Y']}
+        # | self.continuous_coords}
         assert_is_subset(
             "continuous dimensions", self.linear_dims, self.continuous_dims
         )
@@ -457,8 +457,8 @@ class Regressor(ABC):
         # Ensure same number of observations for every output (only possible if something broke)
         assert len(set(sum(df[self.out_col] == output) for output in self.outputs)) == 1
 
-        # Assuming all parameters observed at the same points
-        # Extract the model dimensions from the dataframe for one of the parameters
+        # Assuming all parameters observed at the same points Extract the model dimensions from the dataframe for one of
+        # the parameters
         dims = set(self.dims) - set([self.out_col])
         dim_values = {
             dim: df[df[self.out_col] == self.outputs[0]]
@@ -544,8 +544,7 @@ class Regressor(ABC):
 
         See Also
         --------
-        :meth:`GP.predict`
-        :meth:`GLM.predict`
+        :meth:`GP.predict` :meth:`GLM.predict`
 
         Returns
         -------
@@ -606,8 +605,8 @@ class Regressor(ABC):
                 ]
             )
         else:
-            # If self.out_col is not in categorical_dims, it must be in filter_dims, and only one is possible
-            # Convert input points to tall array
+            # If self.out_col is not in categorical_dims, it must be in filter_dims, and only one is possible Convert
+            # input points to tall array
             param_coords = None
             tall_points = points[:, None]
 
@@ -654,8 +653,8 @@ class Regressor(ABC):
                 output[0], pred_mean, pred_variance, stdzd=True
             )
         else:
-            # Predicting multiple parameters, return an MVUncertainParameterArray
-            # First split prediction into UncertainParameterArrays
+            # Predicting multiple parameters, return an MVUncertainParameterArray First split prediction into
+            # UncertainParameterArrays
             uparrays = []
             for i, name in enumerate(output):
                 idx = (tall_points[self.out_col].values() == param_coords[i]).squeeze()
@@ -684,8 +683,7 @@ class Regressor(ABC):
             List of min/max values as a single parray with one layer for each of a subset of `continuous_dims`.
         at : ParameterArray
             A single parray of length 1 with one layer for each remaining `continuous_dims` by name.
-        ticks : dict
-        resolution : dict or int
+        ticks : dict resolution : dict or int
             Number of points along each dimension, either as a dictionary or one value applied to all dimensions
 
         Returns
@@ -697,9 +695,10 @@ class Regressor(ABC):
         self.predictions = None
         self.predictions_X = None
 
-        ##
-        ## Check inputs for consistency and completeness
-        ##
+        #
+        # Check inputs for consistency and completeness
+        #
+        # TODO: refactor into _parse_grid_inputs method
 
         # Ensure "at" is supplied correctly
         if at is None:
@@ -762,12 +761,12 @@ class Regressor(ABC):
                 "continuous dimensions", resolution.keys(), self.continuous_dims
             )
 
-        ##
-        ## Build grids
-        ##
+        #
+        # Build grids
+        #
 
-        # Store a dictionary with one 1-layer 1-D parray for the grid points along each dimension
-        # Note they may be different sizes
+        # Store a dictionary with one 1-layer 1-D parray for the grid points along each dimension Note they may be
+        # different sizes
         grid_vectors = {
             dim: self.parray(
                 **{dim: np.linspace(*limits[dim].z.values(), resolution[dim])[:, None]},
@@ -949,17 +948,17 @@ class Regressor(ABC):
         :meth:`cross_validate` is *reproducibly random* by default. In order to evaluate different test/train subsets of
         the same size, you will need to set the `seed` explicitly.
 
-        Specifying *unit* changes the interpretation of *n_train* and *pct_train*: rather than the number
-        or fraction of all individual observations to be included in the training set, these now represent the number
-        of distinct entities in the *unit* column from the wide-form dataset.
+        Specifying *unit* changes the interpretation of *n_train* and *pct_train*: rather than the number or fraction of
+        all individual observations to be included in the training set, these now represent the number of distinct
+        entities in the *unit* column from the wide-form dataset.
 
         Criteria in *train_only* are enforced before grouping observations by *unit*. If *train_only* and *unit* are
-        both specified, but the *train_only* criteria encompass only some observations of a given entity in *unit*,
-        this could lead to expected behavior.
+        both specified, but the *train_only* criteria encompass only some observations of a given entity in *unit*, this
+        could lead to expected behavior.
 
-        Similarly, if *warm_start* and *unit* are both specified, but a given entity appears in multiple categories
-        from any of the :attr:`categorical_dims`, this could lead to expected behavior. It is recommended to set
-        *warm_start* to `False` if this is the case.
+        Similarly, if *warm_start* and *unit* are both specified, but a given entity appears in multiple categories from
+        any of the :attr:`categorical_dims`, this could lead to expected behavior. It is recommended to set *warm_start*
+        to `False` if this is the case.
 
         Parameters
         ----------
@@ -974,7 +973,8 @@ class Regressor(ABC):
             Specifications for observations to be always included in the training set. This will select all rows of the
             wide-form dataset which *exactly* match *all* criteria.
         warm_start : bool, default True
-            Whether to include a minimum of one observation for each level in each `categorical_dim` in the training set.
+            Whether to include a minimum of one observation for each level in each `categorical_dim` in the training
+            set.
         seed : int, optional
             Random seed
         errors : {'natural', 'standardized', 'transformed'}
@@ -985,9 +985,9 @@ class Regressor(ABC):
         Returns
         -------
         dict
-            Dictionary with nested dictionaries 'train' and 'test', both containing fields 'data', 'NLPDs', and 'errors'.
-            These fields contain the relevant subset of observations as a DataSet, an array of the negative log
-            posterior densities of observations given the predictions, and an array of the natural-space difference
+            Dictionary with nested dictionaries 'train' and 'test', both containing fields 'data', 'NLPDs', and
+            'errors'. These fields contain the relevant subset of observations as a DataSet, an array of the negative
+            log posterior densities of observations given the predictions, and an array of the natural-space difference
             between observations and prediction means, respectively.
         """
 
@@ -1078,14 +1078,16 @@ class Regressor(ABC):
 
                 if cat_grps.ngroups == 0:
                     raise ValueError(
-                        f"None of the combinations of categorical levels were found in data.\nCombinations:\n{level_combinations}"
+                        "None of the combinations of categorical levels were found in data. \
+                            \nCombinations:\n{level_combinations}"
                     )
 
                 # Randomly select one item from each group
                 warm_idxs = cat_grps.sample(1, random_state=seed).index
                 if len(set(warm_idxs)) != len(warm_idxs):
                     warnings.warn(
-                        "Duplicate entities specified by `unit` were selected during `warm_start`. This may lead to unexpected behavior."
+                        "Duplicate entities specified by `unit` were selected during `warm_start`. \
+                            This may lead to unexpected behavior."
                     )
                 n_train -= len(set(warm_idxs))
                 if n_train < 0:
@@ -1254,8 +1256,7 @@ class Regressor(ABC):
         self._check_has_prediction()
         all_dims = self.prediction_dims
 
-        # All points along every axis (parrays)
-        # Note that these may not all be the same length
+        # All points along every axis (parrays) Note that these may not all be the same length
         all_margins = {
             dim: vec.squeeze()
             for dim, vec in self.grid_vectors.items()
@@ -1286,10 +1287,9 @@ class Regressor(ABC):
             [xi_parray[dim].z.values() for dim in self.dims if dim in xi_parray.names]
         )
 
-        # Interpolate the mean and variance of the predictions
-        # Swapping the first two axes is necessary because grids were generated using meshgrid's "ij" indexing
-        # but interpn expects "xy" indexing
-        # μ_arr = np.swapaxes(self.predictions.μ, 0, 1)
+        # Interpolate the mean and variance of the predictions Swapping the first two axes is necessary because grids
+        # were generated using meshgrid's "ij" indexing but interpn expects "xy" indexing μ_arr =
+        # np.swapaxes(self.predictions.μ, 0, 1)
         μ_arr = self.predictions.μ
         μi = interpn(
             [

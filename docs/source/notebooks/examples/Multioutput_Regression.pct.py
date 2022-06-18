@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # ---
 # jupyter:
 #   jupytext:
@@ -14,18 +13,17 @@
 # %% [markdown]
 # # Multioutput Regression
 
+import matplotlib.pyplot as plt
+
 # %%
 import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
 import pandas as pd
-import pathlib as pl
-import os
+import seaborn as sns
 
 import gumbi as gmb
 
-# %% [markdown]
-# Use gumbi's plotting defaults for stylistic consistency, good dataviz practice, and aesthetics. Use `gmb.style.default` if you don't have the Futura font installed.
+# %% [markdown] Use gumbi's plotting defaults for stylistic consistency, good dataviz practice, and aesthetics. Use
+# `gmb.style.default` if you don't have the Futura font installed.
 
 # %%
 plt.style.use(gmb.style.futura)
@@ -35,8 +33,8 @@ plt.style.use(gmb.style.futura)
 
 # %% [markdown]
 #
-# Load in wide-form data and store as a DataSet. We must specify which columns are considered "outputs",
-# and additionally we may indicate which input and output variables should be treated as log-normal or logit-normal.
+# Load in wide-form data and store as a DataSet. We must specify which columns are considered "outputs", and
+# additionally we may indicate which input and output variables should be treated as log-normal or logit-normal.
 
 # %%
 df = pd.read_pickle(gmb.data.example_dataset)
@@ -52,9 +50,9 @@ ds
 
 # %% [markdown]
 #
-# Train a multioutput GP on five amplification parameters, using an RBF + linear kernel on `lg10_Z` to
-# capture continuous variation along with a coregionalization kernel to allow for correlated but distinct behavior in
-# both the mean and noise across the parameters.
+# Train a multioutput GP on five amplification parameters, using an RBF + linear kernel on `lg10_Z` to capture
+# continuous variation along with a coregionalization kernel to allow for correlated but distinct behavior in both the
+# mean and noise across the parameters.
 
 # %%
 fit_params = ["a", "b", "c", "d", "e"]
@@ -65,8 +63,8 @@ gp.fit(continuous_dims="lg10_Z", linear_dims="lg10_Z")
 # %% [markdown]
 # ## Marginal Parameter Predictions
 
-# %% [markdown]
-# Predict each parameter individually, allowing us to ensure the marginal uncertainty is calibrated correctly.
+# %% [markdown] Predict each parameter individually, allowing us to ensure the marginal uncertainty is calibrated
+# correctly.
 
 # %%
 limits = gp.parray(lg10_Z=[1, 9])
@@ -91,8 +89,7 @@ plt.tight_layout()
 # %% [markdown]
 # ## Correlated Parameter Predictions
 
-# %% [markdown]
-# Make joint predictions for all parameters, returning an MVUncertainParameterArray.
+# %% [markdown] Make joint predictions for all parameters, returning an MVUncertainParameterArray.
 
 # %%
 gp.prepare_grid(limits=gp.parray(lg10_Z=[1, 9]), resolution=5)
@@ -102,8 +99,8 @@ x_pa = gp.predictions_X
 mvup = gp.predictions
 mvup
 
-# %% [markdown]
-# Sample from the joint distribution at each concentration to inspect the correlations between parameters across concentrations.
+# %% [markdown] Sample from the joint distribution at each concentration to inspect the correlations between parameters
+# across concentrations.
 
 # %%
 samples_df = pd.concat(

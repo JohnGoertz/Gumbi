@@ -1,12 +1,8 @@
-from .GP import *
-
-import numpy as np
-import pandas as pd
+from functools import wraps
 
 import pymc3 as pm
-import arviz as az
 
-from functools import wraps
+from .GP import *
 
 
 class GPC(GP):

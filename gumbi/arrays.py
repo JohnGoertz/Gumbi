@@ -1,21 +1,18 @@
-from __future__ import (
+from __future__ import (  # Necessary for self-type annotations until Python >3.10
     annotations,
-)  # Necessary for self-type annotations until Python >3.10
+)
 
 import copy
-import pickle
 import warnings
+
 import numpy as np
-import pandas as pd
-
-from scipy.stats import norm, lognorm, chi2, ncx2, rv_continuous, multivariate_normal
+from scipy.special import expit, logit
+from scipy.stats import chi2, lognorm, ncx2, norm, rv_continuous
 from scipy.stats._multivariate import multivariate_normal_frozen
-from scipy.special import logit, expit
-
 from uncertainties import unumpy as unp
 
-from .utils import skip
 from .aggregation import Standardizer
+from .utils import skip
 
 __all__ = [
     "LayeredArray",
@@ -32,13 +29,13 @@ class LogitNormal(rv_continuous):
     The probability density function for LogitNormal is:
 
     .. math::
-        f \left( x, \sigma \right) = \frac{1}{\sigma \sqrt{2 \pi}} e^{- \frac{ \left( \text{logit} (x) - \mu \right)^2}{2 \sigma^2}} \frac{1}{x \left( 1-x \right)}
+        f \left( x, \sigma \right) = \frac{1}{\sigma \sqrt{2 \pi}} e^{- \frac{ \left( \text{logit} (x) - \mu \right)^2}{2 \sigma^2}} \frac{1}{x \left( 1-x \right)}  # noqa: E501
 
     for :math:`0<x<1`, :math:`\sigma>0`
 
     A logit-normal random variable `Y` can be parameterized in terms of the mean, :math:`\mu`, and standard deviation,
-    :math:`\sigma`, of the unique normally distributed random variable `X` such that `expit(X) = Y`. This parametrization
-    corresponds to setting `scale = σ` and `loc = expit(μ)`.
+    :math:`\sigma`, of the unique normally distributed random variable `X` such that `expit(X) = Y`. This
+    parametrization corresponds to setting `scale = σ` and `loc = expit(μ)`.
     """
 
     def __init__(self, loc=0.5, scale=1):
@@ -680,7 +677,7 @@ class UncertainArray(np.ndarray):
 
     @σ.setter
     def σ(self, val):
-        self["σ2"] = val ** 2
+        self["σ2"] = val**2
 
     @property
     def _as_uncarray(self):
@@ -1513,7 +1510,8 @@ class MVUncertainParameterArray(np.ndarray):
         # TODO: numpy versions > 1.19.3 can have bizarre inscrutable errors when handling mvup.cov. Monitor for fixes.
         if np.__version__ > "1.19.3":
             warnings.warn(
-                "numpy version >1.19.3 may lead to inscrutable linear algebra errors with mvup.cov. May just be on Windows/WSL. Hopefully fixed soon."
+                "numpy version >1.19.3 may lead to inscrutable linear algebra errors with mvup.cov."
+                "May just be on Windows/WSL. Hopefully fixed soon."
             )
         if self.ndim != 0:
             raise NotImplementedError(
@@ -1535,7 +1533,8 @@ class MVUncertainParameterArray(np.ndarray):
         # TODO: numpy versions > 1.19.3 can have bizarre inscrutable errors when handling mvup.dist. Monitor for fixes.
         if np.__version__ > "1.19.3":
             warnings.warn(
-                "numpy version >1.19.3 may lead to inscrutable linear algebra errors with mvup.dist. May just be on Windows/WSL. Hopefully fixed soon."
+                "numpy version >1.19.3 may lead to inscrutable linear algebra errors with mvup.dist."
+                "May just be on Windows/WSL. Hopefully fixed soon."
             )
         if self.ndim != 0:
             raise NotImplementedError(
@@ -1555,5 +1554,5 @@ class MVUncertainParameterArray(np.ndarray):
         """Calculates the p-value that a given (ParameterArray) point is an outlier from the MVUParray distribution."""
         MD = self.mahalanobis(parray)
         n_params = len(self.names)
-        pval = 1 - chi2.cdf(MD ** 2, df=n_params)
+        pval = 1 - chi2.cdf(MD**2, df=n_params)
         return pval
