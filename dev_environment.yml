@@ -14,9 +14,12 @@ dependencies:
   - uncertainties
   - ipympl
   - mkl
+  - flake8
   - black
   - isort
   - pre-commit
+  - commitizen
+  - pytest
   - pip
   - pip:
     - .
