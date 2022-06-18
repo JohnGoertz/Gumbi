@@ -34,11 +34,13 @@ plt.style.use(gmb.style.default)
 
 # %%
 df = pd.read_pickle(gmb.data.example_dataset).query('Metric=="mean"')
-outputs=['a', 'b', 'c', 'd', 'e', 'f']
-log_vars=['Y', 'b', 'c', 'd', 'f']
-logit_vars=['X', 'e']
+outputs = ["a", "b", "c", "d", "e", "f"]
+log_vars = ["Y", "b", "c", "d", "f"]
+logit_vars = ["X", "e"]
 ds = gmb.DataSet(df, outputs=outputs, log_vars=log_vars, logit_vars=logit_vars)
-ds.tidy = ds.tidy[ds.tidy.Color.isin(['cyan', 'magenta']) & (ds.tidy.Pair == 'burrata+barbaresco')]
+ds.tidy = ds.tidy[
+    ds.tidy.Color.isin(["cyan", "magenta"]) & (ds.tidy.Pair == "burrata+barbaresco")
+]
 
 # %% [markdown]
 # ## Building and fitting a model
@@ -47,8 +49,8 @@ ds.tidy = ds.tidy[ds.tidy.Color.isin(['cyan', 'magenta']) & (ds.tidy.Pair == 'bu
 # Build and fit a GP model with linear + RBF kernels for each of `X`, `Y`, and log `Z`:
 
 # %%
-gp = gmb.GP(ds, outputs=['d'])
-gp.fit(continuous_dims=['X', 'Y', 'lg10_Z'], linear_dims=['X', 'Y', 'lg10_Z']);
+gp = gmb.GP(ds, outputs=["d"])
+gp.fit(continuous_dims=["X", "Y", "lg10_Z"], linear_dims=["X", "Y", "lg10_Z"])
 
 # %% [markdown]
 # ## Making predictions
@@ -69,7 +71,7 @@ pred
 # %%
 gp.prepare_grid(at=gp.parray(lg10_Z=8, X=0.5))
 gp.predict_grid()
-x_pa = gp.predictions_X['Y']
+x_pa = gp.predictions_X["Y"]
 y_upa = gp.predictions
 y_upa[:10]
 
@@ -81,31 +83,31 @@ y_upa[:10]
 
 # %%
 pp = gmb.ParrayPlotter(x_pa, y_upa)
-pp.plot();
+pp.plot()
 
 # %% [markdown]
 # Arrays can be viewed in "standardized" or "transformed" space by passing those values as the respective *&ast;_scale* argument. By default, the array the tick labels remain in "natural" space unless an alternative is specified as the corresponding *&ast;_tick_scale* argument.
 
 # %%
-pp = gmb.ParrayPlotter(x_pa, y_upa, x_scale='standardized')
+pp = gmb.ParrayPlotter(x_pa, y_upa, x_scale="standardized")
 # pp = gmb.ParrayPlotter(x_pa.z, y_upa)  # equivalent
-pp.plot();
+pp.plot()
 
 # %% [markdown]
 # The same `ParrayPlotter` instance can be reused to produce an alternative view of the data. Simply call `pp.update()` after changing the *&ast;_scale* or *&ast;_tick_scale* attributes.
 
 # %%
-pp.x_scale = 'transformed'
-pp.x_tick_scale = 'transformed'
+pp.x_scale = "transformed"
+pp.x_tick_scale = "transformed"
 pp.update()
 # pp = gmb.ParrayPlotter(x_pa.t, y_upa, x_tick_scale = 'transformed')  #equiv
-pp.plot();
+pp.plot()
 
 # %%
-pp.y_scale = 'standardized'
-pp.y_tick_scale = 'standardized'
+pp.y_scale = "standardized"
+pp.y_tick_scale = "standardized"
 pp.update()
-pp.plot();
+pp.plot()
 
 # %% [markdown]
 # ### Marginalizing
@@ -115,10 +117,10 @@ pp.plot();
 
 # %%
 gp.prepare_grid(at=gp.parray(lg10_Z=8))
-gp.predict_grid();
+gp.predict_grid()
 
-x_pa = gp.grid_vectors['Y'].squeeze()
-y_upa = gp.predictions.mean(axis=gp.prediction_dims.index('X'))
+x_pa = gp.grid_vectors["Y"].squeeze()
+y_upa = gp.predictions.mean(axis=gp.prediction_dims.index("X"))
 
 ax = gmb.ParrayPlotter(x_pa.z, y_upa).plot()
 
@@ -132,9 +134,9 @@ ax = gmb.ParrayPlotter(x_pa.z, y_upa).plot()
 # To demonstrate, first make predictions across a large grid:
 
 # %%
-gp.prepare_grid(resolution={'Y':100, 'X':100, 'lg10_Z': 21})
+gp.prepare_grid(resolution={"Y": 100, "X": 100, "lg10_Z": 21})
 
-gp.predict_grid();
+gp.predict_grid()
 
 # %% [markdown]
 # In addition to the `.plot` method shown above, a *ParrayPlotter* can be called on any function, typically a matplotlib function, to pass appropriately-formatted ndarrays as positional arguments along with any additional keyword arguments. This allows you to quickly iterate on different visualizations with minimal repetition.
@@ -148,30 +150,30 @@ x_pa, y_pa = xy_pa.as_list()
 pp = gmb.ParrayPlotter(x_pa.z, y_pa.z, z_upa)
 
 # Make a filled contour plot by calling ParrayPlotter on the matplotlib function and passing kwargs
-cs = pp(plt.contourf, cmap='pink', levels=20)
+cs = pp(plt.contourf, cmap="pink", levels=20)
 
 # Add an appropriately scaled and labeled colorbar
-cbar = pp.colorbar(cs);
+cbar = pp.colorbar(cs)
 
 # Add a few contour outlines
-cl = pp(plt.contour, colors='k', levels=10)
-ax.clabel(cl, inline=True, fontsize=10);
+cl = pp(plt.contour, colors="k", levels=10)
+ax.clabel(cl, inline=True, fontsize=10)
 
 # %% [markdown]
 # Or 1D slices:
 
 # %%
-axs = plt.subplots(1,3, figsize=(18,4), sharey=True)[1]
+axs = plt.subplots(1, 3, figsize=(18, 4), sharey=True)[1]
 
-x_pa, y_upa = gp.get_conditional_prediction(Y=88, lg10_Z=8.)
+x_pa, y_upa = gp.get_conditional_prediction(Y=88, lg10_Z=8.0)
 gmb.ParrayPlotter(x_pa.z, y_upa).plot(ax=axs[0])
 
-x_pa, y_upa = gp.get_conditional_prediction(X=0.5, lg10_Z=8.)
+x_pa, y_upa = gp.get_conditional_prediction(X=0.5, lg10_Z=8.0)
 gmb.ParrayPlotter(x_pa.z, y_upa).plot(ax=axs[1])
-axs[1].set_ylabel('')
+axs[1].set_ylabel("")
 
 x_pa, y_upa = gp.get_conditional_prediction(X=0.85, Y=88)
 gmb.ParrayPlotter(x_pa.z, y_upa).plot(ax=axs[2])
-axs[2].set_ylabel('');
+axs[2].set_ylabel("")
 
 # %%

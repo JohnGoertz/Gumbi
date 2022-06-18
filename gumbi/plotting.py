@@ -1,4 +1,6 @@
-from __future__ import annotations  # Necessary for self-type annotations until Python >3.10
+from __future__ import (
+    annotations,
+)  # Necessary for self-type annotations until Python >3.10
 from dataclasses import dataclass
 from typing import Callable
 import warnings
@@ -12,7 +14,7 @@ from gumbi.aggregation import *
 from gumbi.arrays import *
 from gumbi.utils import round_to_n, Trigger
 
-__all__ = ['ParrayPlotter']
+__all__ = ["ParrayPlotter"]
 
 
 @dataclass
@@ -83,22 +85,24 @@ class ParrayPlotter:
     y: UncertainParameterArray | UncertainArray | ParameterArray | LayeredArray | np.ndarray
     z: UncertainParameterArray | UncertainArray | ParameterArray | LayeredArray | np.ndarray = None
     stdzr: Standardizer = None
-    x_scale: str = 'natural'
-    x_tick_scale: str = 'natural'
-    y_scale: str = 'natural'
-    y_tick_scale: str = 'natural'
-    z_scale: str = 'natural'
-    z_tick_scale: str = 'natural'
+    x_scale: str = "natural"
+    x_tick_scale: str = "natural"
+    y_scale: str = "natural"
+    y_tick_scale: str = "natural"
+    z_scale: str = "natural"
+    z_tick_scale: str = "natural"
 
     def __post_init__(self):
         self.update()
 
         for arr in [self.z, self.y, self.x]:
             if self.stdzr is None:
-                self.stdzr = getattr(arr, 'stdzr', None)
+                self.stdzr = getattr(arr, "stdzr", None)
 
         if self.stdzr is None:
-            raise ValueError('Standardizer must be provided if none of the arrays contain a Standardizer.')
+            raise ValueError(
+                "Standardizer must be provided if none of the arrays contain a Standardizer."
+            )
 
     def update(self):
         self._update_x()
@@ -135,19 +139,29 @@ class ParrayPlotter:
         """
         args = [arg for arg in [self.x_, self.y_, self.z_] if arg is not None]
         out = plotter(*args, **kwargs)
-        ax = kwargs.get('ax', plt.gca())
-        _format_parray_plot_labels(ax, self.stdzr, self.xlabel, self.x_scale, self.x_tick_scale, self.ylabel,
-                                   self.y_scale, self.y_tick_scale)
+        ax = kwargs.get("ax", plt.gca())
+        _format_parray_plot_labels(
+            ax,
+            self.stdzr,
+            self.xlabel,
+            self.x_scale,
+            self.x_tick_scale,
+            self.ylabel,
+            self.y_scale,
+            self.y_tick_scale,
+        )
         return out
 
     def colorbar(self, mappable=None, cax=None, ax=None, **kwargs):
         """Wrapper for ``matplotlib.pyplot.colorbar``; adjusts ticks and labels according to plotter settings."""
         cbar = plt.colorbar(mappable=mappable, cax=cax, ax=ax, **kwargs)
 
-        if self.zlabel.endswith('_z') or self.zlabel.endswith('_t'):
+        if self.zlabel.endswith("_z") or self.zlabel.endswith("_t"):
             self.zlabel = self.zlabel[:-2]
         # self.zlabel = self.zlabel.removesuffix('_z').removesuffix('_t')  # Use when Python>=3.7
-        _reformat_tick_labels(cbar, 'c', self.zlabel, self.z_scale, self.z_tick_scale, self.stdzr)
+        _reformat_tick_labels(
+            cbar, "c", self.zlabel, self.z_scale, self.z_tick_scale, self.stdzr
+        )
 
         label = _augment_label(self.stdzr, self.zlabel, self.z_tick_scale)
         cbar.set_label(label)
@@ -176,7 +190,9 @@ class ParrayPlotter:
             Axes for the plot
         """
         if self.z is not None:
-            raise NotImplementedError('Method "plot" not implemented when z_pa is present.')
+            raise NotImplementedError(
+                'Method "plot" not implemented when z_pa is present.'
+            )
 
         line_kws = dict() if line_kws is None else line_kws
         ci_kws = dict() if ci_kws is None else ci_kws
@@ -191,15 +207,23 @@ class ParrayPlotter:
 
         ax = plt.gca() if ax is None else ax
         ax.plot(self.x_, self.y_, **line_kws)
-        if ci is not None and hasattr(self.y, 'σ2'):
+        if ci is not None and hasattr(self.y, "σ2"):
             self.plot_ci(ci=ci, ax=ax, **ci_kws)
 
-        _format_parray_plot_labels(ax, self.stdzr, self.xlabel, self.x_scale, self.x_tick_scale, self.ylabel,
-                                   self.y_scale, self.y_tick_scale)
+        _format_parray_plot_labels(
+            ax,
+            self.stdzr,
+            self.xlabel,
+            self.x_scale,
+            self.x_tick_scale,
+            self.ylabel,
+            self.y_scale,
+            self.y_tick_scale,
+        )
 
         return ax
 
-    def plot_ci(self, ci=0.95, ci_style='fill', center='median', ax=None, **kwargs):
+    def plot_ci(self, ci=0.95, ci_style="fill", center="median", ax=None, **kwargs):
         r"""Plots the confidence interval for an UncertainParameterArray.
 
         Parameters
@@ -221,26 +245,32 @@ class ParrayPlotter:
             Axes for the plot
         """
         if self.z is not None:
-            raise NotImplementedError('Method "plot_ci" not supported when z_pa is present.')
-        if not hasattr(self.y, 'σ2'):
-            raise NotImplementedError('Method "plot_ci" only supported when y_pa has the "σ2" attribute.')
+            raise NotImplementedError(
+                'Method "plot_ci" not supported when z_pa is present.'
+            )
+        if not hasattr(self.y, "σ2"):
+            raise NotImplementedError(
+                'Method "plot_ci" only supported when y_pa has the "σ2" attribute.'
+            )
 
         ax = plt.gca() if ax is None else ax
 
         y, *_ = _parse_uparray(self.y, self.y_scale)
 
         l = y.dist.ppf((1 - ci) / 2)
-        m = y.dist.ppf(0.5) if center == 'median' else y.μ
+        m = y.dist.ppf(0.5) if center == "median" else y.μ
         u = y.dist.ppf((1 + ci) / 2)
 
-        fill_between_styles = ['fill', 'band']
-        errorbar_styles = ['errorbar', 'bar']
+        fill_between_styles = ["fill", "band"]
+        errorbar_styles = ["errorbar", "bar"]
         if ci_style in fill_between_styles:
             ax.fill_between(self.x_, l, u, **kwargs)
         elif ci_style in errorbar_styles:
-            ax.errorbar(self.x_, m, m-l, u-m, **kwargs)
+            ax.errorbar(self.x_, m, m - l, u - m, **kwargs)
         else:
-            return ValueError(f'ci_style must be one of {fill_between_styles + errorbar_styles}')
+            return ValueError(
+                f"ci_style must be one of {fill_between_styles + errorbar_styles}"
+            )
         return ax
 
 
@@ -258,9 +288,9 @@ def _parse_array(array, scale) -> (np.ndarray, str, str):
 
 def _parse_parray(pa, scale) -> (ParameterArray | LayeredArray | np.ndarray, str, str):
     if isinstance(pa, ParameterArray):
-        if scale == 'standardized':
+        if scale == "standardized":
             array = pa.z
-        elif scale == 'transformed':
+        elif scale == "transformed":
             array = pa.t
         else:
             array = pa
@@ -268,47 +298,51 @@ def _parse_parray(pa, scale) -> (ParameterArray | LayeredArray | np.ndarray, str
     elif isinstance(pa, LayeredArray):
         array = pa
         label = pa.names[0]
-        if pa.names[0].endswith('_z'):
-            scale = 'standardized'
-        elif pa.names[0].endswith('_t'):
-            scale = 'transformed'
+        if pa.names[0].endswith("_z"):
+            scale = "standardized"
+        elif pa.names[0].endswith("_t"):
+            scale = "transformed"
     else:
         array = pa
-        label = ''
+        label = ""
     return array, label, scale
 
 
 def _parse_uparray(upa, scale) -> (UncertainParameterArray | UncertainArray, str, str):
     if isinstance(upa, UncertainParameterArray):
-        if scale == 'standardized':
+        if scale == "standardized":
             array = upa.z
-        elif scale == 'transformed':
+        elif scale == "transformed":
             array = upa.t
         else:
             array = upa
     elif isinstance(upa, UncertainArray):
-        if upa.name.endswith('_z'):
-            scale = 'standardized'
-        elif upa.name.endswith('_t'):
-            scale = 'transformed'
+        if upa.name.endswith("_z"):
+            scale = "standardized"
+        elif upa.name.endswith("_t"):
+            scale = "transformed"
         array = upa
     else:
-        raise TypeError('Array must be either an UncertainParameterArray or an UncertainArray.')
+        raise TypeError(
+            "Array must be either an UncertainParameterArray or an UncertainArray."
+        )
     label = upa.name
 
     return array, label, scale
 
 
-def _format_parray_plot_labels(ax, stdzr, xlabel, x_scale, x_tick_scale, ylabel, y_scale, y_tick_scale):
+def _format_parray_plot_labels(
+    ax, stdzr, xlabel, x_scale, x_tick_scale, ylabel, y_scale, y_tick_scale
+):
 
-    if xlabel.endswith('_z') or xlabel.endswith('_t'):
+    if xlabel.endswith("_z") or xlabel.endswith("_t"):
         xlabel = xlabel[:-2]
-    if ylabel.endswith('_z') or ylabel.endswith('_t'):
+    if ylabel.endswith("_z") or ylabel.endswith("_t"):
         ylabel = ylabel[:-2]
     # xlabel = xlabel.removesuffix('_z').removesuffix('_t')  # Use when Python>=3.9
     # ylabel = ylabel.removesuffix('_z').removesuffix('_t')  # Use when Python>=3.9
-    _reformat_tick_labels(ax, 'x', xlabel, x_scale, x_tick_scale, stdzr)
-    _reformat_tick_labels(ax, 'y', ylabel, y_scale, y_tick_scale, stdzr)
+    _reformat_tick_labels(ax, "x", xlabel, x_scale, x_tick_scale, stdzr)
+    _reformat_tick_labels(ax, "y", ylabel, y_scale, y_tick_scale, stdzr)
 
     label = _augment_label(stdzr, xlabel, x_tick_scale)
     ax.set_xlabel(label)
@@ -316,44 +350,50 @@ def _format_parray_plot_labels(ax, stdzr, xlabel, x_scale, x_tick_scale, ylabel,
     label = _augment_label(stdzr, ylabel, y_tick_scale)
     ax.set_ylabel(label)
 
+
 def _augment_label(stdzr, label, tick_scale):
-    prefixes = {np.log: 'log ', logit: 'logit '}
+    prefixes = {np.log: "log ", logit: "logit "}
     transform = stdzr.transforms.get(label, [None])[0]
-    prefix = prefixes.get(transform, '') if tick_scale in ['transformed', 'standardized'] else ''
-    suffix = ' (standardized)' if tick_scale == 'standardized' else ''
-    return f'{prefix}{label}{suffix}'
+    prefix = (
+        prefixes.get(transform, "")
+        if tick_scale in ["transformed", "standardized"]
+        else ""
+    )
+    suffix = " (standardized)" if tick_scale == "standardized" else ""
+    return f"{prefix}{label}{suffix}"
+
 
 def _reformat_tick_labels(ax, axis, name, current, new, stdzr, sigfigs=3):
     tick_setters = {
         # ('natural', 'standardized'): _n_ticks_z_labels,
         # ('natural', 'transformed'): _n_ticks_t_labels,
-        ('standardized', 'natural'): _z_ticks_n_labels,
-        ('transformed', 'natural'): _t_ticks_n_labels,
+        ("standardized", "natural"): _z_ticks_n_labels,
+        ("transformed", "natural"): _t_ticks_n_labels,
     }
 
     if current != new:
         tpl = (current, new)
         if tpl not in tick_setters:
-            raise ValueError('Cannot convert ticks between {0} and {1}'.format(*tpl))
+            raise ValueError("Cannot convert ticks between {0} and {1}".format(*tpl))
         else:
             tick_setter = tick_setters[tpl]
             tick_setter(ax, axis, stdzr, name, sigfigs=sigfigs)
 
 
 def _get_ticks_setter(ax, axis):
-    if axis == 'x':
+    if axis == "x":
         ticks = ax.get_xticks()
         set_ticks = ax.set_xticks
         set_labels = ax.set_xticklabels
-    elif axis == 'y':
+    elif axis == "y":
         ticks = ax.get_yticks()
         set_ticks = ax.set_yticks
         set_labels = ax.set_yticklabels
-    elif axis == 'z':
+    elif axis == "z":
         ticks = ax.get_zticks()
         set_ticks = ax.set_zticks
         set_labels = ax.set_zticklabels
-    elif axis == 'c':
+    elif axis == "c":
         ticks = ax.get_ticks()
         set_ticks = ax.set_ticks
         set_labels = ax.set_ticklabels
@@ -371,13 +411,13 @@ def _get_ticks_setter(ax, axis):
 
 
 def _get_label_setter(ax, axis):
-    if axis == 'x':
+    if axis == "x":
         set_label = ax.set_xlabel
-    elif axis == 'y':
+    elif axis == "y":
         set_label = ax.set_ylabel
-    elif axis == 'z':
+    elif axis == "z":
         set_label = ax.set_zlabel
-    elif axis == 'c':
+    elif axis == "c":
         set_label = ax.set_label
     return set_label
 

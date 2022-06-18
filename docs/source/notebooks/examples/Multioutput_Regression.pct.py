@@ -40,15 +40,15 @@ plt.style.use(gmb.style.futura)
 
 # %%
 df = pd.read_pickle(gmb.data.example_dataset)
-df = df[(df.Name == 'binary-pollen') & (df.Color == 'cyan') & (df.Metric == 'mean')]
-outputs=['a', 'b', 'c', 'd', 'e', 'f']
-log_vars=['Y', 'b', 'c', 'd', 'f']
-logit_vars=['X', 'e']
-ds = gmb.DataSet(df, outputs=outputs, log_vars=log_vars,logit_vars=logit_vars)
+df = df[(df.Name == "binary-pollen") & (df.Color == "cyan") & (df.Metric == "mean")]
+outputs = ["a", "b", "c", "d", "e", "f"]
+log_vars = ["Y", "b", "c", "d", "f"]
+logit_vars = ["X", "e"]
+ds = gmb.DataSet(df, outputs=outputs, log_vars=log_vars, logit_vars=logit_vars)
 ds
 
 # %% [markdown]
-# ## Train Model 
+# ## Train Model
 
 # %% [markdown]
 #
@@ -57,10 +57,10 @@ ds
 # both the mean and noise across the parameters.
 
 # %%
-fit_params = ['a', 'b', 'c', 'd', 'e']
+fit_params = ["a", "b", "c", "d", "e"]
 gp = gmb.GP(ds, outputs=fit_params)
 n_p = len(fit_params)
-gp.fit(continuous_dims='lg10_Z', linear_dims='lg10_Z');
+gp.fit(continuous_dims="lg10_Z", linear_dims="lg10_Z")
 
 # %% [markdown]
 # ## Marginal Parameter Predictions
@@ -81,10 +81,10 @@ for ax, param in zip(np.atleast_1d(axs), fit_params):
 
     gmb.ParrayPlotter(x_pa, y_upa).plot(ax=ax)
 
-    param_data = ds.tidy[(ds.tidy.Metric == 'mean') & (ds.tidy.Variable == param)]
-    x = gp.parray(lg10_Z=param_data['lg10_Z'])
-    y = param_data['Value']
-    ax.plot(x, y, 'o', color=sns.cubehelix_palette()[-3])
+    param_data = ds.tidy[(ds.tidy.Metric == "mean") & (ds.tidy.Variable == param)]
+    x = gp.parray(lg10_Z=param_data["lg10_Z"])
+    y = param_data["Value"]
+    ax.plot(x, y, "o", color=sns.cubehelix_palette()[-3])
 
 plt.tight_layout()
 
@@ -96,7 +96,7 @@ plt.tight_layout()
 
 # %%
 gp.prepare_grid(limits=gp.parray(lg10_Z=[1, 9]), resolution=5)
-gp.predict_grid();
+gp.predict_grid()
 
 x_pa = gp.predictions_X
 mvup = gp.predictions
@@ -107,9 +107,15 @@ mvup
 
 # %%
 samples_df = pd.concat(
-    [pd.DataFrame(point.dist.rvs(1000, random_state=i).as_dict()).assign(lg10_Z=copies.values()) for i, (point, copies) in enumerate(zip(mvup, x_pa))],
-    ignore_index=True)
+    [
+        pd.DataFrame(point.dist.rvs(1000, random_state=i).as_dict()).assign(
+            lg10_Z=copies.values()
+        )
+        for i, (point, copies) in enumerate(zip(mvup, x_pa))
+    ],
+    ignore_index=True,
+)
 
-sns.pairplot(samples_df, hue='lg10_Z', kind='kde', corner=True, plot_kws={'levels': 1});
+sns.pairplot(samples_df, hue="lg10_Z", kind="kde", corner=True, plot_kws={"levels": 1})
 
 # %%

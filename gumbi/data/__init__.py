@@ -3,4 +3,4 @@ import os
 
 data_dir = pl.Path(__file__).resolve().parent
 
-example_dataset = data_dir / 'Example_DataSet.pkl'
+example_dataset = data_dir / "Example_DataSet.pkl"

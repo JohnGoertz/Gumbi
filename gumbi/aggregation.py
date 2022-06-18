@@ -1,18 +1,20 @@
-from __future__ import annotations  # Necessary for self-type annotations until Python >3.10
+from __future__ import (
+    annotations,
+)  # Necessary for self-type annotations until Python >3.10
 
 import pickle
 import warnings
+from abc import ABC, abstractmethod
 from collections import namedtuple
 from dataclasses import dataclass
-from abc import ABC, abstractmethod
 
 import numpy as np
 import pandas as pd
-from scipy.special import logit, expit
+from scipy.special import expit, logit
 
 from .utils import skip
 
-__all__ = ['Standardizer', 'TidyData', 'WideData', 'DataSet']
+__all__ = ["Standardizer", "TidyData", "WideData", "DataSet"]
 
 
 class Standardizer(dict):
@@ -115,20 +117,20 @@ class Standardizer(dict):
     def __init__(self, log_vars=None, logit_vars=None, **kwargs):
         self.validate(kwargs)
         for name, stats in kwargs.items():
-            if 'σ2' not in stats:
-                stats['σ2'] = stats['σ']**2
-                del stats['σ']
+            if "σ2" not in stats:
+                stats["σ2"] = stats["σ"] ** 2
+                del stats["σ"]
         super().__init__(**kwargs)
         self._transforms = {var: [skip, skip] for var in kwargs.keys()}
         if log_vars is not None:
             log_vars = [log_vars] if isinstance(log_vars, str) else log_vars
             if not isinstance(log_vars, list):
-                raise TypeError('log_vars must be a list or str')
+                raise TypeError("log_vars must be a list or str")
             self._transforms.update({var: [np.log, np.exp] for var in log_vars})
         if logit_vars is not None:
             logit_vars = [logit_vars] if isinstance(logit_vars, str) else logit_vars
             if not isinstance(logit_vars, list):
-                raise TypeError('logit_vars must be a list or str')
+                raise TypeError("logit_vars must be a list or str")
             self._transforms.update({var: [logit, expit] for var in logit_vars})
         self._log_vars = log_vars if log_vars is not None else []
         self._logit_vars = logit_vars if logit_vars is not None else []
@@ -138,7 +140,10 @@ class Standardizer(dict):
         new_dct = {**self, **__dct}
         stdzr = Standardizer(**new_dct)
         if isinstance(__dct, Standardizer):
-            stdzr.transforms = {**self.transforms, **__dct.transforms}  # Fix once Python >= 3.9
+            stdzr.transforms = {
+                **self.transforms,
+                **__dct.transforms,
+            }  # Fix once Python >= 3.9
         else:
             stdzr.transforms = self.transforms
         return stdzr
@@ -150,11 +155,17 @@ class Standardizer(dict):
         return stdzr
 
     def __repr__(self):
-        summary = '\n\t'.join([
-            f'Standardizer:',
-            f'log_vars: {self.log_vars}',
-            f'logit_vars: {self.logit_vars}',
-        ]) + '\n\n' + str({**self})
+        summary = (
+            "\n\t".join(
+                [
+                    f"Standardizer:",
+                    f"log_vars: {self.log_vars}",
+                    f"logit_vars: {self.logit_vars}",
+                ]
+            )
+            + "\n\n"
+            + str({**self})
+        )
         return summary
 
     @property
@@ -166,9 +177,11 @@ class Standardizer(dict):
     def log_vars(self, var_list):
         var_list = [var_list] if isinstance(var_list, str) else var_list
         if not isinstance(var_list, list):
-            raise TypeError('log_vars must be a list or str')
+            raise TypeError("log_vars must be a list or str")
         self._log_vars = var_list
-        self._transforms.update({var: [np.log, np.exp] for var in var_list})  # Fix once Python >= 3.9
+        self._transforms.update(
+            {var: [np.log, np.exp] for var in var_list}
+        )  # Fix once Python >= 3.9
 
     @property
     def logit_vars(self) -> list[str]:
@@ -179,9 +192,11 @@ class Standardizer(dict):
     def logit_vars(self, var_list):
         var_list = [var_list] if isinstance(var_list, str) else var_list
         if not isinstance(var_list, list):
-            raise TypeError('logit_vars must be a list or str')
+            raise TypeError("logit_vars must be a list or str")
         self._logit_vars = var_list
-        self._transforms.update({var: [logit, expit] for var in var_list})  # Fix once Python >= 3.9
+        self._transforms.update(
+            {var: [logit, expit] for var in var_list}
+        )  # Fix once Python >= 3.9
 
     @property
     def transforms(self) -> dict:
@@ -197,26 +212,29 @@ class Standardizer(dict):
     @classmethod
     def validate(cls, dct: dict):
         """Ensures provided dictionary has all required attributes"""
-        assert all('μ' in sub.keys() for sub in dct.values())
-        assert all(('σ' in sub.keys() or 'σ2' in sub.keys()) for sub in dct.values())
+        assert all("μ" in sub.keys() for sub in dct.values())
+        assert all(("σ" in sub.keys() or "σ2" in sub.keys()) for sub in dct.values())
 
     @classmethod
     def from_DataFrame(cls, df: pd.DataFrame, log_vars=None, logit_vars=None):
         """Construct from wide-form DataFrame"""
-        float_columns = df.dtypes[df.dtypes == 'float64'].index.to_list()
+        float_columns = df.dtypes[df.dtypes == "float64"].index.to_list()
 
         new = cls(log_vars=log_vars, logit_vars=logit_vars)
 
-        dct = (df[float_columns]
-               .apply(new.transform)
-               .agg([np.mean, np.var])
-               .rename(index={"mean": "μ", "var": "σ2"})
-               .to_dict()
-               )
+        dct = (
+            df[float_columns]
+            .apply(new.transform)
+            .agg([np.mean, np.var])
+            .rename(index={"mean": "μ", "var": "σ2"})
+            .to_dict()
+        )
 
         return new | dct
 
-    def transform(self, name: str | pd.Series, μ: float = None, σ2: float = None) -> float | tuple | pd.Series:
+    def transform(
+        self, name: str | pd.Series, μ: float = None, σ2: float = None
+    ) -> float | tuple | pd.Series:
         """Transforms a parameter, distribution, or Series
 
         Parameters
@@ -234,16 +252,18 @@ class Standardizer(dict):
             Transformed parameter, (mean, variance) of untransformed distribution, or untransformed Series
         """
         if isinstance(name, pd.Series):
-            series=name
+            series = name
             return self._transform_value(series.name, series)
         elif μ is None:
-            raise ValueError('μ cannot be None')
+            raise ValueError("μ cannot be None")
         if σ2 is None:
             return self._transform_value(name, μ)
         else:
             return self._transform_dist(name, μ, σ2)
 
-    def untransform(self, name: str | pd.Series, μ: float = None, σ2: float = None) -> float | tuple | pd.Series:
+    def untransform(
+        self, name: str | pd.Series, μ: float = None, σ2: float = None
+    ) -> float | tuple | pd.Series:
         """Untransforms a parameter, distribution, or Series
 
         Parameters
@@ -268,7 +288,9 @@ class Standardizer(dict):
         else:
             return self._untransform_dist(name, μ, σ2)
 
-    def stdz(self, name: str | pd.Series, μ: float = None, σ2: float = None) -> float | tuple | pd.Series:
+    def stdz(
+        self, name: str | pd.Series, μ: float = None, σ2: float = None
+    ) -> float | tuple | pd.Series:
         """Transforms, mean-centers, and scales a parameter, distribution, or Series
 
         Parameters
@@ -294,7 +316,9 @@ class Standardizer(dict):
         else:
             return self._stdz_dist(name, μ, σ2)
 
-    def unstdz(self, name: str | pd.Series, μ: float = None, σ2: float = None) -> float | tuple | pd.Series:
+    def unstdz(
+        self, name: str | pd.Series, μ: float = None, σ2: float = None
+    ) -> float | tuple | pd.Series:
         """Untransforms, un-centers, and un-scales a parameter, distribution, or Series
 
         Parameters
@@ -333,14 +357,14 @@ class Standardizer(dict):
 
     def _stdz_value(self, name: str, x: float) -> float:
         x_ = self.transform(name, x)
-        μ = self.get(name, {'μ': 0})['μ']
-        σ2 = self.get(name, {'σ2': 1})['σ2']
+        μ = self.get(name, {"μ": 0})["μ"]
+        σ2 = self.get(name, {"σ2": 1})["σ2"]
         σ = np.sqrt(σ2)
         return (x_ - μ) / σ
 
     def _unstdz_value(self, name: str, z: float) -> float:
-        μ = self.get(name, {'μ': 0})['μ']
-        σ2 = self.get(name, {'σ2': 1})['σ2']
+        μ = self.get(name, {"μ": 0})["μ"]
+        σ2 = self.get(name, {"σ2": 1})["σ2"]
         σ = np.sqrt(σ2)
         x_ = z * σ + μ
         return self.untransform(name, x_)
@@ -360,15 +384,13 @@ class Standardizer(dict):
         """
 
         # Forward and reverse transform for each variable type
-        transforms = {skip: [lambda μ, σ2: μ,
-                             lambda μ, σ2: μ],
-                      # Note these are no longer strictly mean and variance. They are defined to be compatible with
-                      # scipy.stats.lognormal definition
-                      np.log: [lambda μ, σ2: np.log(μ),
-                               lambda μ, σ2: np.exp(μ)],
-                      logit: [lambda μ, σ2: logit(μ),
-                              lambda μ, σ2: expit(μ)]
-                      }
+        transforms = {
+            skip: [lambda μ, σ2: μ, lambda μ, σ2: μ],
+            # Note these are no longer strictly mean and variance. They are defined to be compatible with
+            # scipy.stats.lognormal definition
+            np.log: [lambda μ, σ2: np.log(μ), lambda μ, σ2: np.exp(μ)],
+            logit: [lambda μ, σ2: logit(μ), lambda μ, σ2: expit(μ)],
+        }
         return transforms
 
     @property
@@ -382,13 +404,11 @@ class Standardizer(dict):
         """
 
         # Forward and reverse transform for each variable type
-        transforms = {skip: [lambda μ, σ2: σ2,
-                             lambda μ, σ2: σ2],
-                      np.log: [lambda μ, σ2: σ2,
-                               lambda μ, σ2: σ2],
-                      logit: [lambda μ, σ2: σ2,
-                              lambda μ, σ2: σ2]
-                      }
+        transforms = {
+            skip: [lambda μ, σ2: σ2, lambda μ, σ2: σ2],
+            np.log: [lambda μ, σ2: σ2, lambda μ, σ2: σ2],
+            logit: [lambda μ, σ2: σ2, lambda μ, σ2: σ2],
+        }
         return transforms
 
     def _transform_dist(self, name: str, mean: float, var: float) -> tuple:
@@ -412,16 +432,16 @@ class Standardizer(dict):
 
     def _stdz_dist(self, name: str, mean: float, var: float) -> tuple:
         mean_, var_ = self.transform(name, mean, var)
-        μ = self.get(name, {'μ': 0})['μ']
-        σ2 = self.get(name, {'σ2': 1})['σ2']
+        μ = self.get(name, {"μ": 0})["μ"]
+        σ2 = self.get(name, {"σ2": 1})["σ2"]
         σ = np.sqrt(σ2)
         mean_z = (mean_ - μ) / σ
         var_z = var_ / σ2
         return mean_z, var_z
 
     def _unstdz_dist(self, name: str, z_mean: float, z_var: float) -> tuple:
-        μ = self.get(name, {'μ': 0})['μ']
-        σ2 = self.get(name, {'σ2': 1})['σ2']
+        μ = self.get(name, {"μ": 0})["μ"]
+        σ2 = self.get(name, {"σ2": 1})["σ2"]
         σ = np.sqrt(σ2)
         mean_ = z_mean * σ + μ
         var_ = z_var * σ2
@@ -437,16 +457,26 @@ class MetaFrame(pd.DataFrame, ABC):
     outputs: list
     log_vars: list = None
     logit_vars: list = None
-    names_column: str = 'Variable'
-    values_column: str = 'Value'
+    names_column: str = "Variable"
+    values_column: str = "Value"
     stdzr: Standardizer = None
 
-    _metadata = ['df', 'outputs', 'log_vars', 'logit_vars', 'names_column', 'values_column', 'stdzr']
+    _metadata = [
+        "df",
+        "outputs",
+        "log_vars",
+        "logit_vars",
+        "names_column",
+        "values_column",
+        "stdzr",
+    ]
 
     def __post_init__(self):
         super(MetaFrame, self).__init__(self.df)
         if self.stdzr is None:
-            self.stdzr = Standardizer.from_DataFrame(self.df, log_vars=self.log_vars, logit_vars=self.logit_vars)
+            self.stdzr = Standardizer.from_DataFrame(
+                self.df, log_vars=self.log_vars, logit_vars=self.logit_vars
+            )
         else:
             self.log_vars = self.stdzr.log_vars
             self.logit_vars = self.stdzr.logit_vars
@@ -456,11 +486,13 @@ class MetaFrame(pd.DataFrame, ABC):
         cls = self.__class__.__name__
         df_repr = super(MetaFrame, self).__repr__()
 
-        summary = '\n\t'.join([
-            f'{cls}:',
-            f'outputs: {self.outputs}',
-            f'inputs: {self.inputs}',
-        ]) + '\n\n' + df_repr
+        summary = (
+            "\n\t".join(
+                [f"{cls}:", f"outputs: {self.outputs}", f"inputs: {self.inputs}",]
+            )
+            + "\n\n"
+            + df_repr
+        )
         return summary
 
     @property
@@ -478,8 +510,14 @@ class MetaFrame(pd.DataFrame, ABC):
     @property
     def specs(self) -> dict:
         """Provides keyword arguments for easy instantiation of a similar object."""
-        return dict(outputs=self.outputs, names_column=self.names_column, values_column=self.values_column,
-                    stdzr=self.stdzr, log_vars=self.log_vars, logit_vars=self.logit_vars)
+        return dict(
+            outputs=self.outputs,
+            names_column=self.names_column,
+            values_column=self.values_column,
+            stdzr=self.stdzr,
+            log_vars=self.log_vars,
+            logit_vars=self.logit_vars,
+        )
 
     @property
     def inputs(self) -> list[str]:
@@ -489,23 +527,31 @@ class MetaFrame(pd.DataFrame, ABC):
     @property
     def float_inputs(self) -> list[str]:
         """Columns of dataframe with "float64" dtype."""
-        return [col for col in self.inputs if self[col].dtype == 'float64']
+        return [col for col in self.inputs if self[col].dtype == "float64"]
 
     @classmethod
-    def _wide_to_tidy_(cls, wide, outputs, names_column='Variable', values_column='Value'):
+    def _wide_to_tidy_(
+        cls, wide, outputs, names_column="Variable", values_column="Value"
+    ):
         inputs = [col for col in wide.columns if col not in outputs]
-        tidy = wide.melt(id_vars=inputs, value_vars=outputs, var_name=names_column,
-                         value_name=values_column)
+        tidy = wide.melt(
+            id_vars=inputs,
+            value_vars=outputs,
+            var_name=names_column,
+            value_name=values_column,
+        )
         return tidy
 
     @classmethod
-    def _tidy_to_wide_(cls, tidy, names_column='Variable', values_column='Value'):
-        inputs = [col for col in tidy.columns if col not in [names_column, values_column]]
-        wide = (tidy
-                .pivot(index=inputs, columns=names_column, values=values_column)
-                .reset_index()
-                .rename_axis(columns=None)
-                )
+    def _tidy_to_wide_(cls, tidy, names_column="Variable", values_column="Value"):
+        inputs = [
+            col for col in tidy.columns if col not in [names_column, values_column]
+        ]
+        wide = (
+            tidy.pivot(index=inputs, columns=names_column, values=values_column)
+            .reset_index()
+            .rename_axis(columns=None)
+        )
         return wide
 
 
@@ -557,13 +603,30 @@ class WideData(MetaFrame):
         return tidy
 
     @classmethod
-    def from_tidy(cls, tidy, outputs=None, names_column='Variable', values_column='Value',
-                  stdzr=None, log_vars=None, logit_vars=None):
+    def from_tidy(
+        cls,
+        tidy,
+        outputs=None,
+        names_column="Variable",
+        values_column="Value",
+        stdzr=None,
+        log_vars=None,
+        logit_vars=None,
+    ):
         """Constructs `WideData` from a tidy-form dataframe. See :class:`WideData` for explanation of arguments."""
         outputs = outputs if outputs is not None else list(tidy[names_column].unique())
-        wide = cls._tidy_to_wide_(tidy, names_column=names_column, values_column=values_column)
-        return cls(wide, outputs=outputs, names_column=names_column, values_column=values_column,
-                   stdzr=stdzr, log_vars=log_vars, logit_vars=logit_vars)
+        wide = cls._tidy_to_wide_(
+            tidy, names_column=names_column, values_column=values_column
+        )
+        return cls(
+            wide,
+            outputs=outputs,
+            names_column=names_column,
+            values_column=values_column,
+            stdzr=stdzr,
+            log_vars=log_vars,
+            logit_vars=logit_vars,
+        )
 
 
 class TidyData(MetaFrame):
@@ -593,8 +656,12 @@ class TidyData(MetaFrame):
     """
 
     def __post_init__(self):
-        tidy = self._wide_to_tidy_(self.df, outputs=self.outputs, names_column=self.names_column,
-                                   values_column=self.values_column)
+        tidy = self._wide_to_tidy_(
+            self.df,
+            outputs=self.outputs,
+            names_column=self.names_column,
+            values_column=self.values_column,
+        )
         self.df = tidy
         super(TidyData, self).__post_init__()
 
@@ -602,7 +669,11 @@ class TidyData(MetaFrame):
     def z(self) -> pd.DataFrame:
         """Standardized data values."""
         wide = self.to_wide()
-        specs = dict(outputs=self.outputs, names_column=self.names_column, values_column=self.values_column)
+        specs = dict(
+            outputs=self.outputs,
+            names_column=self.names_column,
+            values_column=self.values_column,
+        )
         wd = WideData(wide, **specs, stdzr=self.stdzr)
         z = self._wide_to_tidy_(wd.z, **specs)
         return z
@@ -611,14 +682,20 @@ class TidyData(MetaFrame):
     def t(self) -> pd.DataFrame:
         """Transformed data values."""
         wide = self.to_wide()
-        specs = dict(outputs=self.outputs, names_column=self.names_column, values_column=self.values_column)
+        specs = dict(
+            outputs=self.outputs,
+            names_column=self.names_column,
+            values_column=self.values_column,
+        )
         wd = WideData(wide, **specs, stdzr=self.stdzr)
         z = self._wide_to_tidy_(wd.t, **specs)
         return z
 
     def to_wide(self) -> WideData:
         """Converts to WideData"""
-        wide_df = self._tidy_to_wide_(self, names_column=self.names_column, values_column=self.values_column)
+        wide_df = self._tidy_to_wide_(
+            self, names_column=self.names_column, values_column=self.values_column
+        )
         wide = WideData(wide_df, **self.specs)
         return wide
 
@@ -688,36 +765,46 @@ class DataSet:
 
     data: pd.DataFrame
     outputs: list
-    names_column: str = 'Variable'
-    values_column: str = 'Value'
+    names_column: str = "Variable"
+    values_column: str = "Value"
     log_vars: list = None
     logit_vars: list = None
     stdzr: Standardizer = None
 
     def __post_init__(self):
         if self.stdzr is None:
-            self.stdzr = Standardizer.from_DataFrame(self.wide, log_vars=self.log_vars, logit_vars=self.logit_vars)
+            self.stdzr = Standardizer.from_DataFrame(
+                self.wide, log_vars=self.log_vars, logit_vars=self.logit_vars
+            )
         else:
             self.log_vars = self.stdzr.log_vars
             self.logit_vars = self.stdzr.logit_vars
 
     def __repr__(self):
-        wide_shape = '[{0} rows x {1} columns]'.format(*self.wide.shape)
-        tidy_shape = '[{0} rows x {1} columns]'.format(*self.tidy.shape)
-        summary = '\n\t'.join([
-            'DataSet:',
-            f'wide: {wide_shape}',
-            f'tidy: {tidy_shape}',
-            f'outputs: {self.outputs}',
-            f'inputs: {self.inputs}',
-        ])
+        wide_shape = "[{0} rows x {1} columns]".format(*self.wide.shape)
+        tidy_shape = "[{0} rows x {1} columns]".format(*self.tidy.shape)
+        summary = "\n\t".join(
+            [
+                "DataSet:",
+                f"wide: {wide_shape}",
+                f"tidy: {tidy_shape}",
+                f"outputs: {self.outputs}",
+                f"inputs: {self.inputs}",
+            ]
+        )
         return summary
 
     @property
     def specs(self):
         """Provides keyword arguments for easy instantiation of a similar :class:`DataSet`."""
-        return dict(outputs=self.outputs, names_column=self.names_column, values_column=self.values_column,
-                    stdzr=self.stdzr, log_vars=self.log_vars, logit_vars=self.logit_vars)
+        return dict(
+            outputs=self.outputs,
+            names_column=self.names_column,
+            values_column=self.values_column,
+            stdzr=self.stdzr,
+            log_vars=self.log_vars,
+            logit_vars=self.logit_vars,
+        )
 
     @property
     def inputs(self):
@@ -727,7 +814,7 @@ class DataSet:
     @property
     def float_inputs(self):
         """Columns of dataframe with "float64" dtype."""
-        return [col for col in self.inputs if self.wide[col].dtype == 'float64']
+        return [col for col in self.inputs if self.wide[col].dtype == "float64"]
 
     @property
     def wide(self) -> WideData:
@@ -736,8 +823,9 @@ class DataSet:
 
     @wide.setter
     def wide(self, wide_df: pd.DataFrame):
-        assert any([output in wide_df.columns for output in self.outputs]), \
-            f'Dataframe must have at least one of outputs {self.outputs}'
+        assert any(
+            [output in wide_df.columns for output in self.outputs]
+        ), f"Dataframe must have at least one of outputs {self.outputs}"
         self.data = wide_df
 
     @property
@@ -747,28 +835,63 @@ class DataSet:
 
     @tidy.setter
     def tidy(self, tidy_df: pd.DataFrame):
-        assert all([col in tidy_df.columns for col in [self.names_column, self.values_column]]), \
-            f'Dataframe must have both columns {[self.names_column, self.values_column]}'
+        assert all(
+            [col in tidy_df.columns for col in [self.names_column, self.values_column]]
+        ), f"Dataframe must have both columns {[self.names_column, self.values_column]}"
         self.wide = WideData.from_tidy(tidy_df, **self.specs)
 
     @classmethod
-    def from_tidy(cls, tidy, outputs=None, names_column='Variable', values_column='Value',
-                  stdzr=None, log_vars=None, logit_vars=None):
+    def from_tidy(
+        cls,
+        tidy,
+        outputs=None,
+        names_column="Variable",
+        values_column="Value",
+        stdzr=None,
+        log_vars=None,
+        logit_vars=None,
+    ):
         """Constructs a `DataSet` from a tidy-form dataframe. See :class:`DataSet` for explanation of arguments."""
-        assert all([col in tidy.columns for col in [names_column, values_column]]), \
-            f'Dataframe must have both columns {[names_column, values_column]}'
-        specs = dict(outputs=outputs, names_column=names_column, values_column=values_column,
-                     stdzr=stdzr, log_vars=log_vars, logit_vars=logit_vars)
+        assert all(
+            [col in tidy.columns for col in [names_column, values_column]]
+        ), f"Dataframe must have both columns {[names_column, values_column]}"
+        specs = dict(
+            outputs=outputs,
+            names_column=names_column,
+            values_column=values_column,
+            stdzr=stdzr,
+            log_vars=log_vars,
+            logit_vars=logit_vars,
+        )
         wide = WideData.from_tidy(tidy, **specs)
         return cls(wide, **wide.specs)
 
     @classmethod
-    def from_wide(cls, wide, outputs=None, names_column='Variable', values_column='Value',
-                  stdzr=None, log_vars=None, logit_vars=None):
+    def from_wide(
+        cls,
+        wide,
+        outputs=None,
+        names_column="Variable",
+        values_column="Value",
+        stdzr=None,
+        log_vars=None,
+        logit_vars=None,
+    ):
         """Constructs a `DataSet` from a wide-form dataframe. See :class:`DataSet` for explanation of arguments."""
-        return cls(wide, outputs=outputs, names_column=names_column, values_column=values_column, stdzr=stdzr,
-                   log_vars=log_vars, logit_vars=logit_vars)
+        return cls(
+            wide,
+            outputs=outputs,
+            names_column=names_column,
+            values_column=values_column,
+            stdzr=stdzr,
+            log_vars=log_vars,
+            logit_vars=logit_vars,
+        )
 
     def update_stdzr(self):
         """Updates internal :class:`Standardizer` with current data, :attr:`log_vars`, and :attr:`logit_vars`."""
-        self.stdzr.update(Standardizer.from_DataFrame(self.wide, log_vars=self.log_vars, logit_vars=self.logit_vars))  # Fix once Python >= 3.9
+        self.stdzr.update(
+            Standardizer.from_DataFrame(
+                self.wide, log_vars=self.log_vars, logit_vars=self.logit_vars
+            )
+        )  # Fix once Python >= 3.9

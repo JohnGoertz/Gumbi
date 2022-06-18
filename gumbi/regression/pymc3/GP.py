@@ -1,4 +1,3 @@
-
 import warnings
 import numpy as np
 import pandas as pd
@@ -17,7 +16,8 @@ from gumbi.arrays import MVUncertainParameterArray as mvuparray
 
 from ..base import Regressor
 
-__all__ = ['GP']
+__all__ = ["GP"]
+
 
 class GP(Regressor):
     r"""Gaussian Process surface learning and prediction.
@@ -211,7 +211,7 @@ class GP(Regressor):
         self.MAP = None
         self.trace = None
 
-        self.continuous_kernel = 'ExpQuad'
+        self.continuous_kernel = "ExpQuad"
         self.heteroskedastic_inputs = False
         self.heteroskedastic_outputs = True
         self.sparse = False
@@ -219,21 +219,36 @@ class GP(Regressor):
         self.n_u = 100
 
         self.model_specs = {
-            'seed': self.seed,
-            'continuous_kernel': self.continuous_kernel,
-            'heteroskedastic_inputs': self.heteroskedastic_inputs,
-            'heteroskedastic_outputs': self.heteroskedastic_outputs,
-            'sparse': self.sparse,
-            'n_u': self.n_u,
+            "seed": self.seed,
+            "continuous_kernel": self.continuous_kernel,
+            "heteroskedastic_inputs": self.heteroskedastic_inputs,
+            "heteroskedastic_outputs": self.heteroskedastic_outputs,
+            "sparse": self.sparse,
+            "n_u": self.n_u,
         }
 
     ################################################################################
     # Model building and fitting
     ################################################################################
 
-    def fit(self, outputs=None, linear_dims=None, continuous_dims=None, continuous_levels=None, continuous_coords=None,
-            categorical_dims=None, categorical_levels=None, additive=False, seed=None, heteroskedastic_inputs=False,
-            heteroskedastic_outputs=True, sparse=False, n_u=100, ARD=True, **MAP_kwargs):
+    def fit(
+        self,
+        outputs=None,
+        linear_dims=None,
+        continuous_dims=None,
+        continuous_levels=None,
+        continuous_coords=None,
+        categorical_dims=None,
+        categorical_levels=None,
+        additive=False,
+        seed=None,
+        heteroskedastic_inputs=False,
+        heteroskedastic_outputs=True,
+        sparse=False,
+        n_u=100,
+        ARD=True,
+        **MAP_kwargs,
+    ):
         """Fits a GP surface
 
         Parses inputs, compiles a Pymc3 model, then finds the MAP value for the hyperparameters. `{}_dims` arguments
@@ -295,27 +310,49 @@ class GP(Regressor):
         self : :class:`GP`
         """
 
-        self.specify_model(outputs=outputs, linear_dims=linear_dims, continuous_dims=continuous_dims,
-                           continuous_levels=continuous_levels, continuous_coords=continuous_coords,
-                           categorical_dims=categorical_dims, categorical_levels=categorical_levels,
-                           additive=additive)
+        self.specify_model(
+            outputs=outputs,
+            linear_dims=linear_dims,
+            continuous_dims=continuous_dims,
+            continuous_levels=continuous_levels,
+            continuous_coords=continuous_coords,
+            categorical_dims=categorical_dims,
+            categorical_levels=categorical_levels,
+            additive=additive,
+        )
 
-        self.build_model(seed=seed,
-                         heteroskedastic_inputs=heteroskedastic_inputs,
-                         heteroskedastic_outputs=heteroskedastic_outputs,
-                         sparse=sparse, n_u=n_u, ARD=ARD)
+        self.build_model(
+            seed=seed,
+            heteroskedastic_inputs=heteroskedastic_inputs,
+            heteroskedastic_outputs=heteroskedastic_outputs,
+            sparse=sparse,
+            n_u=n_u,
+            ARD=ARD,
+        )
 
         self.find_MAP(**MAP_kwargs)
 
         return self
 
-    def _make_continuous_cov(self, continuous_cov_func, D_in, idx_s, n_s, ℓ_μ, ℓ_σ, ARD=True, stabilize=True, eps=1e-6):
+    def _make_continuous_cov(
+        self,
+        continuous_cov_func,
+        D_in,
+        idx_s,
+        n_s,
+        ℓ_μ,
+        ℓ_σ,
+        ARD=True,
+        stabilize=True,
+        eps=1e-6,
+    ):
 
         shape = n_s if ARD else 1
+
         def continuous_cov(suffix):
             # ℓ = pm.InverseGamma(f'ℓ_{suffix}', mu=ℓ_μ, sigma=ℓ_σ, shape=shape)
-            ℓ = pm.Gamma(f'ℓ_{suffix}', alpha=2, beta=1, shape=shape)
-            η = pm.Gamma(f'η_{suffix}', alpha=2, beta=1)
+            ℓ = pm.Gamma(f"ℓ_{suffix}", alpha=2, beta=1, shape=shape)
+            η = pm.Gamma(f"η_{suffix}", alpha=2, beta=1)
             cov = η ** 2 * continuous_cov_func(input_dim=D_in, active_dims=idx_s, ls=ℓ)
             if stabilize:
                 cov += pm.gp.cov.WhiteNoise(eps)
@@ -324,16 +361,14 @@ class GP(Regressor):
         return continuous_cov
 
     def _make_linear_cov(self, D_in, idx_l, n_l):
-
         def linear_cov(suffix):
-            c = pm.Normal(f'c_{suffix}', mu=0, sigma=10, shape=n_l)
-            τ = pm.HalfNormal(f'τ_{suffix}', sigma=10)
+            c = pm.Normal(f"c_{suffix}", mu=0, sigma=10, shape=n_l)
+            τ = pm.HalfNormal(f"τ_{suffix}", sigma=10)
             return τ * pm.gp.cov.Linear(input_dim=D_in, c=c, active_dims=idx_l)
 
         return linear_cov
 
     def _make_coreg_cov(self, D_in, seed):
-
         def coreg_cov(suffix, D_out, idx):
             testval = np.random.default_rng(seed).standard_normal(size=(D_out, 2))
             W = pm.Normal(f"W_{suffix}", mu=0, sd=3, shape=(D_out, 2), testval=testval)
@@ -345,8 +380,16 @@ class GP(Regressor):
     # TODO: add full probabilistic model description to docstring
     # TODO: allow dimension-specific continuous kernel specification
     # TODO: allow single multi-dimensional continuous kernel rather than independent kernels per dimension
-    def build_model(self, seed=None, continuous_kernel='ExpQuad', heteroskedastic_inputs=False,
-                    heteroskedastic_outputs=True, sparse=False, n_u=100, ARD=True):
+    def build_model(
+        self,
+        seed=None,
+        continuous_kernel="ExpQuad",
+        heteroskedastic_inputs=False,
+        heteroskedastic_outputs=True,
+        sparse=False,
+        n_u=100,
+        ARD=True,
+    ):
         r"""Compile a marginalized pymc3 model for the GP.
 
         Each dimension in :attr:`continuous_dims` is combined in an ExpQuad kernel with a principled
@@ -382,9 +425,11 @@ class GP(Regressor):
         """
 
         if heteroskedastic_inputs:
-            raise NotImplementedError('Heteroskedasticity over inputs is not yet implemented.')
+            raise NotImplementedError(
+                "Heteroskedasticity over inputs is not yet implemented."
+            )
 
-        X, y = self.get_shaped_data('mean')
+        X, y = self.get_shaped_data("mean")
         D_in = len(self.dims)
         assert X.shape[1] == D_in
 
@@ -398,15 +443,17 @@ class GP(Regressor):
         self.latent = False
 
         self.model_specs = {
-            'seed': seed,
-            'continuous_kernel': continuous_kernel,
-            'heteroskedastic_inputs': heteroskedastic_inputs,
-            'heteroskedastic_outputs': heteroskedastic_outputs,
-            'sparse': sparse,
-            'n_u': n_u,
+            "seed": seed,
+            "continuous_kernel": continuous_kernel,
+            "heteroskedastic_inputs": heteroskedastic_inputs,
+            "heteroskedastic_outputs": heteroskedastic_outputs,
+            "sparse": sparse,
+            "n_u": n_u,
         }
 
-        gp_dict = self._construct_kernels(X, continuous_kernel, seed, sparse, latent=False, ARD=ARD)
+        gp_dict = self._construct_kernels(
+            X, continuous_kernel, seed, sparse, latent=False, ARD=ARD
+        )
 
         with self.model:
 
@@ -418,35 +465,39 @@ class GP(Regressor):
 
             # GP is heteroskedastic across outputs by default,
             # but homoskedastic across continuous dimensions
-            σ = pm.Exponential('σ', lam=1)
+            σ = pm.Exponential("σ", lam=1)
             noise = pm.gp.cov.WhiteNoise(sigma=σ)
             if heteroskedastic_inputs:
-                raise NotImplementedError('Heteroskedasticity over inputs is not yet implemented')
+                raise NotImplementedError(
+                    "Heteroskedasticity over inputs is not yet implemented"
+                )
                 # noise += continuous_cov('noise')
             if heteroskedastic_outputs and self.out_col in self.categorical_dims:
                 D_out = len(self.categorical_levels[self.out_col])
                 coreg_cov = self._make_coreg_cov(D_in, seed)
-                idx_p = self._get_dim_indexes()['p']
-                noise *= coreg_cov('Output_noise', D_out, idx_p)
+                idx_p = self._get_dim_indexes()["p"]
+                noise *= coreg_cov("Output_noise", D_out, idx_p)
 
             if sparse:
                 Xu = pm.gp.util.kmeans_inducing_points(n_u, X)
                 if heteroskedastic_outputs:
-                    warnings.warn('Heteroskedasticity over outputs is not yet implemented for sparse GP. Reverting to scalar-valued noise.')
-                _ = gp_dict['total'].marginal_likelihood('ml', X=X, Xu=Xu, y=y, noise=σ)
+                    warnings.warn(
+                        "Heteroskedasticity over outputs is not yet implemented for sparse GP. Reverting to scalar-valued noise."
+                    )
+                _ = gp_dict["total"].marginal_likelihood("ml", X=X, Xu=Xu, y=y, noise=σ)
             else:
-                _ = gp_dict['total'].marginal_likelihood('ml', X=X, y=y, noise=noise)
+                _ = gp_dict["total"].marginal_likelihood("ml", X=X, y=y, noise=noise)
 
         # self.gp_dict = gp_dict
         return self
 
     def _choose_implementation(self, sparse=False, latent=False):
         if sparse and latent:
-            raise NotImplementedError('Sparse Latent GPs are not yet implemented.')
+            raise NotImplementedError("Sparse Latent GPs are not yet implemented.")
 
         if sparse:
             pm_gp = pm.gp.MarginalSparse
-            gp_kws = {'approx': "FITC"}
+            gp_kws = {"approx": "FITC"}
         elif latent:
             pm_gp = pm.gp.Latent
             gp_kws = {}
@@ -462,10 +513,10 @@ class GP(Regressor):
     def _get_dim_counts(self):
 
         dim_counts = {
-            'l': len(self.linear_dims),
-            's': len(self.continuous_dims),
-            'c': len(self.categorical_dims),
-            'p': len(self.outputs),
+            "l": len(self.linear_dims),
+            "s": len(self.continuous_dims),
+            "c": len(self.categorical_dims),
+            "p": len(self.outputs),
         }
 
         return dim_counts
@@ -473,25 +524,42 @@ class GP(Regressor):
     def _get_dim_indexes(self):
 
         dim_indexes = {
-            'l': [self.dims.index(dim) for dim in self.linear_dims],
-            's': [self.dims.index(dim) for dim in self.continuous_dims],
-            'c': [self.dims.index(dim) for dim in self.categorical_dims],
-            'p': self.dims.index(self.out_col) if self.out_col in self.dims else None,
+            "l": [self.dims.index(dim) for dim in self.linear_dims],
+            "s": [self.dims.index(dim) for dim in self.continuous_dims],
+            "c": [self.dims.index(dim) for dim in self.categorical_dims],
+            "p": self.dims.index(self.out_col) if self.out_col in self.dims else None,
         }
 
         return dim_indexes
 
     def _prepare_lengthscales(self, X):
 
-        X_s = X[:, self._get_dim_indexes()['s']]
+        X_s = X[:, self._get_dim_indexes()["s"]]
 
         ℓ_μ, ℓ_σ = [stat for stat in np.array([get_ℓ_prior(dim) for dim in X_s.T]).T]
         return ℓ_μ, ℓ_σ
 
-    def _construct_kernels(self, X, continuous_kernel, seed, sparse, latent, ARD=True, stabilize=True, eps=1e-6):
+    def _construct_kernels(
+        self,
+        X,
+        continuous_kernel,
+        seed,
+        sparse,
+        latent,
+        ARD=True,
+        stabilize=True,
+        eps=1e-6,
+    ):
 
-        continuous_kernels = ['ExpQuad', 'RatQuad', 'Matern32', 'Matern52', 'Exponential', 'Cosine']
-        assert_in('Continuous kernel', continuous_kernel, continuous_kernels)
+        continuous_kernels = [
+            "ExpQuad",
+            "RatQuad",
+            "Matern32",
+            "Matern52",
+            "Exponential",
+            "Cosine",
+        ]
+        assert_in("Continuous kernel", continuous_kernel, continuous_kernels)
         continuous_cov_func = getattr(pm.gp.cov, continuous_kernel)
 
         D_in = len(self.dims)
@@ -500,9 +568,18 @@ class GP(Regressor):
         idxs = self._get_dim_indexes()
         ℓ_μ, ℓ_σ = self._prepare_lengthscales(X)
 
-        continuous_cov = self._make_continuous_cov(continuous_cov_func, D_in, idxs['s'], ns['s'], ℓ_μ, ℓ_σ,
-                                                   ARD=ARD, stabilize=stabilize, eps=eps)
-        linear_cov = self._make_linear_cov(D_in, idxs['l'], ns['l'])
+        continuous_cov = self._make_continuous_cov(
+            continuous_cov_func,
+            D_in,
+            idxs["s"],
+            ns["s"],
+            ℓ_μ,
+            ℓ_σ,
+            ARD=ARD,
+            stabilize=stabilize,
+            eps=eps,
+        )
+        linear_cov = self._make_linear_cov(D_in, idxs["l"], ns["l"])
         coreg_cov = self._make_coreg_cov(D_in, seed)
 
         pm_gp = self._choose_implementation(sparse=sparse, latent=latent)
@@ -513,13 +590,13 @@ class GP(Regressor):
             # lin_mean = pm.gp.mean.Linear(coeffs=[β[i] if i in idx_l else 0 for i in range(D_in), intercept=μ)
 
             # Define a "global" continuous kernel regardless of additive structure
-            cov = continuous_cov('total')
-            if ns['l'] > 0:
-                cov += linear_cov('total')
+            cov = continuous_cov("total")
+            if ns["l"] > 0:
+                cov += linear_cov("total")
 
             # Construct a coregion kernel for each categorical_dims
-            if ns['c'] > 0 and not self.additive:
-                for dim, idx in zip(self.categorical_dims, idxs['c']):
+            if ns["c"] > 0 and not self.additive:
+                for dim, idx in zip(self.categorical_dims, idxs["c"]):
                     if dim == self.out_col:
                         continue
                     D_out = len(self.categorical_levels[dim])
@@ -528,22 +605,22 @@ class GP(Regressor):
             # Coregion kernel for parameters, if necessary
             if self.out_col in self.categorical_dims:
                 D_out = len(self.categorical_levels[self.out_col])
-                cov_param = coreg_cov(self.out_col, D_out, idxs['p'])
+                cov_param = coreg_cov(self.out_col, D_out, idxs["p"])
                 cov *= cov_param
 
-            gp_dict = {'total': pm_gp(cov_func=cov)}
+            gp_dict = {"total": pm_gp(cov_func=cov)}
 
             # Construct a continuous+coregion kernel for each categorical_dim, then combine them additively
             if self.additive:
-                gp_dict['global'] = gp_dict['total']
-                for dim, idx in zip(self.categorical_dims, idxs['c']):
+                gp_dict["global"] = gp_dict["total"]
+                for dim, idx in zip(self.categorical_dims, idxs["c"]):
                     if dim == self.out_col:
                         continue
 
                     # Continuous kernel specific to this dimension
                     cov = continuous_cov(dim)
                     # TODO: Decide if each additive dimension needs its own linear kernel
-                    if ns['l'] > 0:
+                    if ns["l"] > 0:
                         cov += linear_cov(dim)
 
                     # Coregion kernel specific to this dimension
@@ -556,17 +633,24 @@ class GP(Regressor):
 
                     # Combine GPs
                     gp_dict[dim] = pm_gp(cov_func=cov)
-                    gp_dict['total'] += gp_dict[dim]
+                    gp_dict["total"] += gp_dict[dim]
 
         self.gp_dict = gp_dict
         return gp_dict
 
-    def build_latent(self, seed=None, continuous_kernel='ExpQuad', prior_name='latent_prior', ARD=True, eps=1e-6):
+    def build_latent(
+        self,
+        seed=None,
+        continuous_kernel="ExpQuad",
+        prior_name="latent_prior",
+        ARD=True,
+        eps=1e-6,
+    ):
 
         if self.additive:
-            raise NotImplementedError('Additive/latent GPs are not yet implemented')
+            raise NotImplementedError("Additive/latent GPs are not yet implemented")
 
-        X, y = self.get_shaped_data('mean')
+        X, y = self.get_shaped_data("mean")
         D_in = len(self.dims)
         assert X.shape[1] == D_in
 
@@ -576,11 +660,19 @@ class GP(Regressor):
         self.sparse = False
         self.latent = True
 
-        gp_dict = self._construct_kernels(X, continuous_kernel, seed, sparse=False, latent=True, ARD=ARD,
-                                          stabilize=True, eps=eps)
+        gp_dict = self._construct_kernels(
+            X,
+            continuous_kernel,
+            seed,
+            sparse=False,
+            latent=True,
+            ARD=ARD,
+            stabilize=True,
+            eps=eps,
+        )
 
         with self.model:
-            self.prior = gp_dict['total'].prior(prior_name, X=X)
+            self.prior = gp_dict["total"].prior(prior_name, X=X)
 
         return self
 
@@ -612,8 +704,8 @@ class GP(Regressor):
         """
 
         defaults = {
-            'return_inferencedata': True,
-            'random_seed': self.seed,
+            "return_inferencedata": True,
+            "random_seed": self.seed,
         }
 
         assert self.model is not None
@@ -622,7 +714,7 @@ class GP(Regressor):
 
         return self.trace
 
-    def predict(self, points_array, with_noise=True, additive_level='total', **kwargs):
+    def predict(self, points_array, with_noise=True, additive_level="total", **kwargs):
         """Make predictions at supplied points using specified gp
 
         Parameters
@@ -640,26 +732,41 @@ class GP(Regressor):
         """
 
         # TODO: need to supply "given" dict for additive GP sublevel predictions
-        if additive_level != 'total':
-            raise NotImplementedError('Prediction for additive sublevels is not yet supported.')
+        if additive_level != "total":
+            raise NotImplementedError(
+                "Prediction for additive sublevels is not yet supported."
+            )
 
         # Prediction means and variance as a numpy vector
-        predictions = self.gp_dict[additive_level].predict(points_array, point=self.MAP, diag=True,
-                                                           pred_noise=with_noise, **kwargs)
+        predictions = self.gp_dict[additive_level].predict(
+            points_array, point=self.MAP, diag=True, pred_noise=with_noise, **kwargs
+        )
 
         return predictions
 
-    def _recursively_append(self, var_name, suffix='_', increment_var=True):
+    def _recursively_append(self, var_name, suffix="_", increment_var=True):
         if var_name in [v.name for v in self.model.vars]:
             if increment_var:
                 var_name += suffix
                 return self._recursively_append(var_name)
             else:
-                raise ValueError(f'The variable name "{var_name}" already exists in model.')
+                raise ValueError(
+                    f'The variable name "{var_name}" already exists in model.'
+                )
         else:
             return var_name
 
-    def draw_point_samples(self, points, *args, source=None, output=None, var_name='posterior_samples', additive_level='total', increment_var=True, **kwargs):
+    def draw_point_samples(
+        self,
+        points,
+        *args,
+        source=None,
+        output=None,
+        var_name="posterior_samples",
+        additive_level="total",
+        increment_var=True,
+        **kwargs,
+    ):
         """Draw posterior samples at supplied points
 
         Parameters
@@ -685,14 +792,22 @@ class GP(Regressor):
 
         output = self._parse_prediction_output(output)
         if len(output) > 1:
-            raise NotImplementedError('Drawing correlated samples of multiple outputs is not yet implemented.')
-        points_array, tall_points, param_coords = self._prepare_points_for_prediction(points, output=output)
+            raise NotImplementedError(
+                "Drawing correlated samples of multiple outputs is not yet implemented."
+            )
+        points_array, tall_points, param_coords = self._prepare_points_for_prediction(
+            points, output=output
+        )
 
         if source is None:
             if self.trace is None and self.MAP is None:
-                raise ValueError('"Source" of predictions must be supplied if GP object has no trace or MAP stored.')
+                raise ValueError(
+                    '"Source" of predictions must be supplied if GP object has no trace or MAP stored.'
+                )
             elif self.trace is not None and self.MAP is not None:
-                raise ValueError('"Source" of predictions must be supplied if GP object has both trace and MAP stored.')
+                raise ValueError(
+                    '"Source" of predictions must be supplied if GP object has both trace and MAP stored.'
+                )
             elif self.MAP is not None:
                 source = [self.MAP]
             elif self.trace is not None:
@@ -704,15 +819,26 @@ class GP(Regressor):
             _ = self.gp_dict[additive_level].conditional(var_name, points_array)
 
         with self.model:
-            samples = pm.sample_posterior_predictive(*args, source, var_names=[var_name], **kwargs)
+            samples = pm.sample_posterior_predictive(
+                *args, source, var_names=[var_name], **kwargs
+            )
 
         self.predictions = self.parray(**{var_name: samples[var_name]}, stdzd=True)
         self.predictions_X = points
 
         return self.predictions
 
-    def draw_grid_samples(self, *args, source=None, output=None, categorical_levels=None, var_name='posterior_samples',
-                          additive_level='total', increment_var=True, **kwargs):
+    def draw_grid_samples(
+        self,
+        *args,
+        source=None,
+        output=None,
+        categorical_levels=None,
+        var_name="posterior_samples",
+        additive_level="total",
+        increment_var=True,
+        **kwargs,
+    ):
         """Draw posterior samples at points defined by :meth:`prepare_grid`.
 
         Parameters
@@ -737,14 +863,24 @@ class GP(Regressor):
         """
 
         if self.grid_points is None:
-            raise ValueError('Grid must first be specified with `prepare_grid`')
+            raise ValueError("Grid must first be specified with `prepare_grid`")
 
         points = self.grid_points
         if self.categorical_dims:
-            points = self.append_categorical_points(points, categorical_levels=categorical_levels)
+            points = self.append_categorical_points(
+                points, categorical_levels=categorical_levels
+            )
 
-        samples = self.draw_point_samples(*args, points=points, output=output, source=source, var_name=var_name,
-                                          additive_level=additive_level, increment_var=increment_var, **kwargs)
+        samples = self.draw_point_samples(
+            *args,
+            points=points,
+            output=output,
+            source=source,
+            var_name=var_name,
+            additive_level=additive_level,
+            increment_var=increment_var,
+            **kwargs,
+        )
         self.predictions = samples.reshape(-1, *self.grid_parray.shape)
         self.predictions_X = self.predictions_X.reshape(self.grid_parray.shape)
 

@@ -1,4 +1,6 @@
-from __future__ import annotations  # Necessary for self-type annotations until Python >3.10
+from __future__ import (
+    annotations,
+)  # Necessary for self-type annotations until Python >3.10
 
 import copy
 import pickle
@@ -15,7 +17,13 @@ from uncertainties import unumpy as unp
 from .utils import skip
 from .aggregation import Standardizer
 
-__all__ = ['LayeredArray', 'ParameterArray', 'UncertainArray', 'UncertainParameterArray', 'MVUncertainParameterArray']
+__all__ = [
+    "LayeredArray",
+    "ParameterArray",
+    "UncertainArray",
+    "UncertainParameterArray",
+    "MVUncertainParameterArray",
+]
 
 
 class LogitNormal(rv_continuous):
@@ -32,6 +40,7 @@ class LogitNormal(rv_continuous):
     :math:`\sigma`, of the unique normally distributed random variable `X` such that `expit(X) = Y`. This parametrization
     corresponds to setting `scale = σ` and `loc = expit(μ)`.
     """
+
     def __init__(self, loc=0.5, scale=1):
         super().__init__(self)
         self.scale = scale
@@ -47,7 +56,11 @@ class LogitNormal(rv_continuous):
         return expit(norm(loc=self.loc, scale=self.scale).ppf(q))
 
     def rvs(self, size=None, random_state=None):
-        return expit(norm(loc=self.loc, scale=self.scale).rvs(size=size, random_state=random_state))
+        return expit(
+            norm(loc=self.loc, scale=self.scale).rvs(
+                size=size, random_state=random_state
+            )
+        )
 
 
 class MultivariateNormalish(multivariate_normal_frozen):
@@ -66,9 +79,11 @@ class MultivariateNormalish(multivariate_normal_frozen):
     """
 
     def __init__(self, mean: ParameterArray, cov: int | float | np.ndarray, **kwargs):
-        assert isinstance(mean, ParameterArray), 'Mean must be a ParameterArray'
+        assert isinstance(mean, ParameterArray), "Mean must be a ParameterArray"
         if mean.ndim != 0:
-            raise NotImplementedError('Multidimensional multivariate distributions are not yet supported.')
+            raise NotImplementedError(
+                "Multidimensional multivariate distributions are not yet supported."
+            )
 
         self._names = mean.names
         self._stdzr = mean.stdzr
@@ -77,7 +92,9 @@ class MultivariateNormalish(multivariate_normal_frozen):
         self._islog = [1 if var in self._log_vars else 0 for var in self._names]
         self._islogit = [1 if var in self._logit_vars else 0 for var in self._names]
 
-        super(MultivariateNormalish, self).__init__(mean=mean.z.values(), cov=cov, **kwargs)
+        super(MultivariateNormalish, self).__init__(
+            mean=mean.z.values(), cov=cov, **kwargs
+        )
 
     def pdf(self, x: ParameterArray) -> float:
         r"""Probability density function.
@@ -157,8 +174,14 @@ class MultivariateNormalish(multivariate_normal_frozen):
         #     except:
         #         multivariate_normal(mean=self.mean, cov=self.cov).rvs()
         #         samples = super(MultivariateNormalish, self).rvs(size=size, random_state=random_state)
-        samples = super(MultivariateNormalish, self).rvs(size=size, random_state=random_state)
-        return ParameterArray(**{p: samples[..., i] for i, p in enumerate(self._names)}, stdzd=True, stdzr=self._stdzr)
+        samples = super(MultivariateNormalish, self).rvs(
+            size=size, random_state=random_state
+        )
+        return ParameterArray(
+            **{p: samples[..., i] for i, p in enumerate(self._names)},
+            stdzd=True,
+            stdzr=self._stdzr,
+        )
 
 
 class LayeredArray(np.ndarray):
@@ -169,10 +192,15 @@ class LayeredArray(np.ndarray):
     name : str
     array : array-like
     """
+
     def __new__(cls, stdzr=None, **arrays):
         if arrays == {}:
-            raise ValueError('Must supply at least one array')
-        arrays = {name: np.asarray(array) for name, array in arrays.items() if array is not None}
+            raise ValueError("Must supply at least one array")
+        arrays = {
+            name: np.asarray(array)
+            for name, array in arrays.items()
+            if array is not None
+        }
 
         narray_dtype = np.dtype([(name, array.dtype) for name, array in arrays.items()])
 
@@ -189,23 +217,38 @@ class LayeredArray(np.ndarray):
     def __array_finalize__(self, larray):
         if larray is None:
             return
-        self.names = getattr(larray, 'names', None)
-        self.stdzr = getattr(larray, 'stdzr', None)
+        self.names = getattr(larray, "names", None)
+        self.stdzr = getattr(larray, "stdzr", None)
 
     def __array_ufunc__(self, ufunc, method, *inputs, out=None, **kwargs):
         """https://numpy.org/doc/stable/user/basics.subclassing.html#array-ufunc-for-ufuncs"""
         args = []
-        if len(set([larray.names[0] for larray in inputs if isinstance(larray, LayeredArray)]))>1:
-            warnings.warnings.warn('Operating on arrays with different layer names, results may be unexpected.')
+        if (
+            len(
+                set(
+                    [
+                        larray.names[0]
+                        for larray in inputs
+                        if isinstance(larray, LayeredArray)
+                    ]
+                )
+            )
+            > 1
+        ):
+            warnings.warnings.warn(
+                "Operating on arrays with different layer names, results may be unexpected."
+            )
         for input_ in inputs:
             if isinstance(input_, LayeredArray):
                 if len(input_.names) > 1:
-                    raise ValueError('Cannot operate on array with multiple layer names')
+                    raise ValueError(
+                        "Cannot operate on array with multiple layer names"
+                    )
                 args.append(input_.astype(float).view(np.ndarray))
             else:
                 args.append(input_)
 
-        outputs = kwargs.get('out')
+        outputs = kwargs.get("out")
         if outputs:
             out_args = []
             for output in outputs:
@@ -213,7 +256,7 @@ class LayeredArray(np.ndarray):
                     out_args.append(output.astype(float).view(np.ndarray))
                 else:
                     out_args.append(output)
-            kwargs['out'] = tuple(out_args)
+            kwargs["out"] = tuple(out_args)
         else:
             outputs = (None,) * ufunc.nout
 
@@ -225,9 +268,10 @@ class LayeredArray(np.ndarray):
         if ufunc.nout == 1:
             results = (results,)
 
-        results = tuple(LayeredArray(**{self.names[0]: result})
-                        if output is None else output
-                        for result, output in zip(results,outputs))
+        results = tuple(
+            LayeredArray(**{self.names[0]: result}) if output is None else output
+            for result, output in zip(results, outputs)
+        )
 
         return results[0] if len(results) == 1 else results
 
@@ -235,7 +279,9 @@ class LayeredArray(np.ndarray):
         default = super().__getitem__(item)
         if isinstance(item, str):
             arrays = {item: default}
-        elif isinstance(item, (int, np.int32, np.int64)) or (isinstance(item, tuple) and all(isinstance(val, int) for val in item)):
+        elif isinstance(item, (int, np.int32, np.int64)) or (
+            isinstance(item, tuple) and all(isinstance(val, int) for val in item)
+        ):
             arrays = {name: value for name, value in zip(default.dtype.names, default)}
         elif isinstance(item, slice):
             arrays = {layer.names[0]: layer.values() for layer in default.as_list()}
@@ -244,7 +290,7 @@ class LayeredArray(np.ndarray):
         return LayeredArray(**arrays)
 
     def __repr__(self):
-        return f'{tuple(self.names)}: {np.asarray(self)}'
+        return f"{tuple(self.names)}: {np.asarray(self)}"
 
     def get(self, name, default=None):
         """Return value given by `name` if it exists, otherwise return `default`."""
@@ -257,11 +303,13 @@ class LayeredArray(np.ndarray):
 
     def drop(self, name, missing_ok=True):
         if name in self.names:
-            return LayeredArray(**{p: arr for p, arr in self.as_dict().items() if p != name})
+            return LayeredArray(
+                **{p: arr for p, arr in self.as_dict().items() if p != name}
+            )
         elif missing_ok:
             return self
         else:
-            raise KeyError(f'Name {name} not found in array.')
+            raise KeyError(f"Name {name} not found in array.")
 
     def values(self):
         """Values at each index stacked into regular ndarray."""
@@ -353,11 +401,13 @@ class ParameterArray(LayeredArray):
 
     def __new__(cls, stdzr: Standardizer, stdzd=False, **arrays):
         if arrays == {}:
-            raise ValueError('Must supply at least one array')
+            raise ValueError("Must supply at least one array")
 
         if stdzd:
-            arrays = {name: stdzr.unstdz(name, np.array(array))
-                      for name, array in arrays.items()}
+            arrays = {
+                name: stdzr.unstdz(name, np.array(array))
+                for name, array in arrays.items()
+            }
 
         parray = LayeredArray.__new__(cls, **arrays)
         parray.stdzr = stdzr
@@ -367,8 +417,8 @@ class ParameterArray(LayeredArray):
     def __array_finalize__(self, parray):
         if parray is None:
             return
-        self.stdzr = getattr(parray, 'stdzr', None)
-        self.names = getattr(parray, 'names', None)
+        self.stdzr = getattr(parray, "stdzr", None)
+        self.names = getattr(parray, "names", None)
 
     def __array_ufunc__(self, ufunc, method, *inputs, **kwargs):
         result = super().__array_ufunc__(ufunc, method, *inputs, **kwargs)
@@ -380,14 +430,15 @@ class ParameterArray(LayeredArray):
         default = super(LayeredArray, self).__getitem__(item)
         if isinstance(item, str):
             arrays = {item: default}
-        elif isinstance(item, (int, np.int32, np.int64)) or (isinstance(item, tuple) and all(isinstance(val, int) for val in item)):
+        elif isinstance(item, (int, np.int32, np.int64)) or (
+            isinstance(item, tuple) and all(isinstance(val, int) for val in item)
+        ):
             arrays = {name: value for name, value in zip(default.dtype.names, default)}
         elif isinstance(item, slice):
             arrays = {layer.names[0]: layer.values() for layer in default.as_list()}
         else:
             return default
         return ParameterArray(**arrays, stdzr=self.stdzr, stdzd=False)
-
 
     def get(self, name, default=None):
         """Return value given by `name` if it exists, otherwise return `default`"""
@@ -400,22 +451,30 @@ class ParameterArray(LayeredArray):
 
     def drop(self, name, missing_ok=True):
         if name in self.names:
-            return self.parray(**{p: arr for p, arr in self.as_dict().items() if p != name})
+            return self.parray(
+                **{p: arr for p, arr in self.as_dict().items() if p != name}
+            )
         elif missing_ok:
             return self
         else:
-            raise KeyError(f'Name {name} not found in array.')
+            raise KeyError(f"Name {name} not found in array.")
 
     @property
     def z(self) -> LayeredArray:
         """Standardized values"""
-        zdct = {name+'_z': self.stdzr.stdz(name, self[name].values()) for name in self.names}
+        zdct = {
+            name + "_z": self.stdzr.stdz(name, self[name].values())
+            for name in self.names
+        }
         return LayeredArray(**zdct, stdzr=self.stdzr)
 
     @property
     def t(self) -> LayeredArray:
         """Transformed values"""
-        tdct = {name+'_t': self.stdzr.transform(name, self[name].values()) for name in self.names}
+        tdct = {
+            name + "_t": self.stdzr.transform(name, self[name].values())
+            for name in self.names
+        }
         return LayeredArray(**tdct, stdzr=self.stdzr)
 
     def add_layers(self, stdzd=False, **arrays):
@@ -430,7 +489,9 @@ class ParameterArray(LayeredArray):
         """Add a single value for a new parameter at all locations."""
         assert all([isinstance(value, (float, int)) for value in params.values()])
         assert all([isinstance(key, str) for key in params.keys()])
-        return self.add_layers(**{param: np.full(self.shape, value) for param, value in params.items()})
+        return self.add_layers(
+            **{param: np.full(self.shape, value) for param, value in params.items()}
+        )
 
     def parray(self, *args, **kwargs):
         """Create a new ParameterArray using this instance's standardizer"""
@@ -440,7 +501,7 @@ class ParameterArray(LayeredArray):
     def stack(cls, parray_list, axis=0, **kwargs):
         all_names = [pa.names for pa in parray_list]
         if not all(names == all_names[0] for names in all_names):
-            raise ValueError('Arrays do not have the same names!')
+            raise ValueError("Arrays do not have the same names!")
         new = np.stack(parray_list, axis=axis, **kwargs)
         stdzr = parray_list[0].stdzr
         return cls(**{dim: new[dim] for dim in new.dtype.names}, stdzr=stdzr)
@@ -449,7 +510,7 @@ class ParameterArray(LayeredArray):
     def vstack(cls, parray_list, **kwargs):
         all_names = [pa.names for pa in parray_list]
         if not all(names == all_names[0] for names in all_names):
-            raise ValueError('Arrays do not have the same names!')
+            raise ValueError("Arrays do not have the same names!")
         new = np.vstack(parray_list, **kwargs)
         stdzr = parray_list[0].stdzr
         return cls(**{dim: new[dim] for dim in new.dtype.names}, stdzr=stdzr)
@@ -458,7 +519,7 @@ class ParameterArray(LayeredArray):
     def hstack(cls, parray_list, **kwargs):
         all_names = [pa.names for pa in parray_list]
         if not all(names == all_names[0] for names in all_names):
-            raise ValueError('Arrays do not have the same names!')
+            raise ValueError("Arrays do not have the same names!")
         new = np.hstack(parray_list, **kwargs)
         stdzr = parray_list[0].stdzr
         return cls(**{dim: new[dim] for dim in new.dtype.names}, stdzr=stdzr)
@@ -564,14 +625,18 @@ class UncertainArray(np.ndarray):
     def __new__(cls, name: str, μ: np.ndarray, σ2: np.ndarray, stdzr=None, **kwargs):
         μ_ = np.asarray(μ)
         σ2_ = np.asarray(σ2)
-        assert(μ_.shape == σ2_.shape)
-        base_dtypes = [('μ', μ_.dtype), ('σ2', σ2_.dtype)]
-        extra_dtypes = [(dim, np.asarray(arr).dtype) for dim, arr in kwargs.items() if arr is not None]
-        uarray_dtype = np.dtype(base_dtypes+extra_dtypes)
+        assert μ_.shape == σ2_.shape
+        base_dtypes = [("μ", μ_.dtype), ("σ2", σ2_.dtype)]
+        extra_dtypes = [
+            (dim, np.asarray(arr).dtype)
+            for dim, arr in kwargs.items()
+            if arr is not None
+        ]
+        uarray_dtype = np.dtype(base_dtypes + extra_dtypes)
 
         uarray_prototype = np.empty(μ_.shape, dtype=uarray_dtype)
-        uarray_prototype['μ'] = μ_
-        uarray_prototype['σ2'] = σ2_
+        uarray_prototype["μ"] = μ_
+        uarray_prototype["σ2"] = σ2_
         for dim, arr in kwargs.items():
             if arr is not None:
                 uarray_prototype[dim] = np.asarray(arr)
@@ -586,27 +651,27 @@ class UncertainArray(np.ndarray):
     def __array_finalize__(self, uarray):
         if uarray is None:
             return
-        self.name = getattr(uarray, 'name', None)
-        self.stdzr = getattr(uarray, 'stdzr', None)
-        self.fields = getattr(uarray, 'fields', None)
+        self.name = getattr(uarray, "name", None)
+        self.stdzr = getattr(uarray, "stdzr", None)
+        self.fields = getattr(uarray, "fields", None)
 
     @property
     def μ(self) -> np.ndarray:
         """Nominal value (mean)"""
-        return self['μ']
+        return self["μ"]
 
     @μ.setter
     def μ(self, val):
-        self['μ'] = val
+        self["μ"] = val
 
     @property
     def σ2(self) -> np.ndarray:
         """Variance"""
-        return self['σ2']
+        return self["σ2"]
 
     @σ2.setter
     def σ2(self, val):
-        self['σ2'] = val
+        self["σ2"] = val
 
     @property
     def σ(self) -> np.ndarray:
@@ -615,7 +680,7 @@ class UncertainArray(np.ndarray):
 
     @σ.setter
     def σ(self, val):
-        self['σ2'] = val**2
+        self["σ2"] = val ** 2
 
     @property
     def _as_uncarray(self):
@@ -623,7 +688,12 @@ class UncertainArray(np.ndarray):
 
     @classmethod
     def _from_uncarray(cls, name, uncarray, **extra):
-        return cls(name=name, μ=unp.nominal_values(uncarray), σ2=unp.std_devs(uncarray)**2, **extra)
+        return cls(
+            name=name,
+            μ=unp.nominal_values(uncarray),
+            σ2=unp.std_devs(uncarray) ** 2,
+            **extra,
+        )
 
     @property
     def dist(self) -> rv_continuous:
@@ -637,7 +707,7 @@ class UncertainArray(np.ndarray):
         if all(name == names[0] for name in names):
             name = uarray_list[0].name
         else:
-            raise ValueError('Arrays do not have the same name!')
+            raise ValueError("Arrays do not have the same name!")
             # name = '('+', '.join(names)+')'
         return UncertainArray(name, **{dim: new[dim] for dim in new.dtype.names})
 
@@ -664,8 +734,8 @@ class UncertainArray(np.ndarray):
         nc = ((target - self.μ) ** 2) / self.σ2
 
         h1_nx = ncx2.cdf((best_yet / self.σ2), k, nc)
-        h2_nx = ncx2.cdf((best_yet / self.σ2), (k+2), nc)
-        h3_nx = ncx2.cdf((best_yet / self.σ2), (k+4), nc)
+        h2_nx = ncx2.cdf((best_yet / self.σ2), (k + 2), nc)
+        h3_nx = ncx2.cdf((best_yet / self.σ2), (k + 4), nc)
 
         t1 = best_yet * h1_nx
         t2 = self.σ2 * (k * h2_nx + nc * h3_nx)
@@ -684,7 +754,11 @@ class UncertainArray(np.ndarray):
         divergence : float
         """
         assert isinstance(other, UncertainArray)
-        return np.log(other.σ / self.σ) + (self.σ2 + (self.μ - other.μ) ** 2) / (2 * other.σ2) - 1 / 2
+        return (
+            np.log(other.σ / self.σ)
+            + (self.σ2 + (self.μ - other.μ) ** 2) / (2 * other.σ2)
+            - 1 / 2
+        )
 
     def BD(self, other):
         """Bhattacharyya Distance
@@ -698,8 +772,9 @@ class UncertainArray(np.ndarray):
         distance : float
         """
         assert isinstance(other, UncertainArray)
-        return 1 / 4 * np.log(1 / 4 * (self.σ2 / other.σ2 + other.σ2 / self.σ2 + 2)) + 1 / 4 * ((self.μ - other.μ) ** 2 / (self.σ2 + other.σ2))
-
+        return 1 / 4 * np.log(
+            1 / 4 * (self.σ2 / other.σ2 + other.σ2 / self.σ2 + 2)
+        ) + 1 / 4 * ((self.μ - other.μ) ** 2 / (self.σ2 + other.σ2))
 
     def BC(self, other):
         """Bhattacharyya Coefficient
@@ -713,7 +788,6 @@ class UncertainArray(np.ndarray):
         coefficient : float
         """
         return np.exp(-self.BD(other))
-
 
     def HD(self, other):
         """Hellinger Distance
@@ -729,11 +803,13 @@ class UncertainArray(np.ndarray):
         return np.sqrt(1 - self.BC(other))
 
     def __repr__(self):
-        return f'{self.name}{self.fields}: {np.asarray(self)}'
+        return f"{self.name}{self.fields}: {np.asarray(self)}"
 
     def __getitem__(self, item):
         default = super().__getitem__(item)
-        if isinstance(item, (int, np.int32, np.int64)) or (isinstance(item, tuple) and all(isinstance(val, int) for val in item)):
+        if isinstance(item, (int, np.int32, np.int64)) or (
+            isinstance(item, tuple) and all(isinstance(val, int) for val in item)
+        ):
             arrays = {name: value for name, value in zip(default.dtype.names, default)}
         elif isinstance(item, slice):
             # arrays = {layer.names[0]: layer.values() for layer in default.as_list()}
@@ -742,29 +818,45 @@ class UncertainArray(np.ndarray):
             return default.view(np.ndarray)
         return UncertainArray(self.name, **arrays)
 
-    def sum(self, axis=None, dtype=None, out=None, keepdims=False, **kwargs) -> UncertainArray:
+    def sum(
+        self, axis=None, dtype=None, out=None, keepdims=False, **kwargs
+    ) -> UncertainArray:
         """Summation with uncertainty propagation"""
-        kwargs.update(dict(axis=axis, dtype=dtype, out=out, keepdims=keepdims))  # Fix once Python >= 3.9
+        kwargs.update(
+            dict(axis=axis, dtype=dtype, out=out, keepdims=keepdims)
+        )  # Fix once Python >= 3.9
         new = self._as_uncarray.sum(**kwargs)
-        extra = {dim: np.sum(self[dim]) for dim in self.fields if dim not in ['μ', 'σ2']}
+        extra = {
+            dim: np.sum(self[dim]) for dim in self.fields if dim not in ["μ", "σ2"]
+        }
         return self._from_uncarray(self.name, new, **extra)
 
-    def mean(self, axis=None, dtype=None, out=None, keepdims=False, **kwargs) -> UncertainArray:
+    def mean(
+        self, axis=None, dtype=None, out=None, keepdims=False, **kwargs
+    ) -> UncertainArray:
         """Mean with uncertainty propagation"""
-        kwargs.update(dict(axis=axis, dtype=dtype, out=out, keepdims=keepdims))  # Fix once Python >= 3.9
+        kwargs.update(
+            dict(axis=axis, dtype=dtype, out=out, keepdims=keepdims)
+        )  # Fix once Python >= 3.9
         new = self._as_uncarray.mean(**kwargs)
-        extra = {dim: np.mean(self[dim]) for dim in self.fields if dim not in ['μ', 'σ2']}
+        extra = {
+            dim: np.mean(self[dim]) for dim in self.fields if dim not in ["μ", "σ2"]
+        }
         return self._from_uncarray(self.name, new, **extra)
 
     def __add__(self, other):
         new = self._as_uncarray
         if isinstance(other, UncertainArray):
             new += other._as_uncarray
-            name = self.name if self.name == other.name else f'({self.name}+{other.name})'
+            name = (
+                self.name if self.name == other.name else f"({self.name}+{other.name})"
+            )
         else:
             new += other
             name = self.name
-        extra = {dim: np.mean(self[dim]) for dim in self.fields if dim not in ['μ', 'σ2']}
+        extra = {
+            dim: np.mean(self[dim]) for dim in self.fields if dim not in ["μ", "σ2"]
+        }
         return self._from_uncarray(name, new, **extra)
 
     def __radd__(self, other):
@@ -774,33 +866,45 @@ class UncertainArray(np.ndarray):
         new = self._as_uncarray
         if isinstance(other, UncertainArray):
             new -= other._as_uncarray
-            name = self.name if self.name == other.name else f'({self.name}-{other.name})'
+            name = (
+                self.name if self.name == other.name else f"({self.name}-{other.name})"
+            )
         else:
             new -= other
             name = self.name
-        extra = {dim: np.mean(self[dim]) for dim in self.fields if dim not in ['μ', 'σ2']}
+        extra = {
+            dim: np.mean(self[dim]) for dim in self.fields if dim not in ["μ", "σ2"]
+        }
         return self._from_uncarray(name, new, **extra)
 
     def __rsub__(self, other):
         if isinstance(other, UncertainArray):
             new = other._as_uncarray
-            name = self.name if self.name == other.name else f'({other.name}-{self.name})'
+            name = (
+                self.name if self.name == other.name else f"({other.name}-{self.name})"
+            )
         else:
             new = copy.copy(other)
             name = self.name
         new -= self._as_uncarray
-        extra = {dim: np.mean(self[dim]) for dim in self.fields if dim not in ['μ', 'σ2']}
+        extra = {
+            dim: np.mean(self[dim]) for dim in self.fields if dim not in ["μ", "σ2"]
+        }
         return self._from_uncarray(name, new, **extra)
 
     def __mul__(self, other):
         new = self._as_uncarray
         if isinstance(other, UncertainArray):
             new *= other._as_uncarray
-            name = self.name if self.name == other.name else f'({self.name}*{other.name})'
+            name = (
+                self.name if self.name == other.name else f"({self.name}*{other.name})"
+            )
         else:
             new *= other
             name = self.name
-        extra = {dim: np.mean(self[dim]) for dim in self.fields if dim not in ['μ', 'σ2']}
+        extra = {
+            dim: np.mean(self[dim]) for dim in self.fields if dim not in ["μ", "σ2"]
+        }
         return self._from_uncarray(name, new, **extra)
 
     def __rmul__(self, other):
@@ -810,22 +914,30 @@ class UncertainArray(np.ndarray):
         new = self._as_uncarray
         if isinstance(other, UncertainArray):
             new /= other._as_uncarray
-            name = self.name if self.name == other.name else f'({self.name}/{other.name})'
+            name = (
+                self.name if self.name == other.name else f"({self.name}/{other.name})"
+            )
         else:
             new /= other
             name = self.name
-        extra = {dim: np.mean(self[dim]) for dim in self.fields if dim not in ['μ', 'σ2']}
+        extra = {
+            dim: np.mean(self[dim]) for dim in self.fields if dim not in ["μ", "σ2"]
+        }
         return self._from_uncarray(name, new, **extra)
 
     def __pow__(self, other):
         new = self._as_uncarray
         if isinstance(other, UncertainArray):
             new **= other._as_uncarray
-            name = self.name if self.name == other.name else f'({self.name}**{other.name})'
+            name = (
+                self.name if self.name == other.name else f"({self.name}**{other.name})"
+            )
         else:
             new **= other
-            name = f'({self.name}**{other})'
-        extra = {dim: np.mean(self[dim]) for dim in self.fields if dim not in ['μ', 'σ2']}
+            name = f"({self.name}**{other})"
+        extra = {
+            dim: np.mean(self[dim]) for dim in self.fields if dim not in ["μ", "σ2"]
+        }
         return self._from_uncarray(name, new, **extra)
 
 
@@ -1001,19 +1113,21 @@ class UncertainParameterArray(UncertainArray):
         An instance  of :class:`Standardizer` created from the supplied :class:`Standardizer` object
     """
 
-    def __new__(cls, name: str, μ: np.ndarray, σ2: np.ndarray, stdzr: Standardizer, stdzd=False):
+    def __new__(
+        cls, name: str, μ: np.ndarray, σ2: np.ndarray, stdzr: Standardizer, stdzd=False
+    ):
         μ_ = np.asarray(μ)
         σ2_ = np.asarray(σ2)
-        assert(μ_.shape == σ2_.shape)
+        assert μ_.shape == σ2_.shape
 
         if stdzd:
             μ_, σ2_ = stdzr.unstdz(name, μ_, σ2_)
 
-        uparray_dtype = np.dtype([('μ', μ_.dtype), ('σ2', σ2_.dtype)])
+        uparray_dtype = np.dtype([("μ", μ_.dtype), ("σ2", σ2_.dtype)])
 
         uparray_prototype = np.empty(μ_.shape, dtype=uparray_dtype)
-        uparray_prototype['μ'] = μ_
-        uparray_prototype['σ2'] = σ2_
+        uparray_prototype["μ"] = μ_
+        uparray_prototype["σ2"] = σ2_
 
         uparray = uparray_prototype.view(cls)
         uparray.name = name
@@ -1025,9 +1139,9 @@ class UncertainParameterArray(UncertainArray):
     def __array_finalize__(self, uparray):
         if uparray is None:
             return
-        self.name = getattr(uparray, 'name', None)
-        self.fields = getattr(uparray, 'fields', None)
-        self.stdzr = getattr(uparray, 'stdzr', None)
+        self.name = getattr(uparray, "name", None)
+        self.fields = getattr(uparray, "fields", None)
+        self.stdzr = getattr(uparray, "stdzr", None)
 
     @property
     def z(self) -> UncertainArray:
@@ -1035,7 +1149,7 @@ class UncertainParameterArray(UncertainArray):
 
         zmean, zvar = self.stdzr.stdz(self.name, self.μ, self.σ2)
 
-        return UncertainArray(f'{self.name}_z', zmean, zvar, stdzr=self.stdzr)
+        return UncertainArray(f"{self.name}_z", zmean, zvar, stdzr=self.stdzr)
 
     @property
     def t(self) -> UncertainArray:
@@ -1043,7 +1157,7 @@ class UncertainParameterArray(UncertainArray):
 
         tmean, tvar = self.stdzr.transform(self.name, self.μ, self.σ2)
 
-        return UncertainArray(f'{self.name}_t', tmean, tvar, stdzr=self.stdzr)
+        return UncertainArray(f"{self.name}_t", tmean, tvar, stdzr=self.stdzr)
 
     @property
     def _ftransform(self):
@@ -1072,7 +1186,7 @@ class UncertainParameterArray(UncertainArray):
         dists = {
             skip: super().dist,
             np.log: lognorm(scale=self.μ, s=self.σ),
-            logit: LogitNormal(loc=self.μ, scale=self.σ)
+            logit: LogitNormal(loc=self.μ, scale=self.σ),
         }
         return dists[self._ftransform]
 
@@ -1089,45 +1203,54 @@ class UncertainParameterArray(UncertainArray):
         return self._from_z(z)
 
     def _from_z(self, z):
-        name = z.name.replace('_z', '')
+        name = z.name.replace("_z", "")
         fields = {dim: z[dim] for dim in z.fields}
         return UncertainParameterArray(name, **fields, stdzr=self.stdzr, stdzd=True)
 
     def _from_t(self, t):
-        name = t.name.replace('_t', '')
+        name = t.name.replace("_t", "")
         t.μ, t.σ2 = self.stdzr.untransform(name, t.μ, t.σ2)
-        return UncertainParameterArray(name, **{dim: t[dim] for dim in t.fields}, stdzr=self.stdzr,
-                                       stdzd=False)
+        return UncertainParameterArray(
+            name, **{dim: t[dim] for dim in t.fields}, stdzr=self.stdzr, stdzd=False
+        )
 
     def _warn_if_dissimilar(self, other):
         if isinstance(other, UncertainParameterArray):
             if not self.stdzr == other.stdzr:
-                warnings.warn('uparrays have dissimilar Standardizers')
+                warnings.warn("uparrays have dissimilar Standardizers")
 
     def _warn_if_poorly_defined(self):
         if self._ftransform is not skip:
-            warnings.warn(f'Transform is poorly defined for {self._ftransform}; results may be unexpected.')
+            warnings.warn(
+                f"Transform is poorly defined for {self._ftransform}; results may be unexpected."
+            )
 
     # def __repr__(self):
     #     return f'{self.name}{self.fields}: {np.asarray(self)}'
 
     def __getitem__(self, item):
         default = super(UncertainArray, self).__getitem__(item)
-        if isinstance(item, (int, np.int32, np.int64)) or (isinstance(item, tuple) and all(isinstance(val, int) for val in item)):
+        if isinstance(item, (int, np.int32, np.int64)) or (
+            isinstance(item, tuple) and all(isinstance(val, int) for val in item)
+        ):
             arrays = {name: value for name, value in zip(default.dtype.names, default)}
         elif isinstance(item, slice):
             # arrays = {layer.names[0]: layer.values() for layer in default.as_list()}
             return default
         else:
             return default.view(np.ndarray)
-        return UncertainParameterArray(self.name, stdzr=self.stdzr, stdzd=False, **arrays)
+        return UncertainParameterArray(
+            self.name, stdzr=self.stdzr, stdzd=False, **arrays
+        )
 
     def __add__(self, other):
         self._warn_if_dissimilar(other)
         self._warn_if_poorly_defined()
         if isinstance(other, UncertainParameterArray):
             new = self._from_t(self.t.__add__(other.t))
-            new.stdzr = Standardizer(**{**self.stdzr, **other.stdzr})  # Fix once Python >= 3.9
+            new.stdzr = Standardizer(
+                **{**self.stdzr, **other.stdzr}
+            )  # Fix once Python >= 3.9
         else:
             new = super().__add__(other)
         return new
@@ -1137,7 +1260,9 @@ class UncertainParameterArray(UncertainArray):
         self._warn_if_poorly_defined()
         if isinstance(other, UncertainParameterArray):
             new = self._from_t(self.t.__sub__(other.t))
-            new.stdzr = Standardizer(**{**self.stdzr, **other.stdzr})  # Fix once Python >= 3.9
+            new.stdzr = Standardizer(
+                **{**self.stdzr, **other.stdzr}
+            )  # Fix once Python >= 3.9
         else:
             new = super().__sub__(other)
         return new
@@ -1147,7 +1272,9 @@ class UncertainParameterArray(UncertainArray):
         self._warn_if_poorly_defined()
         if isinstance(other, UncertainParameterArray):
             new = self._from_t(self.t.__rsub__(other.t))
-            new.stdzr = Standardizer(**{**other.stdzr, **self.stdzr})  # Fix once Python >= 3.9
+            new.stdzr = Standardizer(
+                **{**other.stdzr, **self.stdzr}
+            )  # Fix once Python >= 3.9
         else:
             new = super().__rsub__(other)
         return new
@@ -1267,10 +1394,10 @@ class MVUncertainParameterArray(np.ndarray):
         μ_ = ParameterArray(**{upa.name: upa.μ for upa in uparrays}, stdzr=stdzr)
         σ2_ = ParameterArray(**{upa.name: upa.σ2 for upa in uparrays}, stdzr=stdzr)
 
-        mvuparray_dtype = np.dtype([('μ', μ_.dtype), ('σ2', σ2_.dtype)])
+        mvuparray_dtype = np.dtype([("μ", μ_.dtype), ("σ2", σ2_.dtype)])
         mvuparray_prototype = np.empty(shape, dtype=mvuparray_dtype)
-        mvuparray_prototype['μ'] = μ_
-        mvuparray_prototype['σ2'] = σ2_
+        mvuparray_prototype["μ"] = μ_
+        mvuparray_prototype["σ2"] = σ2_
 
         mvuparray = mvuparray_prototype.view(cls)
         mvuparray.names = [upa.name for upa in uparrays]
@@ -1283,17 +1410,19 @@ class MVUncertainParameterArray(np.ndarray):
     def __array_finalize__(self, mvup):
         if mvup is None:
             return
-        self.names = getattr(mvup, 'names', None)
-        self.fields = getattr(mvup, 'fields', None)
-        self.stdzr = getattr(mvup, 'stdzr', None)
-        self.cor = getattr(mvup, 'cor', None)
+        self.names = getattr(mvup, "names", None)
+        self.fields = getattr(mvup, "fields", None)
+        self.stdzr = getattr(mvup, "stdzr", None)
+        self.cor = getattr(mvup, "cor", None)
 
     def __repr__(self):
-        return f'{tuple(self.names)}{self.fields}: {np.asarray(self)}'
+        return f"{tuple(self.names)}{self.fields}: {np.asarray(self)}"
 
     def __getitem__(self, item):
         default = super().__getitem__(item)
-        if isinstance(item, (int, np.int32, np.int64)) or (isinstance(item, tuple) and all(isinstance(val, int) for val in item)):
+        if isinstance(item, (int, np.int32, np.int64)) or (
+            isinstance(item, tuple) and all(isinstance(val, int) for val in item)
+        ):
             arrays = [self.get(name)[item] for name in self.names]
         elif isinstance(item, slice):
             # arrays = [self.get(name)[item] for name in self.names]
@@ -1303,39 +1432,45 @@ class MVUncertainParameterArray(np.ndarray):
             return default.view(ParameterArray)
         return self.mvuparray(*arrays)
 
-    def get(self, name, default=None) -> UncertainParameterArray | MVUncertainParameterArray:
+    def get(
+        self, name, default=None
+    ) -> UncertainParameterArray | MVUncertainParameterArray:
         """Return one component parameter as an UncertainParameterArray or a subset as an MVUncertainParameterArray"""
         if isinstance(name, str):
             if name in self.names:
-                return self.uparray(name, self['μ'][name].values(), self['σ2'][name].values())
+                return self.uparray(
+                    name, self["μ"][name].values(), self["σ2"][name].values()
+                )
             else:
                 return default
         elif isinstance(name, list):
             idxs = [self.names.index(n) for n in name]
-            return self.mvuparray([self.get(n) for n in name], cor=self.cor[idxs, :][:, idxs])
+            return self.mvuparray(
+                [self.get(n) for n in name], cor=self.cor[idxs, :][:, idxs]
+            )
 
     @property
     def μ(self) -> ParameterArray:
         """Means"""
-        return self['μ']
+        return self["μ"]
 
     @μ.setter
     def μ(self, val):
-        self['μ'] = val
+        self["μ"] = val
 
     @property
     def σ2(self) -> ParameterArray:
         """Marginal variances"""
-        return self['σ2']
+        return self["σ2"]
 
     @σ2.setter
     def σ2(self, val):
-        self['σ2'] = val
+        self["σ2"] = val
 
     @property
     def σ(self) -> ParameterArray:
         """Standard deviations"""
-        return self.parray(**{k: np.sqrt(v) for k, v in self['σ2'].as_dict().items()})
+        return self.parray(**{k: np.sqrt(v) for k, v in self["σ2"].as_dict().items()})
 
     @property
     def t(self) -> MVUncertainParameterArray:
@@ -1344,7 +1479,7 @@ class MVUncertainParameterArray(np.ndarray):
         Returns a MVUncertainParameterArray with the same Standardizer values as the current instance but with all
         transforms set to `lambda x: x`.
         """
-        stdzr = Standardizer(**{k+'_t': v for k, v in self.stdzr.items()})
+        stdzr = Standardizer(**{k + "_t": v for k, v in self.stdzr.items()})
         return self.mvuparray(*[self.get(name).t for name in self.names], stdzr=stdzr)
 
     @property
@@ -1354,39 +1489,43 @@ class MVUncertainParameterArray(np.ndarray):
         Returns a MVUncertainParameterArray with a default Standardizer (mean and SD of all variables set to zero and
         all transforms set to `lambda x: x`).
         """
-        stdzr = Standardizer(**{k+'_z': {'μ': 0, 'σ2': 1} for k in self.names})
+        stdzr = Standardizer(**{k + "_z": {"μ": 0, "σ2": 1} for k in self.names})
         return self.mvuparray(*[self.get(name).z for name in self.names], stdzr=stdzr)
 
     def parray(self, *args, **kwargs) -> ParameterArray:
         """Create a ParameterArray using this instance's Standardizer"""
-        kwargs.setdefault('stdzr', self.stdzr)
+        kwargs.setdefault("stdzr", self.stdzr)
         return ParameterArray(*args, **kwargs)
 
     def uparray(self, *args, **kwargs) -> UncertainParameterArray:
         """Create an UncertainParameterArray using this instance's Standardizer"""
-        kwargs.setdefault('stdzr', self.stdzr)
+        kwargs.setdefault("stdzr", self.stdzr)
         return UncertainParameterArray(*args, **kwargs)
 
     def mvuparray(self, *args, **kwargs) -> MVUncertainParameterArray:
         """Create an MVUncertainParameterArray using this instance's Standardizer"""
-        kwargs.setdefault('stdzr', self.stdzr)
-        kwargs.setdefault('cor', self.cor)
+        kwargs.setdefault("stdzr", self.stdzr)
+        kwargs.setdefault("cor", self.cor)
         return MVUncertainParameterArray(*args, **kwargs)
 
     def cov(self, stdzd=True, whiten=1e-10):
         """Covariance matrix (only supported for 0-D MVUParrays)"""
         # TODO: numpy versions > 1.19.3 can have bizarre inscrutable errors when handling mvup.cov. Monitor for fixes.
-        if np.__version__ > '1.19.3':
-            warnings.warn('numpy version >1.19.3 may lead to inscrutable linear algebra errors with mvup.cov. May just be on Windows/WSL. Hopefully fixed soon.')
+        if np.__version__ > "1.19.3":
+            warnings.warn(
+                "numpy version >1.19.3 may lead to inscrutable linear algebra errors with mvup.cov. May just be on Windows/WSL. Hopefully fixed soon."
+            )
         if self.ndim != 0:
-            raise NotImplementedError('Multidimensional multivariate covariance calculations are not yet supported.')
+            raise NotImplementedError(
+                "Multidimensional multivariate covariance calculations are not yet supported."
+            )
 
         σ = self.z.σ.values() if stdzd else self.t.σ.values()
 
         cov = np.diag(σ) @ self.cor @ np.diag(σ)
 
         if whiten:
-            cov += whiten*np.eye(*cov.shape)
+            cov += whiten * np.eye(*cov.shape)
 
         return cov
 
@@ -1394,24 +1533,27 @@ class MVUncertainParameterArray(np.ndarray):
     def dist(self) -> MultivariateNormalish:
         """Scipy :func:`multivariate_normal` object (only supported for 0-D MVUParrays)"""
         # TODO: numpy versions > 1.19.3 can have bizarre inscrutable errors when handling mvup.dist. Monitor for fixes.
-        if np.__version__ > '1.19.3':
-            warnings.warn('numpy version >1.19.3 may lead to inscrutable linear algebra errors with mvup.dist. May just be on Windows/WSL. Hopefully fixed soon.')
+        if np.__version__ > "1.19.3":
+            warnings.warn(
+                "numpy version >1.19.3 may lead to inscrutable linear algebra errors with mvup.dist. May just be on Windows/WSL. Hopefully fixed soon."
+            )
         if self.ndim != 0:
-            raise NotImplementedError('Multidimensional multivariate distributions are not yet supported.')
+            raise NotImplementedError(
+                "Multidimensional multivariate distributions are not yet supported."
+            )
         return MultivariateNormalish(mean=self.μ, cov=self.cov(stdzd=True))
 
     def mahalanobis(self, parray: ParameterArray) -> float:
         """Calculates the Mahalanobis distance between the MVUParray distribution and a (ParameterArray) point."""
         cov_inv = np.linalg.inv(self.cov(stdzd=True))
-        points = np.stack([parray.z.get(p+'_z').values() for p in self.names])
-        μ = np.stack([self.z.μ.get(p+'_z').values() for p in self.names])
-        diff = points-μ
+        points = np.stack([parray.z.get(p + "_z").values() for p in self.names])
+        μ = np.stack([self.z.μ.get(p + "_z").values() for p in self.names])
+        diff = points - μ
         return np.sqrt(diff.T @ cov_inv @ diff)
 
     def outlier_pval(self, parray: ParameterArray) -> float:
         """Calculates the p-value that a given (ParameterArray) point is an outlier from the MVUParray distribution."""
         MD = self.mahalanobis(parray)
         n_params = len(self.names)
-        pval = 1-chi2.cdf(MD**2, df=n_params)
+        pval = 1 - chi2.cdf(MD ** 2, df=n_params)
         return pval
-

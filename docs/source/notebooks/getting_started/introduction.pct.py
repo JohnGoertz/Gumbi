@@ -32,10 +32,13 @@
 # %%
 import gumbi as gmb
 import seaborn as sns
-cars = sns.load_dataset('mpg').dropna()
-ds = gmb.DataSet(cars,
-                 outputs=['mpg', 'acceleration'],
-                 log_vars=['mpg', 'acceleration', 'horsepower'])
+
+cars = sns.load_dataset("mpg").dropna()
+ds = gmb.DataSet(
+    cars,
+    outputs=["mpg", "acceleration"],
+    log_vars=["mpg", "acceleration", "horsepower"],
+)
 
 # %% [markdown]
 #
@@ -43,7 +46,7 @@ ds = gmb.DataSet(cars,
 
 # %%
 gp = gmb.GP(ds)
-gp.fit(outputs=['mpg'], continuous_dims=['horsepower']);
+gp.fit(outputs=["mpg"], continuous_dims=["horsepower"])
 
 # %% [markdown]
 #
@@ -53,7 +56,9 @@ gp.fit(outputs=['mpg'], continuous_dims=['horsepower']);
 X = gp.prepare_grid()
 y = gp.predict_grid()
 gmb.ParrayPlotter(X, y).plot()
-sns.scatterplot(data=cars, x='horsepower', y='mpg', color=sns.cubehelix_palette()[-1], alpha=0.5);
+sns.scatterplot(
+    data=cars, x="horsepower", y="mpg", color=sns.cubehelix_palette()[-1], alpha=0.5
+)
 
 # %% [markdown]
 #

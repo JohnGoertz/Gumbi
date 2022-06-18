@@ -25,8 +25,8 @@ def nc_Normal(name: str, mu: float, sigma: float, **kws):
         Underlying standard Normal distribution, named with '_nc' appended
 
     """
-    nc = pm.Normal(name+'_nc', mu=0, sigma=1, **kws)
-    rv = pm.Deterministic(name, mu + sigma*nc)
+    nc = pm.Normal(name + "_nc", mu=0, sigma=1, **kws)
+    rv = pm.Deterministic(name, mu + sigma * nc)
 
     return rv, nc
 
@@ -51,6 +51,6 @@ def sc_Exponential(name: str, mu: float, **kws):
         Underlying standard Exponential distribution, named with '_nc' appended
 
     """
-    nc = pm.Exponential(name+'_nc', lam=1, **kws)
-    rv = pm.Deterministic(name, mu*nc)
+    nc = pm.Exponential(name + "_nc", lam=1, **kws)
+    rv = pm.Deterministic(name, mu * nc)
     return rv, nc

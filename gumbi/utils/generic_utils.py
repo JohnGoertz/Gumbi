@@ -21,9 +21,9 @@ def setup_paths(make_missing=True):
     """
     code_pth = pl.Path(os.getcwd())
     base_pth = code_pth.parent
-    data_pth = base_pth / 'Data'
-    rslt_pth = base_pth / 'Results'
-    fig_pth = base_pth / 'Figures'
+    data_pth = base_pth / "Data"
+    rslt_pth = base_pth / "Results"
+    fig_pth = base_pth / "Figures"
     if make_missing:
         data_pth.mkdir(parents=True, exist_ok=True)
         rslt_pth.mkdir(parents=True, exist_ok=True)
@@ -51,14 +51,14 @@ def savefig(filename: str, fig=None, path=None, silent=False, **kwargs):
     fig = plt.gcf() if fig is None else fig
     path = setup_paths(make_missing=False)[-1] if path is None else path
 
-    kwargs.setdefault('bbox_inches', 'tight')
-    kwargs.setdefault('transparent', True)
+    kwargs.setdefault("bbox_inches", "tight")
+    kwargs.setdefault("transparent", True)
 
     if not silent:
-        print('Saving.', end='')
-    fig.savefig(path / (filename + '.png'), dpi=300, **kwargs)
+        print("Saving.", end="")
+    fig.savefig(path / (filename + ".png"), dpi=300, **kwargs)
     if not silent:
-        print('.', end='')
-    fig.savefig(path / (filename + '.svg'), **kwargs)
+        print(".", end="")
+    fig.savefig(path / (filename + ".svg"), **kwargs)
     if not silent:
-        print('Done')
+        print("Done")
