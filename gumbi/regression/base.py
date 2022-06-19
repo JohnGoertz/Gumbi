@@ -82,9 +82,7 @@ class Regressor(ABC):
 
     def __init__(self, dataset: DataSet, outputs=None, seed=2021):
         if not isinstance(dataset, DataSet):
-            raise TypeError(
-                "Learner instance must be initialized with a DataSet object"
-            )
+            raise TypeError("Learner instance must be initialized with a DataSet object")
 
         self.data = dataset
         self.stdzr = dataset.stdzr
@@ -226,17 +224,11 @@ class Regressor(ABC):
         self.linear_dims = self._parse_dimensions(linear_dims)
         self.categorical_dims = self._parse_dimensions(categorical_dims)
         if set(self.categorical_dims) & set(self.continuous_dims) != set():
-            raise ValueError(
-                "Overlapping items in categorical_dims and continuous_dims"
-            )
+            raise ValueError("Overlapping items in categorical_dims and continuous_dims")
 
         # Ensure levels are valid and format as dict
-        self.continuous_levels = self._parse_levels(
-            self.continuous_dims, continuous_levels
-        )
-        self.categorical_levels = self._parse_levels(
-            self.categorical_dims, categorical_levels
-        )
+        self.continuous_levels = self._parse_levels(self.continuous_dims, continuous_levels)
+        self.categorical_levels = self._parse_levels(self.categorical_dims, categorical_levels)
 
         # Add self.out_col to the end of the categorical list
         self.categorical_dims += [self.out_col]
@@ -250,20 +242,14 @@ class Regressor(ABC):
                 self.filter_dims[dim] = levels
                 self.continuous_dims = [d for d in self.continuous_dims if d != dim]
                 self.categorical_dims = [d for d in self.categorical_dims if d != dim]
-                self.continuous_levels = {
-                    d: l for d, l in self.continuous_levels.items() if d != dim
-                }
-                self.categorical_levels = {
-                    d: l for d, l in self.categorical_levels.items() if d != dim
-                }
+                self.continuous_levels = {d: l for d, l in self.continuous_levels.items() if d != dim}
+                self.categorical_levels = {d: l for d, l in self.categorical_levels.items() if d != dim}
 
         # Ensure coordinates are valid and format as dict-of-dicts
         self.continuous_coords = self._parse_coordinates(
             self.continuous_dims, self.continuous_levels, continuous_coords
         )
-        self.categorical_coords = self._parse_coordinates(
-            self.categorical_dims, self.categorical_levels, None
-        )
+        self.categorical_coords = self._parse_coordinates(self.categorical_dims, self.categorical_levels, None)
 
         # Add 'X' and 'Y' to the beginning of the continuous list if 'Y' not in self.continuous_dims:
         # self.continuous_dims = ['Y'] + self.continuous_dims if 'X' not in self.continuous_dims: self.continuous_dims =
@@ -272,9 +258,7 @@ class Regressor(ABC):
         # self.continuous_levels | {dim: self.tidy.tidy[dim].unique() for dim in ['X', 'Y']} | self.continuous_levels}
         # self.continuous_coords | {dim: {level: level for level in self.continuous_levels[dim]} for dim in ['X', 'Y']}
         # | self.continuous_coords}
-        assert_is_subset(
-            "continuous dimensions", self.linear_dims, self.continuous_dims
-        )
+        assert_is_subset("continuous dimensions", self.linear_dims, self.continuous_dims)
         self.additive = additive
         return self
 
@@ -296,9 +280,7 @@ class Regressor(ABC):
                 levels = {dim: list(self.data.tidy[dim].unique()) for dim in dims}
             elif any(isinstance(levels, typ) for typ in [str, list]):
                 # If only a single dim is supplied, convert levels to dictionary
-                assert (
-                    len(dims) == 1
-                ), "Non-dict argument for `levels` only allowed if `len(dims)==1`"
+                assert len(dims) == 1, "Non-dict argument for `levels` only allowed if `len(dims)==1`"
                 levels = levels if isinstance(levels, list) else [levels]
                 levels = {dims[0]: levels}
             elif isinstance(levels, dict):
@@ -309,27 +291,14 @@ class Regressor(ABC):
                 # Ensure each dimension specified by levels is valid
                 bad = [dim for dim in levels.keys() if dim not in dims]
                 if bad:
-                    raise KeyError(
-                        f"Dimensions {bad} specified in *levels not found in *dims"
-                    )
+                    raise KeyError(f"Dimensions {bad} specified in *levels not found in *dims")
                 # Ensure each level is valid
-                bad = {
-                    k: v
-                    for k, vs in levels.items()
-                    for v in vs
-                    if v not in self.data.tidy[k].unique()
-                }
+                bad = {k: v for k, vs in levels.items() for v in vs if v not in self.data.tidy[k].unique()}
                 if bad:
-                    raise ValueError(
-                        f"Values specified in *levels not found in tidy: {bad}"
-                    )
+                    raise ValueError(f"Values specified in *levels not found in tidy: {bad}")
                 # Use all levels of remaining dims
                 levels.update(
-                    {
-                        dim: list(self.data.tidy[dim].unique())
-                        for dim in dims
-                        if dim not in levels.keys()
-                    }
+                    {dim: list(self.data.tidy[dim].unique()) for dim in dims if dim not in levels.keys()}
                 )  # Fix once Python >= 3.9
             else:
                 raise TypeError("`levels` must be of type str, list, or dict")
@@ -340,23 +309,13 @@ class Regressor(ABC):
             levels = {}
         return levels
 
-    def _parse_coordinates(
-        self, dims: list, levels: dict, coords: None or list or dict
-    ) -> dict:
+    def _parse_coordinates(self, dims: list, levels: dict, coords: None or list or dict) -> dict:
         """Check for consistency between supplied dims/levels/coords or generate coords automatically"""
         if coords is not None:
             if isinstance(coords, dict):
                 # Ensure all dim-level pairs in ``levels`` and ``coords`` match exactly
-                level_tuples = [
-                    (dim, level)
-                    for dim, levels_list in levels.items()
-                    for level in levels_list
-                ]
-                coord_tuples = [
-                    (dim, level)
-                    for dim, coord_dict in coords.items()
-                    for level in coord_dict.keys()
-                ]
+                level_tuples = [(dim, level) for dim, levels_list in levels.items() for level in levels_list]
+                coord_tuples = [(dim, level) for dim, coord_dict in coords.items() for level in coord_dict.keys()]
                 assert_is_subset("coordinates", coord_tuples, level_tuples)
                 assert_is_subset("coordinates", level_tuples, coord_tuples)
             elif isinstance(coords, list):
@@ -365,22 +324,15 @@ class Regressor(ABC):
                 ), "Non-dict argument for `continuous_coords` only allowed if `len(continuous_dims)==1`"
                 dim = dims[0]
                 assert len(coords) == len(levels[dim])
-                coords = {
-                    dim: {level: coord for level, coord in zip(levels[dim], coords)}
-                }
+                coords = {dim: {level: coord for level, coord in zip(levels[dim], coords)}}
             else:
                 raise TypeError("Coordinates must be of type list or dict")
             if not all(
-                isinstance(coord, (int, float))
-                for coord_dict in coords.values()
-                for coord in coord_dict.values()
+                isinstance(coord, (int, float)) for coord_dict in coords.values() for coord in coord_dict.values()
             ):
                 raise TypeError("Coordinates must be numeric")
         elif dims is not None and levels is not None:
-            coords = {
-                dim: self._make_coordinates(dim, levels_list)
-                for dim, levels_list in levels.items()
-            }
+            coords = {dim: self._make_coordinates(dim, levels_list) for dim, levels_list in levels.items()}
         else:
             coords = {}
         return coords
@@ -394,10 +346,7 @@ class Regressor(ABC):
         if col.dtype in [np.float32, np.float64, np.int32, np.int64]:
             coords = {level: level for level in levels_list}
         else:
-            coords = {
-                level: col.astype("category").cat.categories.to_list().index(level)
-                for level in levels_list
-            }
+            coords = {level: col.astype("category").cat.categories.to_list().index(level) for level in levels_list}
 
         return coords
 
@@ -460,19 +409,11 @@ class Regressor(ABC):
         # Assuming all parameters observed at the same points Extract the model dimensions from the dataframe for one of
         # the parameters
         dims = set(self.dims) - set([self.out_col])
-        dim_values = {
-            dim: df[df[self.out_col] == self.outputs[0]]
-            .replace(self.coords)[dim]
-            .values
-            for dim in dims
-        }
+        dim_values = {dim: df[df[self.out_col] == self.outputs[0]].replace(self.coords)[dim].values for dim in dims}
         X = self.parray(**dim_values, stdzd=False)
 
         # List of parrays for each output
-        outputs = {
-            output: df[df[self.out_col] == output]["Value"].values
-            for output in self.outputs
-        }
+        outputs = {output: df[df[self.out_col] == output]["Value"].values for output in self.outputs}
         y = self.parray(**outputs, stdzd=False)
 
         return X, y
@@ -502,30 +443,14 @@ class Regressor(ABC):
 
         # Convert ParameterArray into plain numpy tall array
         if self.out_col in self.dims:
-            ordered_outputs = {
-                k: v
-                for k, v in sorted(
-                    self.coords[self.out_col].items(), key=lambda item: item[1]
-                )
-            }
-            y = np.hstack(
-                [self.y.z[output + "_z"].values() for output in ordered_outputs.keys()]
-            )
+            ordered_outputs = {k: v for k, v in sorted(self.coords[self.out_col].items(), key=lambda item: item[1])}
+            y = np.hstack([self.y.z[output + "_z"].values() for output in ordered_outputs.keys()])
             X = self.X[:, None]  # convert to column vector
-            X = parray.vstack(
-                [
-                    X.add_layers(**{self.out_col: coord})
-                    for coord in ordered_outputs.values()
-                ]
-            )
-            X = np.atleast_2d(
-                np.column_stack([X[dim].z.values().squeeze() for dim in self.dims])
-            )
+            X = parray.vstack([X.add_layers(**{self.out_col: coord}) for coord in ordered_outputs.values()])
+            X = np.atleast_2d(np.column_stack([X[dim].z.values().squeeze() for dim in self.dims]))
         else:
             y = self.y.z.values().squeeze()
-            X = np.atleast_2d(
-                np.column_stack([self.X[dim].z.values().squeeze() for dim in self.dims])
-            )
+            X = np.atleast_2d(np.column_stack([self.X[dim].z.values().squeeze() for dim in self.dims]))
 
         return X, y
 
@@ -556,9 +481,7 @@ class Regressor(ABC):
     def _check_has_prediction(self):
         """Does what it says on the tin"""
         if self.predictions is None:
-            raise ValueError(
-                "No predictions found. Run self.predict_grid or related method first."
-            )
+            raise ValueError("No predictions found. Run self.predict_grid or related method first.")
 
     def _parse_prediction_output(self, output):
         if self.out_col in self.categorical_dims:
@@ -567,14 +490,10 @@ class Regressor(ABC):
                 # predict all parameters in model
                 output = self.categorical_levels[self.out_col]
             elif isinstance(output, list):
-                assert_is_subset(
-                    "Outputs", output, self.categorical_levels[self.out_col]
-                )
+                assert_is_subset("Outputs", output, self.categorical_levels[self.out_col])
             elif isinstance(output, str):
                 output = [output]
-                assert_is_subset(
-                    "Outputs", output, self.categorical_levels[self.out_col]
-                )
+                assert_is_subset("Outputs", output, self.categorical_levels[self.out_col])
             else:
                 raise ValueError('"output" must be list, string, or None')
         else:
@@ -598,12 +517,7 @@ class Regressor(ABC):
             param_coords = [self.categorical_coords[self.out_col][p] for p in output]
 
             # Convert input points to tall array and tile once for each output, adding the respective coordinate
-            tall_points = parray.vstack(
-                [
-                    points.add_layers(**{self.out_col: coord})[:, None]
-                    for coord in param_coords
-                ]
-            )
+            tall_points = parray.vstack([points.add_layers(**{self.out_col: coord})[:, None] for coord in param_coords])
         else:
             # If self.out_col is not in categorical_dims, it must be in filter_dims, and only one is possible Convert
             # input points to tall array
@@ -636,22 +550,16 @@ class Regressor(ABC):
         """
 
         output = self._parse_prediction_output(output)
-        points_array, tall_points, param_coords = self._prepare_points_for_prediction(
-            points, output=output
-        )
+        points_array, tall_points, param_coords = self._prepare_points_for_prediction(points, output=output)
 
         # Prediction means and variance as a list of numpy vectors
-        pred_mean, pred_variance = self.predict(
-            points_array, with_noise=with_noise, **kwargs
-        )
+        pred_mean, pred_variance = self.predict(points_array, with_noise=with_noise, **kwargs)
         self.predictions_X = points
 
         # Store predictions in appropriate structured array format
         if len(output) == 1:
             # Predicting one output, return an UncertainParameterArray
-            self.predictions = self.uparray(
-                output[0], pred_mean, pred_variance, stdzd=True
-            )
+            self.predictions = self.uparray(output[0], pred_mean, pred_variance, stdzd=True)
         else:
             # Predicting multiple parameters, return an MVUncertainParameterArray First split prediction into
             # UncertainParameterArrays
@@ -706,9 +614,7 @@ class Regressor(ABC):
         elif not isinstance(at, ParameterArray):
             raise TypeError('"at" must be a ParameterArray')
         elif at.ndim != 0:
-            raise ValueError(
-                '"at" must be single point, potentially with multiple layers'
-            )
+            raise ValueError('"at" must be single point, potentially with multiple layers')
 
         # Ensure a grid can be built
         at_dims = set(at.names)
@@ -717,9 +623,7 @@ class Regressor(ABC):
 
         # If there are no remaining dimensions
         if limit_dims == set():
-            raise ValueError(
-                "At least one dimension must be non-degenerate to generate grid."
-            )
+            raise ValueError("At least one dimension must be non-degenerate to generate grid.")
 
         # If no limits are supplied
         if limits is None:
@@ -734,22 +638,16 @@ class Regressor(ABC):
                 raise TypeError('"limits" must be a ParameterArray')
             remaining_dims = limit_dims - set(limits.names)
             if remaining_dims:
-                dflt_limits = self.parray(
-                    **{dim: [-2.5, +2.5] for dim in remaining_dims}, stdzd=True
-                )
+                dflt_limits = self.parray(**{dim: [-2.5, +2.5] for dim in remaining_dims}, stdzd=True)
                 limits = limits.add_layers(**dflt_limits.as_dict())
 
         # Ensure all dimensions are specified without conflicts
         limit_dims = set(limits.names)
 
         if limit_dims.intersection(at_dims):
-            raise ValueError(
-                'Dimensions specified via "limits" and in "at" must not overlap.'
-            )
+            raise ValueError('Dimensions specified via "limits" and in "at" must not overlap.')
         elif not continuous_dims.issubset(at_dims.union(limit_dims) - set(["none"])):
-            raise ValueError(
-                'Not all continuous dimensions are specified by "limits" or "at".'
-            )
+            raise ValueError('Not all continuous dimensions are specified by "limits" or "at".')
 
         # Format "resolution" as dict if necessary
         if isinstance(resolution, int):
@@ -757,9 +655,7 @@ class Regressor(ABC):
         elif not isinstance(resolution, dict):
             raise TypeError('"resolution" must be a dictionary or an integer')
         else:
-            assert_is_subset(
-                "continuous dimensions", resolution.keys(), self.continuous_dims
-            )
+            assert_is_subset("continuous dimensions", resolution.keys(), self.continuous_dims)
 
         #
         # Build grids
@@ -785,10 +681,7 @@ class Regressor(ABC):
 
         # Add values specified in "at" to all locations in grid_parray
         if at.names != ["none"]:
-            at_arrays = {
-                dim: np.full(grid_parray.shape, value)
-                for dim, value in at.as_dict().items()
-            }
+            at_arrays = {dim: np.full(grid_parray.shape, value) for dim, value in at.as_dict().items()}
             grid_parray = grid_parray.add_layers(**at_arrays)
 
         # Store dimensions along which grid was formed, ensuring the same order as self.dims
@@ -817,14 +710,10 @@ class Regressor(ABC):
         assert_is_subset("GP dims", dims, self.prediction_dims)
 
         ordered_dims = [dim for dim in self.dims if dim in dims]
-        grids = np.meshgrid(
-            *[self.grid_vectors[dim] for dim in ordered_dims], indexing="ij"
-        )
+        grids = np.meshgrid(*[self.grid_vectors[dim] for dim in ordered_dims], indexing="ij")
         return [grids[ordered_dims.index(dim)] for dim in dims]
 
-    def predict_grid(
-        self, output=None, categorical_levels=None, with_noise=True, **kwargs
-    ):
+    def predict_grid(self, output=None, categorical_levels=None, with_noise=True, **kwargs):
         """Make predictions and reshape into grid.
 
         If the model has :attr:`categorical_dims`, a specific level for each dimension must be specified as key-value
@@ -850,9 +739,7 @@ class Regressor(ABC):
 
         points = self.grid_points
         if self.categorical_dims:
-            points = self.append_categorical_points(
-                points, categorical_levels=categorical_levels
-            )
+            points = self.append_categorical_points(points, categorical_levels=categorical_levels)
 
         self.predict_points(points, output=output, with_noise=with_noise, **kwargs)
         self.predictions = self.predictions.reshape(self.grid_parray.shape)
@@ -877,18 +764,11 @@ class Regressor(ABC):
         """
 
         if categorical_levels is not None:
-            if set(categorical_levels.keys()) != (
-                set(self.categorical_dims) - set([self.out_col])
-            ):
-                raise AttributeError(
-                    "Must specify level for every categorical dimension"
-                )
+            if set(categorical_levels.keys()) != (set(self.categorical_dims) - set([self.out_col])):
+                raise AttributeError("Must specify level for every categorical dimension")
 
             points = continuous_parray.fill_with(
-                **{
-                    dim: self.categorical_coords[dim][level]
-                    for dim, level in categorical_levels.items()
-                }
+                **{dim: self.categorical_coords[dim][level] for dim, level in categorical_levels.items()}
             )
         else:
             points = continuous_parray
@@ -992,57 +872,37 @@ class Regressor(ABC):
         """
 
         if not (n_train is None) ^ (pct_train is None):
-            raise ValueError(
-                'Exactly one of "n_train" and "pct_train" must be specified'
-            )
+            raise ValueError('Exactly one of "n_train" and "pct_train" must be specified')
 
         if unit is not None:
             if not isinstance(unit, str):
                 raise TypeError('Keyword "unit" must be a single string.')
 
-        assert_in(
-            'Keyword "errors"', errors, ["natural", "standardized", "transformed"]
-        )
+        assert_in('Keyword "errors"', errors, ["natural", "standardized", "transformed"])
 
         seed = self.seed if seed is None else seed
         rg = np.random.default_rng(seed)
 
         df = self.data.wide
 
-        n_entities = (
-            len(set(df.index)) if unit is None else len(set(df.set_index(unit).index))
-        )
-        n_train = (
-            n_train
-            if n_train is not None
-            else np.floor(n_entities * pct_train).astype(int)
-        )
+        n_entities = len(set(df.index)) if unit is None else len(set(df.set_index(unit).index))
+        n_train = n_train if n_train is not None else np.floor(n_entities * pct_train).astype(int)
         if n_train <= 0:
             raise ValueError("Size of training set must be strictly greater than zero.")
         if n_train > n_entities:
-            raise ValueError(
-                "Size of training set must be not exceed number of observations or entities in dataset."
-            )
+            raise ValueError("Size of training set must be not exceed number of observations or entities in dataset.")
 
         # Build up a list of dataframes that make up the training set
         train_list = []
 
         if train_only is not None:
             # Move items that match `train_only` criteria to training set
-            train_only_criteria = [
-                df[dim] == level for dim, level in train_only.items()
-            ]
+            train_only_criteria = [df[dim] == level for dim, level in train_only.items()]
             train_only_idxs = pd.concat(train_only_criteria, axis=1).all(axis=1).index
-            train_only_df = (
-                df.loc[train_only_idxs]
-                if unit is None
-                else df.loc[train_only_idxs].set_index(unit)
-            )
+            train_only_df = df.loc[train_only_idxs] if unit is None else df.loc[train_only_idxs].set_index(unit)
             n_train -= len(set(train_only_df.index))
             if n_train < 0:
-                raise ValueError(
-                    "Adding `train_only` observations exceeded specified size of training set"
-                )
+                raise ValueError("Adding `train_only` observations exceeded specified size of training set")
             train_list.append(train_only_df)
             df = df.drop(index=train_only_idxs)
 
@@ -1060,9 +920,7 @@ class Regressor(ABC):
                     )
 
         if n_train > len(df.index.unique()):
-            raise ValueError(
-                "Specified size of training set exceeds number of unique combinations found in `dims`"
-            )
+            raise ValueError("Specified size of training set exceeds number of unique combinations found in `dims`")
 
         if warm_start:
             # Add one random item from each categorical level to the training set
@@ -1091,9 +949,7 @@ class Regressor(ABC):
                     )
                 n_train -= len(set(warm_idxs))
                 if n_train < 0:
-                    raise ValueError(
-                        "Adding `warm_start` observations exceeded specified size of training set"
-                    )
+                    raise ValueError("Adding `warm_start` observations exceeded specified size of training set")
                 train_list.append(df.loc[warm_idxs])
                 df = df.drop(index=warm_idxs)
 
@@ -1129,11 +985,7 @@ class Regressor(ABC):
                     for dim, lvls in self.categorical_levels.items()
                 },
                 "continuous_coords": {
-                    dim: {
-                        lvl: coord
-                        for lvl, coord in coords.items()
-                        if lvl in train_df[dim].values
-                    }
+                    dim: {lvl: coord for lvl, coord in coords.items() if lvl in train_df[dim].values}
                     for dim, coords in self.continuous_coords.items()
                 },
             },
@@ -1151,11 +1003,7 @@ class Regressor(ABC):
                     for dim, lvls in self.categorical_levels.items()
                 },
                 "continuous_coords": {
-                    dim: {
-                        lvl: coord
-                        for lvl, coord in coords.items()
-                        if lvl in test_df[dim].values
-                    }
+                    dim: {lvl: coord for lvl, coord in coords.items() if lvl in test_df[dim].values}
                     for dim, coords in self.continuous_coords.items()
                 },
             },
@@ -1178,9 +1026,7 @@ class Regressor(ABC):
         train_obj.specify_model(**train_specs)
         train_obj.filter_dims = self.filter_dims
         train_obj.build_model(**self.model_specs)
-        train_obj.find_MAP(
-            **MAP_kws
-        )  # TODO: make more general to allow alternative inference approaches
+        train_obj.find_MAP(**MAP_kws)  # TODO: make more general to allow alternative inference approaches
 
         # Get in-sample prediction metrics
         train_X, train_y = train_obj.get_structured_data()
@@ -1197,9 +1043,7 @@ class Regressor(ABC):
             test_obj = self.__class__(test_ds, outputs=self.outputs, seed=seed)
 
             # TODO: figure out why this was necessary and get rid of it
-            categorical_dims = [
-                dim for dim in self.categorical_dims if dim != self.out_col
-            ]
+            categorical_dims = [dim for dim in self.categorical_dims if dim != self.out_col]
             test_specs["categorical_dims"] = categorical_dims
             train_specs["categorical_dims"] = categorical_dims
             test_obj.specify_model(**test_specs)
@@ -1257,11 +1101,7 @@ class Regressor(ABC):
         all_dims = self.prediction_dims
 
         # All points along every axis (parrays) Note that these may not all be the same length
-        all_margins = {
-            dim: vec.squeeze()
-            for dim, vec in self.grid_vectors.items()
-            if dim in self.prediction_dims
-        }
+        all_margins = {dim: vec.squeeze() for dim, vec in self.grid_vectors.items() if dim in self.prediction_dims}
 
         # The dimensions to be "kept" are the ones not listed in kwargs
         keep = set(all_dims) - set(dim_values.keys())
@@ -1269,51 +1109,33 @@ class Regressor(ABC):
 
         # parray grid of original points along all "kept" dimensions
         conditional_grid = self.parray(
-            **{
-                array.names[0]: array.values()
-                for array in np.meshgrid(*kept_margins, indexing="ij")
-            }
+            **{array.names[0]: array.values() for array in np.meshgrid(*kept_margins, indexing="ij")}
         )
         # Add specified value for each remaining dimension at all points, then unravel
         xi_parray = conditional_grid.add_layers(
-            **{
-                dim: np.full(conditional_grid.shape, value)
-                for dim, value in dim_values.items()
-            }
+            **{dim: np.full(conditional_grid.shape, value) for dim, value in dim_values.items()}
         ).ravel()
 
         # Stack standardized points into (ordinary) tall array, ensuring dimensions are in the right order for the model
-        xi_pts = np.column_stack(
-            [xi_parray[dim].z.values() for dim in self.dims if dim in xi_parray.names]
-        )
+        xi_pts = np.column_stack([xi_parray[dim].z.values() for dim in self.dims if dim in xi_parray.names])
 
         # Interpolate the mean and variance of the predictions Swapping the first two axes is necessary because grids
         # were generated using meshgrid's "ij" indexing but interpn expects "xy" indexing μ_arr =
         # np.swapaxes(self.predictions.μ, 0, 1)
         μ_arr = self.predictions.μ
         μi = interpn(
-            [
-                all_margins[dim].z.values()
-                for dim in self.dims
-                if dim in self.prediction_dims
-            ],
+            [all_margins[dim].z.values() for dim in self.dims if dim in self.prediction_dims],
             μ_arr,
             xi_pts,
         )
         # σ2_arr = np.swapaxes(self.predictions.σ2, 0, 1)
         σ2_arr = self.predictions.σ2
         σ2i = interpn(
-            [
-                all_margins[dim].z.values()
-                for dim in self.dims
-                if dim in self.prediction_dims
-            ],
+            [all_margins[dim].z.values() for dim in self.dims if dim in self.prediction_dims],
             σ2_arr,
             xi_pts,
         )
 
-        conditional_prediction = self.uparray(
-            self.predictions.name, μ=μi, σ2=σ2i
-        ).reshape(*conditional_grid.shape)
+        conditional_prediction = self.uparray(self.predictions.name, μ=μi, σ2=σ2i).reshape(*conditional_grid.shape)
 
         return conditional_grid.squeeze(), conditional_prediction.squeeze()

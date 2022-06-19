@@ -347,6 +347,8 @@ class GP(Regressor):
 
         shape = n_s if ARD else 1
 
+        shape = n_s if ARD else 1
+
         def continuous_cov(suffix):
             # ℓ = pm.InverseGamma(f'ℓ_{suffix}', mu=ℓ_μ, sigma=ℓ_σ, shape=shape)
             ℓ = pm.Gamma(f"ℓ_{suffix}", alpha=2, beta=1, shape=shape)
@@ -423,9 +425,7 @@ class GP(Regressor):
         """
 
         if heteroskedastic_inputs:
-            raise NotImplementedError(
-                "Heteroskedasticity over inputs is not yet implemented."
-            )
+            raise NotImplementedError("Heteroskedasticity over inputs is not yet implemented.")
 
         X, y = self.get_shaped_data("mean")
         D_in = len(self.dims)
@@ -449,9 +449,7 @@ class GP(Regressor):
             "n_u": n_u,
         }
 
-        gp_dict = self._construct_kernels(
-            X, continuous_kernel, seed, sparse, latent=False, ARD=ARD
-        )
+        gp_dict = self._construct_kernels(X, continuous_kernel, seed, sparse, latent=False, ARD=ARD)
 
         with self.model:
 
@@ -463,9 +461,7 @@ class GP(Regressor):
             σ = pm.Exponential("σ", lam=1)
             noise = pm.gp.cov.WhiteNoise(sigma=σ)
             if heteroskedastic_inputs:
-                raise NotImplementedError(
-                    "Heteroskedasticity over inputs is not yet implemented"
-                )
+                raise NotImplementedError("Heteroskedasticity over inputs is not yet implemented")
                 # noise += continuous_cov('noise')
             if heteroskedastic_outputs and self.out_col in self.categorical_dims:
                 D_out = len(self.categorical_levels[self.out_col])
@@ -727,9 +723,7 @@ class GP(Regressor):
 
         # TODO: need to supply "given" dict for additive GP sublevel predictions
         if additive_level != "total":
-            raise NotImplementedError(
-                "Prediction for additive sublevels is not yet supported."
-            )
+            raise NotImplementedError("Prediction for additive sublevels is not yet supported.")
 
         # Prediction means and variance as a numpy vector
         predictions = self.gp_dict[additive_level].predict(
@@ -744,9 +738,7 @@ class GP(Regressor):
                 var_name += suffix
                 return self._recursively_append(var_name)
             else:
-                raise ValueError(
-                    f'The variable name "{var_name}" already exists in model.'
-                )
+                raise ValueError(f'The variable name "{var_name}" already exists in model.')
         else:
             return var_name
 
@@ -787,22 +779,14 @@ class GP(Regressor):
 
         output = self._parse_prediction_output(output)
         if len(output) > 1:
-            raise NotImplementedError(
-                "Drawing correlated samples of multiple outputs is not yet implemented."
-            )
-        points_array, tall_points, param_coords = self._prepare_points_for_prediction(
-            points, output=output
-        )
+            raise NotImplementedError("Drawing correlated samples of multiple outputs is not yet implemented.")
+        points_array, tall_points, param_coords = self._prepare_points_for_prediction(points, output=output)
 
         if source is None:
             if self.trace is None and self.MAP is None:
-                raise ValueError(
-                    '"Source" of predictions must be supplied if GP object has no trace or MAP stored.'
-                )
+                raise ValueError('"Source" of predictions must be supplied if GP object has no trace or MAP stored.')
             elif self.trace is not None and self.MAP is not None:
-                raise ValueError(
-                    '"Source" of predictions must be supplied if GP object has both trace and MAP stored.'
-                )
+                raise ValueError('"Source" of predictions must be supplied if GP object has both trace and MAP stored.')
             elif self.MAP is not None:
                 source = [self.MAP]
             elif self.trace is not None:
@@ -814,9 +798,7 @@ class GP(Regressor):
             _ = self.gp_dict[additive_level].conditional(var_name, points_array)
 
         with self.model:
-            samples = pm.sample_posterior_predictive(
-                *args, source, var_names=[var_name], **kwargs
-            )
+            samples = pm.sample_posterior_predictive(*args, source, var_names=[var_name], **kwargs)
 
         self.predictions = self.parray(**{var_name: samples[var_name]}, stdzd=True)
         self.predictions_X = points
@@ -863,9 +845,7 @@ class GP(Regressor):
 
         points = self.grid_points
         if self.categorical_dims:
-            points = self.append_categorical_points(
-                points, categorical_levels=categorical_levels
-            )
+            points = self.append_categorical_points(points, categorical_levels=categorical_levels)
 
         samples = self.draw_point_samples(
             *args,

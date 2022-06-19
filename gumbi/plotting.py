@@ -85,9 +85,7 @@ class ParrayPlotter:
     """
     x: ParameterArray | LayeredArray | np.ndarray
     y: UncertainParameterArray | UncertainArray | ParameterArray | LayeredArray | np.ndarray
-    z: UncertainParameterArray | UncertainArray | ParameterArray | LayeredArray | np.ndarray = (
-        None
-    )
+    z: UncertainParameterArray | UncertainArray | ParameterArray | LayeredArray | np.ndarray = None
     stdzr: Standardizer = None
     x_scale: str = "natural"
     x_tick_scale: str = "natural"
@@ -104,9 +102,7 @@ class ParrayPlotter:
                 self.stdzr = getattr(arr, "stdzr", None)
 
         if self.stdzr is None:
-            raise ValueError(
-                "Standardizer must be provided if none of the arrays contain a Standardizer."
-            )
+            raise ValueError("Standardizer must be provided if none of the arrays contain a Standardizer.")
 
     def update(self):
         self._update_x()
@@ -163,9 +159,7 @@ class ParrayPlotter:
         if self.zlabel.endswith("_z") or self.zlabel.endswith("_t"):
             self.zlabel = self.zlabel[:-2]
         # self.zlabel = self.zlabel.removesuffix('_z').removesuffix('_t')  # Use when Python>=3.7
-        _reformat_tick_labels(
-            cbar, "c", self.zlabel, self.z_scale, self.z_tick_scale, self.stdzr
-        )
+        _reformat_tick_labels(cbar, "c", self.zlabel, self.z_scale, self.z_tick_scale, self.stdzr)
 
         label = _augment_label(self.stdzr, self.zlabel, self.z_tick_scale)
         cbar.set_label(label)
@@ -194,9 +188,7 @@ class ParrayPlotter:
             Axes for the plot
         """
         if self.z is not None:
-            raise NotImplementedError(
-                'Method "plot" not implemented when z_pa is present.'
-            )
+            raise NotImplementedError('Method "plot" not implemented when z_pa is present.')
 
         line_kws = dict() if line_kws is None else line_kws
         ci_kws = dict() if ci_kws is None else ci_kws
@@ -249,13 +241,9 @@ class ParrayPlotter:
             Axes for the plot
         """
         if self.z is not None:
-            raise NotImplementedError(
-                'Method "plot_ci" not supported when z_pa is present.'
-            )
+            raise NotImplementedError('Method "plot_ci" not supported when z_pa is present.')
         if not hasattr(self.y, "σ2"):
-            raise NotImplementedError(
-                'Method "plot_ci" only supported when y_pa has the "σ2" attribute.'
-            )
+            raise NotImplementedError('Method "plot_ci" only supported when y_pa has the "σ2" attribute.')
 
         ax = plt.gca() if ax is None else ax
 
@@ -272,9 +260,7 @@ class ParrayPlotter:
         elif ci_style in errorbar_styles:
             ax.errorbar(self.x_, m, m - b, u - m, **kwargs)
         else:
-            return ValueError(
-                f"ci_style must be one of {fill_between_styles + errorbar_styles}"
-            )
+            return ValueError(f"ci_style must be one of {fill_between_styles + errorbar_styles}")
         return ax
 
 
@@ -290,9 +276,7 @@ def _parse_array(array, scale) -> Tuple[np.ndarray, str, str]:
     return array, label, scale
 
 
-def _parse_parray(
-    pa, scale
-) -> Tuple[ParameterArray | LayeredArray | np.ndarray, str, str]:
+def _parse_parray(pa, scale) -> Tuple[ParameterArray | LayeredArray | np.ndarray, str, str]:
     if isinstance(pa, ParameterArray):
         if scale == "standardized":
             array = pa.z
@@ -314,9 +298,7 @@ def _parse_parray(
     return array, label, scale
 
 
-def _parse_uparray(
-    upa, scale
-) -> Tuple[UncertainParameterArray | UncertainArray, str, str]:
+def _parse_uparray(upa, scale) -> Tuple[UncertainParameterArray | UncertainArray, str, str]:
     if isinstance(upa, UncertainParameterArray):
         if scale == "standardized":
             array = upa.z
@@ -331,17 +313,13 @@ def _parse_uparray(
             scale = "transformed"
         array = upa
     else:
-        raise TypeError(
-            "Array must be either an UncertainParameterArray or an UncertainArray."
-        )
+        raise TypeError("Array must be either an UncertainParameterArray or an UncertainArray.")
     label = upa.name
 
     return array, label, scale
 
 
-def _format_parray_plot_labels(
-    ax, stdzr, xlabel, x_scale, x_tick_scale, ylabel, y_scale, y_tick_scale
-):
+def _format_parray_plot_labels(ax, stdzr, xlabel, x_scale, x_tick_scale, ylabel, y_scale, y_tick_scale):
 
     if xlabel.endswith("_z") or xlabel.endswith("_t"):
         xlabel = xlabel[:-2]
@@ -362,11 +340,7 @@ def _format_parray_plot_labels(
 def _augment_label(stdzr, label, tick_scale):
     prefixes = {np.log: "log ", logit: "logit "}
     transform = stdzr.transforms.get(label, [None])[0]
-    prefix = (
-        prefixes.get(transform, "")
-        if tick_scale in ["transformed", "standardized"]
-        else ""
-    )
+    prefix = prefixes.get(transform, "") if tick_scale in ["transformed", "standardized"] else ""
     suffix = " (standardized)" if tick_scale == "standardized" else ""
     return f"{prefix}{label}{suffix}"
 

@@ -19,17 +19,11 @@ class GPC(GP):
     ):
 
         if heteroskedastic_inputs:
-            raise NotImplementedError(
-                "The GP Classifier does not support heteroskedastic inputs."
-            )
+            raise NotImplementedError("The GP Classifier does not support heteroskedastic inputs.")
         if heteroskedastic_outputs:
-            raise NotImplementedError(
-                "The GP Classifier does not support heteroskedastic outputs."
-            )
+            raise NotImplementedError("The GP Classifier does not support heteroskedastic outputs.")
         if sparse:
-            raise NotImplementedError(
-                "The GP Classifier does not support sparse structure (yet)."
-            )
+            raise NotImplementedError("The GP Classifier does not support sparse structure (yet).")
 
         self.build_latent(seed=seed, continuous_kernel=continuous_kernel, eps=eps)
 
