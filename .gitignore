@@ -13,3 +13,5 @@ htmlcov
 nupack/*
 dist/*
 *.pub
+build/
+*.swp
