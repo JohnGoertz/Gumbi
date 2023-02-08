@@ -20,6 +20,8 @@ dependencies:
   - pre-commit
   - commitizen
   - pytest
+  - build
+  - twine
   - pip
   - pip:
     - .
