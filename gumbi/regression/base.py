@@ -98,6 +98,7 @@ class Regressor(ABC):
         self.categorical_dims = []
         self.categorical_levels = {}
         self.categorical_coords = {}
+        self.filter_dims = {}
         self.additive = False
         self.model_specs = {}
 
@@ -234,16 +235,17 @@ class Regressor(ABC):
         self.categorical_dims += [self.out_col]
         self.categorical_levels[self.out_col] = self.outputs
 
-        # Move dims with only one level to separate list
+        # If dataset has more than one observation, move dims with only one level to separate list
         self.filter_dims = {}
-        for dim in self.dims:
-            levels = self.levels[dim]
-            if len(levels) == 1:
-                self.filter_dims[dim] = levels
-                self.continuous_dims = [d for d in self.continuous_dims if d != dim]
-                self.categorical_dims = [d for d in self.categorical_dims if d != dim]
-                self.continuous_levels = {d: l for d, l in self.continuous_levels.items() if d != dim}
-                self.categorical_levels = {d: l for d, l in self.categorical_levels.items() if d != dim}
+        if self.data.wide.shape[0] > 1:
+            for dim in self.dims:
+                levels = self.levels[dim]
+                if len(levels) == 1:
+                    self.filter_dims[dim] = levels
+                    self.continuous_dims = [d for d in self.continuous_dims if d != dim]
+                    self.categorical_dims = [d for d in self.categorical_dims if d != dim]
+                    self.continuous_levels = {d: l for d, l in self.continuous_levels.items() if d != dim}
+                    self.categorical_levels = {d: l for d, l in self.categorical_levels.items() if d != dim}
 
         # Ensure coordinates are valid and format as dict-of-dicts
         self.continuous_coords = self._parse_coordinates(
@@ -548,6 +550,8 @@ class Regressor(ABC):
         prediction : UncertainParameterArray
             Predictions as a `uparray`
         """
+
+        # TODO: add convenience method for predicting at a single point
 
         output = self._parse_prediction_output(output)
         points_array, tall_points, param_coords = self._prepare_points_for_prediction(points, output=output)
@@ -1096,6 +1100,8 @@ class Regressor(ABC):
         conditional_prediction: UncertainParameterArray
             `n`-dimensional grid of predictions conditional on the given values of the `m` specified dimensions
         """
+
+        # TODO: currently fails if all dimensions are specified. Should return the prediction at the given point or throw an informative error.
 
         self._check_has_prediction()
         all_dims = self.prediction_dims
