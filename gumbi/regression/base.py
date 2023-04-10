@@ -420,7 +420,7 @@ class Regressor(ABC):
 
         return X, y
 
-    def get_shaped_data(self, metric="mean"):
+    def get_shaped_data(self, metric="mean", dropna=True):
         """Formats input data and observations as plain numpy arrays
 
         Parameters
@@ -454,7 +454,9 @@ class Regressor(ABC):
             y = self.y.z.values().squeeze()
             X = np.atleast_2d(np.column_stack([self.X[dim].z.values().squeeze() for dim in self.dims]))
 
-        return X, y
+        nans = np.isnan(y)
+
+        return X[~nans], y[~nans]
 
     ################################################################################
     # Prediction
