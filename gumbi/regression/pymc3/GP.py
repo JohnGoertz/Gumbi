@@ -2,6 +2,7 @@ import warnings
 
 import numpy as np
 import pymc3 as pm
+import theano.tensor as tt
 
 from gumbi.aggregation import DataSet
 from gumbi.arrays import (  # noqa: F401
@@ -376,6 +377,45 @@ class GP(Regressor):
 
         return continuous_cov
 
+    def _make_periodic_cov(
+        self,
+        continuous_cov_func,
+        D_in,
+        idx_s,
+        n_s,
+        ℓ_μ,
+        ℓ_σ,
+        period,
+        ARD=True,
+        stabilize=True,
+        eps=1e-6,
+        **kernel_kwargs,
+    ):
+
+        continuous_kernel_factory = self._make_continuous_cov(
+            continuous_cov_func, D_in, None, n_s, ℓ_μ, ℓ_σ, ARD=ARD, stabilize=False, **kernel_kwargs
+        )
+
+        zperiods = [period.z[dim + "_z"].values() for dim in self.continuous_dims]
+        zperiods = np.array(zperiods).squeeze() if len(zperiods) > 1 else zperiods[0]
+
+        def mapping(x, zperiods):
+            c = 2.0 * np.pi * (1.0 / zperiods)
+            u = tt.concatenate((tt.sin(c * x), tt.cos(c * x)), 1)
+            return u
+
+        def periodic_cov(suffix):
+            cov_func = continuous_kernel_factory(suffix)
+            cov = pm.gp.cov.WarpedInput(
+                input_dim=D_in, active_dims=idx_s, cov_func=cov_func, warp_func=mapping, args=(zperiods,)
+            )
+            if stabilize:
+                cov += pm.gp.cov.WhiteNoise(eps)
+
+            return cov
+
+        return periodic_cov
+
     def _make_linear_cov(self, D_in, idx_l, n_l):
         def linear_cov(suffix):
             c = pm.Normal(f"c_{suffix}", mu=0, sigma=10, shape=n_l)
@@ -572,7 +612,17 @@ class GP(Regressor):
             "Exponential",
             "Periodic",
         ]
+        continuous_kernels += [kernel + "+Periodic" for kernel in continuous_kernels if kernel != "Periodic"]
         assert_in("Continuous kernel", continuous_kernel, continuous_kernels)
+
+        if continuous_kernel.endswith("+Periodic"):
+            continuous_kernel = continuous_kernel.removesuffix("+Periodic")
+            if period is None:
+                raise ValueError("Period must be specified for periodic kernel")
+            kernel_factory = self._make_periodic_cov
+        else:
+            kernel_factory = self._make_continuous_cov
+
         continuous_cov_func = getattr(pm.gp.cov, continuous_kernel)
 
         D_in = len(self.dims)
@@ -581,7 +631,7 @@ class GP(Regressor):
         idxs = self._get_dim_indexes()
         ℓ_μ, ℓ_σ = self._prepare_lengthscales(X)
 
-        continuous_cov = self._make_continuous_cov(
+        continuous_cov = kernel_factory(
             continuous_cov_func,
             D_in,
             idxs["s"],
