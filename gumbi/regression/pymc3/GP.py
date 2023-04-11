@@ -238,12 +238,16 @@ class GP(Regressor):
         categorical_levels=None,
         additive=False,
         seed=None,
+        continuous_kernel="ExpQuad",
+        period=None,
         heteroskedastic_inputs=False,
         heteroskedastic_outputs=True,
         sparse=False,
         n_u=100,
         ARD=True,
-        **MAP_kwargs,
+        spec_kwargs=None,
+        build_kwargs=None,
+        MAP_kwargs=None,
     ):
         """Fits a GP surface
 
@@ -284,6 +288,10 @@ class GP(Regressor):
             Whether to treat categorical_dims as additive or joint (default).
         seed : int, optional.
             Random seed for model instantiation. If ``None``, :attr:`seed` is used.
+        continuous_kernel : {'ExpQuad', 'Matern32', 'Matern52', 'Exponential', or 'Cosine'}
+            Covariance function to use for continuous dimensions. See `pymc3 docs`_ for more details.
+        period : ParameterArray, optional
+            A single parray of length 1 with one layer for each `continuous_dims` by name containing the period of the kernel, if periodic-like kernel is used.
         heteroskedastic_inputs: bool, default False
             Whether to allow heteroskedasticity along continuous dimensions (input-dependent noise)
         heteroskedastic_outputs: bool, default True
@@ -296,12 +304,9 @@ class GP(Regressor):
             Whether to use "Automatic Relevance Determination" in the continuous kernel. If _True_, each continuous
             dimension receives its own lengthscale; otherwise a single lengthscale is used for all continuous
             dimensions.
+
         **MAP_kwargs
             Additional keyword arguments passed to :func:`pm.find_MAP`.
-        ARD: bool, default True
-            Whether to use "Automatic Relevance Determination" in the continuous kernel. If _True_, each continuous
-            dimension receives its own lengthscale; otherwise a single lengthscale is used for all continuous
-            dimensions.
 
         Returns
         -------
@@ -317,18 +322,22 @@ class GP(Regressor):
             categorical_dims=categorical_dims,
             categorical_levels=categorical_levels,
             additive=additive,
+            **(spec_kwargs or {}),
         )
 
         self.build_model(
             seed=seed,
+            continuous_kernel=continuous_kernel,
+            period=period,
             heteroskedastic_inputs=heteroskedastic_inputs,
             heteroskedastic_outputs=heteroskedastic_outputs,
             sparse=sparse,
             n_u=n_u,
             ARD=ARD,
+            **(build_kwargs or {}),
         )
 
-        self.find_MAP(**MAP_kwargs)
+        self.find_MAP(**(MAP_kwargs or {}))
 
         return self
 
@@ -343,19 +352,26 @@ class GP(Regressor):
         ARD=True,
         stabilize=True,
         eps=1e-6,
+        period=None,
+        **kernel_kwargs,
     ):
 
         shape = n_s if ARD else 1
 
         shape = n_s if ARD else 1
 
+        if period is not None:
+            zperiods = [period.z[dim + "_z"].values() for dim in self.continuous_dims]
+            kernel_kwargs["period"] = np.array(zperiods).squeeze()
+
         def continuous_cov(suffix):
             # ℓ = pm.InverseGamma(f'ℓ_{suffix}', mu=ℓ_μ, sigma=ℓ_σ, shape=shape)
             ℓ = pm.Gamma(f"ℓ_{suffix}", alpha=2, beta=1, shape=shape)
             η = pm.Gamma(f"η_{suffix}", alpha=2, beta=1)
-            cov = η**2 * continuous_cov_func(input_dim=D_in, active_dims=idx_s, ls=ℓ)
+            cov = η**2 * continuous_cov_func(input_dim=D_in, active_dims=idx_s, ls=ℓ, **kernel_kwargs)
             if stabilize:
                 cov += pm.gp.cov.WhiteNoise(eps)
+
             return cov
 
         return continuous_cov
@@ -383,6 +399,7 @@ class GP(Regressor):
         self,
         seed=None,
         continuous_kernel="ExpQuad",
+        period=None,
         heteroskedastic_inputs=False,
         heteroskedastic_outputs=True,
         sparse=False,
@@ -403,8 +420,10 @@ class GP(Regressor):
         ----------
         seed : int, optional.
             Random seed. If ``None``, :attr:`seed` is used.
-        continuous_kernel : {'ExpQuad', 'RatQuad', 'Matern32', 'Matern52', 'Exponential', or 'Cosine'}
+        continuous_kernel : {'ExpQuad', 'Matern32', 'Matern52', 'Exponential', 'Cosine', or 'Periodic'}
             Covariance function to use for continuous dimensions. See `pymc3 docs`_ for more details.
+        period : ParameterArray, optional
+            A single parray of length 1 with one layer for each `continuous_dims` by name containing the period of the kernel, if periodic-like kernel is used.
         heteroskedastic_inputs: bool, default False
             Whether to allow heteroskedasticity along continuous dimensions (input-dependent noise).
         heteroskedastic_outputs: bool, default True
@@ -449,7 +468,7 @@ class GP(Regressor):
             "n_u": n_u,
         }
 
-        gp_dict = self._construct_kernels(X, continuous_kernel, seed, sparse, latent=False, ARD=ARD)
+        gp_dict = self._construct_kernels(X, continuous_kernel, seed, sparse, latent=False, ARD=ARD, period=period)
 
         with self.model:
 
@@ -541,15 +560,17 @@ class GP(Regressor):
         ARD=True,
         stabilize=True,
         eps=1e-6,
+        period=None,
     ):
 
         continuous_kernels = [
             "ExpQuad",
-            "RatQuad",
+            # "RatQuad",
+            "Matern12",
             "Matern32",
             "Matern52",
             "Exponential",
-            "Cosine",
+            "Periodic",
         ]
         assert_in("Continuous kernel", continuous_kernel, continuous_kernels)
         continuous_cov_func = getattr(pm.gp.cov, continuous_kernel)
@@ -570,6 +591,7 @@ class GP(Regressor):
             ARD=ARD,
             stabilize=stabilize,
             eps=eps,
+            period=period,
         )
         linear_cov = self._make_linear_cov(D_in, idxs["l"], ns["l"])
         coreg_cov = self._make_coreg_cov(D_in, seed)
