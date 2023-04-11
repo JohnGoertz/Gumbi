@@ -393,18 +393,22 @@ class GP(Regressor):
     ):
 
         continuous_kernel_factory = self._make_continuous_cov(
-            continuous_cov_func, D_in, idx_s, n_s, ℓ_μ, ℓ_σ, ARD=ARD, stabilize=False, **kernel_kwargs
+            continuous_cov_func, D_in, None, n_s, ℓ_μ, ℓ_σ, ARD=ARD, stabilize=False, **kernel_kwargs
         )
 
-        def mapping(x, period):
-            c = 2.0 * np.pi * (1.0 / period)
+        zperiods = [period.z[dim + "_z"].values() for dim in self.continuous_dims]
+        zperiods = np.array(zperiods).squeeze() if len(zperiods) > 1 else zperiods[0]
+
+        def mapping(x, zperiods):
+            c = 2.0 * np.pi * (1.0 / zperiods)
             u = tt.concatenate((tt.sin(c * x), tt.cos(c * x)), 1)
             return u
 
         def periodic_cov(suffix):
             cov_func = continuous_kernel_factory(suffix)
-            cov += pm.gp.cov.Periodic(period, active_dims=idx_s, **kernel_kwargs)
-            cov = pm.gp.cov.WarpedInput(active_dims=idx_s, cov_func=cov_func, warp_func=mapping, args=(period,))
+            cov = pm.gp.cov.WarpedInput(
+                input_dim=D_in, active_dims=idx_s, cov_func=cov_func, warp_func=mapping, args=(zperiods,)
+            )
             if stabilize:
                 cov += pm.gp.cov.WhiteNoise(eps)
 
@@ -613,7 +617,6 @@ class GP(Regressor):
 
         if continuous_kernel.endswith("+Periodic"):
             continuous_kernel = continuous_kernel.removesuffix("+Periodic")
-            construct_periodic = True
             if period is None:
                 raise ValueError("Period must be specified for periodic kernel")
             kernel_factory = self._make_periodic_cov
