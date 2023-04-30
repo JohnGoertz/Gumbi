@@ -1,8 +1,8 @@
 import warnings
 
 import numpy as np
-import pymc3 as pm
-import theano.tensor as tt
+import pymc as pm
+import pytensor.tensor as pt
 
 from gumbi.aggregation import DataSet
 from gumbi.arrays import (  # noqa: F401
@@ -33,7 +33,7 @@ class GP(Regressor):
     specifed when the :class:`DataSet` is constructed. The model inputs are constructed by filtering this dataframe,
     extracting column values, and converting these to numerical input coordinates. The main entry point will be
     :meth:`fit`, which parses the dimensions of the model with :meth:`specify_model`, extracts numerical input
-    coordinates with :meth:`get_structured_data`, compiles the Pymc3 model with :meth:`build_model`, and finally learns
+    coordinates with :meth:`get_structured_data`, compiles the Pymc model with :meth:`build_model`, and finally learns
     the hyperparameters with :meth:`find_MAP`.
 
     Dimensions fall into several categories:
@@ -194,8 +194,8 @@ class GP(Regressor):
         A 2D tall array of input coordinates.
     y : array
         A 1D vector of observations
-    model : pymc3.model.Model
-        Compiled pymc3 model
+    model : pymc.model.Model
+        Compiled pymc model
     gp_dict : dict
         Dictionary of model GP objects. Contains at least 'total'.
     """
@@ -252,7 +252,7 @@ class GP(Regressor):
     ):
         """Fits a GP surface
 
-        Parses inputs, compiles a Pymc3 model, then finds the MAP value for the hyperparameters. `{}_dims` arguments
+        Parses inputs, compiles a Pymc model, then finds the MAP value for the hyperparameters. `{}_dims` arguments
         indicate the columns of the dataframe to be included in the model, with `{}_levels` indicating which values of
         those columns are to be included (``None`` implies all values).
 
@@ -290,7 +290,7 @@ class GP(Regressor):
         seed : int, optional.
             Random seed for model instantiation. If ``None``, :attr:`seed` is used.
         continuous_kernel : {'ExpQuad', 'Matern32', 'Matern52', 'Exponential', or 'Cosine'}
-            Covariance function to use for continuous dimensions. See `pymc3 docs`_ for more details.
+            Covariance function to use for continuous dimensions. See `pymc docs`_ for more details.
         period : ParameterArray, optional
             A single parray of length 1 with one layer for each `continuous_dims` by name containing the period of the kernel, if periodic-like kernel is used.
         heteroskedastic_inputs: bool, default False
@@ -351,12 +351,9 @@ class GP(Regressor):
         ℓ_μ,
         ℓ_σ,
         ARD=True,
-        stabilize=True,
-        eps=1e-6,
         period=None,
         **kernel_kwargs,
     ):
-
         shape = n_s if ARD else 1
 
         shape = n_s if ARD else 1
@@ -370,8 +367,6 @@ class GP(Regressor):
             ℓ = pm.Gamma(f"ℓ_{suffix}", alpha=2, beta=1, shape=shape)
             η = pm.Gamma(f"η_{suffix}", alpha=2, beta=1)
             cov = η**2 * continuous_cov_func(input_dim=D_in, active_dims=idx_s, ls=ℓ, **kernel_kwargs)
-            if stabilize:
-                cov += pm.gp.cov.WhiteNoise(eps)
 
             return cov
 
@@ -387,11 +382,8 @@ class GP(Regressor):
         ℓ_σ,
         period,
         ARD=True,
-        stabilize=True,
-        eps=1e-6,
         **kernel_kwargs,
     ):
-
         continuous_kernel_factory = self._make_continuous_cov(
             continuous_cov_func, 2, None, n_s, ℓ_μ, ℓ_σ, ARD=ARD, stabilize=False, **kernel_kwargs
         )
@@ -401,7 +393,7 @@ class GP(Regressor):
 
         def mapping(x, zperiods):
             c = 2.0 * np.pi * (1.0 / zperiods)
-            u = tt.concatenate((tt.sin(c * x), tt.cos(c * x)), 1)
+            u = pt.concatenate((pt.sin(c * x), pt.cos(c * x)), 1)
             return u
 
         def periodic_cov(suffix):
@@ -409,8 +401,6 @@ class GP(Regressor):
             cov = pm.gp.cov.WarpedInput(
                 input_dim=D_in, active_dims=idx_s, cov_func=cov_func, warp_func=mapping, args=(zperiods,)
             )
-            if stabilize:
-                cov += pm.gp.cov.WhiteNoise(eps)
 
             return cov
 
@@ -427,7 +417,7 @@ class GP(Regressor):
     def _make_coreg_cov(self, D_in, seed):
         def coreg_cov(suffix, D_out, idx):
             testval = np.random.default_rng(seed).standard_normal(size=(D_out, 2))
-            W = pm.Normal(f"W_{suffix}", mu=0, sd=3, shape=(D_out, 2), testval=testval)
+            W = pm.Normal(f"W_{suffix}", mu=0, sigma=3, shape=(D_out, 2), testval=testval)
             κ = pm.Gamma(f"κ_{suffix}", alpha=1.5, beta=1, shape=(D_out,))
             return pm.gp.cov.Coregion(input_dim=D_in, active_dims=[idx], kappa=κ, W=W)
 
@@ -446,14 +436,14 @@ class GP(Regressor):
         n_u=100,
         ARD=True,
     ):
-        r"""Compile a marginalized pymc3 model for the GP.
+        r"""Compile a marginalized pymc model for the GP.
 
         Each dimension in :attr:`continuous_dims` is combined in an ExpQuad kernel with a principled
         :math:`\text{InverseGamma}` prior for each lengthscale (as `suggested by Michael Betancourt`_) and a
         :math:`\text{Gamma}\left(2, 1\right)` prior for variance.
 
         .. _suggested by Michael Betancourt: https://betanalpha.github.io/assets/case_studies/gp_part3/part3.html#4_adding_an_informative_prior_for_the_length_scale  # noqa: E501
-        .. _pymc3 docs: https://docs.pymc.io/en/v3/api/gp/cov.html
+        .. _pymc docs: https://docs.pymc.io/en/v3/api/gp/cov.html
         .. _sparse approximation: https://docs.pymc.io/en/v3/pymc-examples/examples/gaussian_processes/GP-SparseApprox.html  # noqa: E501
 
         Parameters
@@ -461,7 +451,7 @@ class GP(Regressor):
         seed : int, optional.
             Random seed. If ``None``, :attr:`seed` is used.
         continuous_kernel : {'ExpQuad', 'Matern32', 'Matern52', 'Exponential', 'Cosine', or 'Periodic'}
-            Covariance function to use for continuous dimensions. See `pymc3 docs`_ for more details.
+            Covariance function to use for continuous dimensions. See `pymc docs`_ for more details.
         period : ParameterArray, optional
             A single parray of length 1 with one layer for each `continuous_dims` by name containing the period of the kernel, if periodic-like kernel is used.
         heteroskedastic_inputs: bool, default False
@@ -511,7 +501,6 @@ class GP(Regressor):
         gp_dict = self._construct_kernels(X, continuous_kernel, seed, sparse, latent=False, ARD=ARD, period=period)
 
         with self.model:
-
             # From https://docs.pymc.io/notebooks/GP-Marginal.html OR a covariance function for the noise can be given
             # noise_l = pm.Gamma("noise_l", alpha=2, beta=2) cov_func_noise = pm.gp.cov.Exponential(1, noise_l) +
             # pm.gp.cov.WhiteNoise(sigma=0.1) y_ = gp.marginal_likelihood("y", X=X, y=y, noise=cov_func_noise)
@@ -562,7 +551,6 @@ class GP(Regressor):
         return implementation
 
     def _get_dim_counts(self):
-
         dim_counts = {
             "l": len(self.linear_dims),
             "s": len(self.continuous_dims),
@@ -573,7 +561,6 @@ class GP(Regressor):
         return dim_counts
 
     def _get_dim_indexes(self):
-
         dim_indexes = {
             "l": [self.dims.index(dim) for dim in self.linear_dims],
             "s": [self.dims.index(dim) for dim in self.continuous_dims],
@@ -584,7 +571,6 @@ class GP(Regressor):
         return dim_indexes
 
     def _prepare_lengthscales(self, X):
-
         X_s = X[:, self._get_dim_indexes()["s"]]
 
         ℓ_μ, ℓ_σ = [stat for stat in np.array([get_ℓ_prior(dim) for dim in X_s.T]).T]
@@ -598,11 +584,8 @@ class GP(Regressor):
         sparse,
         latent,
         ARD=True,
-        stabilize=True,
-        eps=1e-6,
         period=None,
     ):
-
         continuous_kernels = [
             "ExpQuad",
             # "RatQuad",
@@ -639,8 +622,6 @@ class GP(Regressor):
             ℓ_μ,
             ℓ_σ,
             ARD=ARD,
-            stabilize=stabilize,
-            eps=eps,
             period=period,
         )
         linear_cov = self._make_linear_cov(D_in, idxs["l"], ns["l"])
@@ -707,9 +688,7 @@ class GP(Regressor):
         continuous_kernel="ExpQuad",
         prior_name="latent_prior",
         ARD=True,
-        eps=1e-6,
     ):
-
         if self.additive:
             raise NotImplementedError("Additive/latent GPs are not yet implemented")
 
@@ -730,8 +709,6 @@ class GP(Regressor):
             sparse=False,
             latent=True,
             ARD=ARD,
-            stabilize=True,
-            eps=eps,
         )
 
         with self.model:

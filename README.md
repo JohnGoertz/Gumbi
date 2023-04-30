@@ -9,7 +9,7 @@ transforming, and standardizing data as necessary while applying best practices 
 construction of the GP model itself. Taking inspiration from popular packages such as
 __[Bambi](https://bambinos.github.io/bambi/main/index.html)__ and __[Seaborn](https://seaborn.pydata.org/index.html)__,
 Gumbi's aim is to allow quick iteration on both model structure and prediction visualization. Gumbi is primarily built
-on top of __[PyMC3](https://docs.pymc.io/)__, though additional support for __[GPflow](https://gpflow.readthedocs.io/)__
+on top of __[Pymc](https://docs.pymc.io/)__, though additional support for __[GPflow](https://gpflow.readthedocs.io/)__
 is planned.
 
 ## Quickstart

@@ -1,7 +1,7 @@
 import pathlib as pl
 
 import pandas as pd
-import pymc3 as pm
+import pymc as pm
 import pytest
 
 from gumbi import GP, DataSet, Standardizer
@@ -170,9 +170,7 @@ def test_gp_build_model_additive(example_gp):
 
 def test_gp_fit_simple(example_gp):
     # Basically just makes sure that `fit` runs without errors
-    gp = example_gp.fit(
-        continuous_dims=["X", "Y", "lg10_Z"], continuous_levels={"lg10_Z": [8]}
-    )
+    gp = example_gp.fit(continuous_dims=["X", "Y", "lg10_Z"], continuous_levels={"lg10_Z": [8]})
     assert isinstance(gp.MAP, dict)
 
 

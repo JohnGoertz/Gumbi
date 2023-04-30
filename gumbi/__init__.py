@@ -5,9 +5,8 @@
 from .aggregation import *
 from .arrays import *
 from .plotting import *
-
-# from .regression import *
-# from .versions import __version__
+from .regression import *
+from .versions import __version__
 
 # Aliases
 parray = ParameterArray

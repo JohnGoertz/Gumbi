@@ -1,6 +1,6 @@
 from functools import wraps
 
-import pymc3 as pm
+import pymc as pm
 
 from .GP import *
 
@@ -17,7 +17,6 @@ class GPC(GP):
         n_u=100,
         eps=1e-6,
     ):
-
         if heteroskedastic_inputs:
             raise NotImplementedError("The GP Classifier does not support heteroskedastic inputs.")
         if heteroskedastic_outputs:
@@ -50,7 +49,6 @@ class GPC(GP):
         increment_var=True,
         **kwargs
     ):
-
         var_name = self._recursively_append(var_name, increment_var=increment_var)
 
         # A

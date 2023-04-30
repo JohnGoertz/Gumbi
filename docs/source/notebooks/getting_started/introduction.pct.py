@@ -19,7 +19,7 @@
 # construction of the GP model itself. Taking inspiration from popular packages such as
 # __[Bambi](https://bambinos.github.io/bambi/main/index.html)__ and
 # __[Seaborn](https://seaborn.pydata.org/index.html)__, Gumbi's aim is to allow quick iteration on both model structure
-# and prediction visualization. Gumbi is primarily built on top of __[PyMC3](https://docs.pymc.io/)__, though additional
+# and prediction visualization. Gumbi is primarily built on top of __[Pymc](https://docs.pymc.io/)__, though additional
 # support for __[GPflow](https://gpflow.readthedocs.io/)__ is planned.
 
 # %% [markdown]
@@ -56,9 +56,7 @@ gp.fit(outputs=["mpg"], continuous_dims=["horsepower"])
 X = gp.prepare_grid()
 y = gp.predict_grid()
 gmb.ParrayPlotter(X, y).plot()
-sns.scatterplot(
-    data=cars, x="horsepower", y="mpg", color=sns.cubehelix_palette()[-1], alpha=0.5
-)
+sns.scatterplot(data=cars, x="horsepower", y="mpg", color=sns.cubehelix_palette()[-1], alpha=0.5)
 
 # %% [markdown]
 #

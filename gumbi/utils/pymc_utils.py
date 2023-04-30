@@ -1,6 +1,6 @@
-"""Utility functions for working with pymc3"""
+"""Utility functions for working with pymc"""
 
-import pymc3 as pm
+import pymc as pm
 
 
 def nc_Normal(name: str, mu: float, sigma: float, **kws):
@@ -9,7 +9,7 @@ def nc_Normal(name: str, mu: float, sigma: float, **kws):
     Parameters
     ----------
     name: str
-        Name given to pymc3 RV.
+        Name given to pymc RV.
     mu: float
         Mean.
     sigma: float
@@ -37,7 +37,7 @@ def sc_Exponential(name: str, mu: float, **kws):
     Parameters
     ----------
     name: str
-        Name given to pymc3 RV.
+        Name given to pymc RV.
     mu: float
         Mean.
     **kws:

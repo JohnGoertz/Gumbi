@@ -9,7 +9,7 @@ dependencies:
   - scipy
   - seaborn
   - matplotlib
-  - pymc
+  - pymc>=5.3.1
   - arviz
   - uncertainties
   - ipympl
