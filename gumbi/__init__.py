@@ -4,8 +4,8 @@
 
 from .aggregation import *
 from .arrays import *
+from .plotting import *
 
-# from .plotting import *
 # from .regression import *
 # from .versions import __version__
 

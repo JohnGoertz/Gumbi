@@ -15,9 +15,7 @@ def test_1d_array_plotting():
         logit_vars=["z"],
     )
     m_pa = parray(m=np.arange(1, 5) / 10, stdzr=stdzr)
-    r_upa = uparray(
-        "d", np.arange(1, 5) / 10 + 0.5, np.arange(1, 5) / 100 * 2, stdzr=stdzr
-    )
+    r_upa = uparray("d", np.arange(1, 5) / 10 + 0.5, np.arange(1, 5) / 100 * 2, stdzr=stdzr)
     ParrayPlotter(m_pa, r_upa.t).plot()
     ParrayPlotter(m_pa, r_upa.z).plot()
     ParrayPlotter(m_pa.t, r_upa.t).plot()
@@ -34,9 +32,7 @@ def test_1d_array_plotting():
 
 
 def test_2d_array_plotting():
-    stdzr = Standardizer(
-        c={"μ": -5.30, "σ": 0.582}, d={"μ": -0.307, "σ": 0.158}, log_vars=["d", "c"]
-    )
+    stdzr = Standardizer(c={"μ": -5.30, "σ": 0.582}, d={"μ": -0.307, "σ": 0.158}, log_vars=["d", "c"])
     c = np.arange(1, 10, 0.25)
     d = np.arange(1, 10, 0.25)
     c, d = np.meshgrid(c, d)

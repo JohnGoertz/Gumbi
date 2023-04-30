@@ -320,7 +320,6 @@ def _parse_uparray(upa, scale) -> Tuple[UncertainParameterArray | UncertainArray
 
 
 def _format_parray_plot_labels(ax, stdzr, xlabel, x_scale, x_tick_scale, ylabel, y_scale, y_tick_scale):
-
     if xlabel.endswith("_z") or xlabel.endswith("_t"):
         xlabel = xlabel[:-2]
     if ylabel.endswith("_z") or ylabel.endswith("_t"):
