@@ -37,14 +37,10 @@ def test_parray():
         rpa.t,
         np.array([-0.69314718, -0.51082562, -0.35667494, -0.22314355, -0.10536052]),
     )
-    assert np.allclose(
-        rpa.z, np.array([-2.4439695, -1.29003559, -0.31439838, 0.53073702, 1.27619927])
-    )
+    assert np.allclose(rpa.z, np.array([-2.4439695, -1.29003559, -0.31439838, 0.53073702, 1.27619927]))
 
     # Composition with numpy functions
-    assert np.allclose(
-        np.min(np.sqrt(np.mean(np.square(rpa - rpa[0] - 0.05)))).t, -1.5791256
-    )
+    assert np.allclose(np.min(np.sqrt(np.mean(np.square(rpa - rpa[0] - 0.05)))).t, -1.5791256)
     assert np.argmax(rpa.values()) == 4
 
     # Parameter not found in stdzr
@@ -56,9 +52,7 @@ def test_parray():
     # Multiple parameters
     pa2 = parray(param=np.arange(5), other=np.arange(5) * 10, stdzr=stdzr)
     assert np.allclose(pa2.get("param").values(), np.array([0.0, 1.0, 2.0, 3.0, 4.0]))
-    assert np.allclose(
-        pa2.get("other").values(), np.array([0.0, 10.0, 20.0, 30.0, 40.0])
-    )
+    assert np.allclose(pa2.get("other").values(), np.array([0.0, 10.0, 20.0, 30.0, 40.0]))
     assert pa2.values().shape == (2, 5)
 
     # Indexing and slicing
@@ -99,9 +93,7 @@ def test_uarray():
     assert np.isclose(ua8.σ2, 0.10625)
 
     # Conversion to scipy distribution
-    assert np.allclose(
-        ua7.dist.ppf(0.95), np.array([0.26448536, 0.43261743, 0.58489701, 0.72897073])
-    )
+    assert np.allclose(ua7.dist.ppf(0.95), np.array([0.26448536, 0.43261743, 0.58489701, 0.72897073]))
     rvs = ua7.dist.rvs([3, *ua7.shape], random_state=2021)
     targets = np.array(
         [
@@ -142,12 +134,8 @@ def test_uparray():
     assert np.isclose(upa.mean().σ2, mc_var, atol=1e-4)
 
     # Distribution behavior
-    assert np.allclose(
-        upa.dist.ppf(0.025), np.array([0.08220152, 0.1515835, 0.21364308, 0.27028359])
-    )
-    assert np.allclose(
-        upa.dist.ppf(0.975), np.array([0.12165225, 0.26388097, 0.42126336, 0.59197082])
-    )
+    assert np.allclose(upa.dist.ppf(0.025), np.array([0.08220152, 0.1515835, 0.21364308, 0.27028359]))
+    assert np.allclose(upa.dist.ppf(0.975), np.array([0.12165225, 0.26388097, 0.42126336, 0.59197082]))
     rvs = upa.dist.rvs([3, *upa.shape], random_state=2021)
     target = np.array(
         [
