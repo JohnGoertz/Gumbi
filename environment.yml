@@ -3,14 +3,14 @@ channels:
   - defaults
   - conda-forge
 dependencies:
-  - python>=3.7
+  - python>=3.9
   - pandas
-  - numpy=1.19.2
+  - numpy  #=1.19.2
   - scipy
   - seaborn
   - matplotlib
-  - pymc3>=3.11.2
-  - arviz>=0.11.2
+  - pymc
+  - arviz
   - uncertainties
   - ipympl
   - mkl
