@@ -1398,12 +1398,13 @@ class MVUncertainParameterArray(np.ndarray):
 
     def cov(self, stdzd=True, whiten=1e-10):
         """Covariance matrix (only supported for 0-D MVUParrays)"""
-        # TODO: numpy versions > 1.19.3 can have bizarre inscrutable errors when handling mvup.cov. Monitor for fixes.
-        if np.__version__ > "1.19.3":
-            warnings.warn(
-                "numpy version >1.19.3 may lead to inscrutable linear algebra errors with mvup.cov."
-                "May just be on Windows/WSL. Hopefully fixed soon."
-            )
+        # # I think this is now fixed:
+        # numpy versions > 1.19.3 can have bizarre inscrutable errors when handling mvup.cov. Monitor for fixes.
+        # if np.__version__ > "1.19.3":
+        #     warnings.warn(
+        #         "numpy version >1.19.3 may lead to inscrutable linear algebra errors with mvup.cov."
+        #         "May just be on Windows/WSL. Hopefully fixed soon."
+        #     )
         if self.ndim != 0:
             raise NotImplementedError("Multidimensional multivariate covariance calculations are not yet supported.")
 
@@ -1419,12 +1420,13 @@ class MVUncertainParameterArray(np.ndarray):
     @property
     def dist(self) -> MultivariateNormalish:
         """Scipy :func:`multivariate_normal` object (only supported for 0-D MVUParrays)"""
-        # TODO: numpy versions > 1.19.3 can have bizarre inscrutable errors when handling mvup.dist. Monitor for fixes.
-        if np.__version__ > "1.19.3":
-            warnings.warn(
-                "numpy version >1.19.3 may lead to inscrutable linear algebra errors with mvup.dist."
-                "May just be on Windows/WSL. Hopefully fixed soon."
-            )
+        # # I think this is now fixed:
+        # numpy versions > 1.19.3 can have bizarre inscrutable errors when handling mvup.dist. Monitor for fixes.
+        # if np.__version__ > "1.19.3":
+        #     warnings.warn(
+        #         "numpy version >1.19.3 may lead to inscrutable linear algebra errors with mvup.dist."
+        #         "May just be on Windows/WSL. Hopefully fixed soon."
+        #     )
         if self.ndim != 0:
             raise NotImplementedError("Multidimensional multivariate distributions are not yet supported.")
         return MultivariateNormalish(mean=self.μ, cov=self.cov(stdzd=True))

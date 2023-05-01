@@ -416,8 +416,8 @@ class GP(Regressor):
 
     def _make_coreg_cov(self, D_in, seed):
         def coreg_cov(suffix, D_out, idx):
-            testval = np.random.default_rng(seed).standard_normal(size=(D_out, 2))
-            W = pm.Normal(f"W_{suffix}", mu=0, sigma=3, shape=(D_out, 2), testval=testval)
+            initval = np.random.default_rng(seed).standard_normal(size=(D_out, 2))
+            W = pm.Normal(f"W_{suffix}", mu=0, sigma=3, shape=(D_out, 2), initval=initval)
             κ = pm.Gamma(f"κ_{suffix}", alpha=1.5, beta=1, shape=(D_out,))
             return pm.gp.cov.Coregion(input_dim=D_in, active_dims=[idx], kappa=κ, W=W)
 
@@ -503,7 +503,7 @@ class GP(Regressor):
         with self.model:
             # From https://docs.pymc.io/notebooks/GP-Marginal.html OR a covariance function for the noise can be given
             # noise_l = pm.Gamma("noise_l", alpha=2, beta=2) cov_func_noise = pm.gp.cov.Exponential(1, noise_l) +
-            # pm.gp.cov.WhiteNoise(sigma=0.1) y_ = gp.marginal_likelihood("y", X=X, y=y, noise=cov_func_noise)
+            # pm.gp.cov.WhiteNoise(sigma=0.1) y_ = gp.marginal_likelihood("y", X=X, y=y, sigma=cov_func_noise)
 
             # GP is heteroskedastic across outputs by default, but homoskedastic across continuous dimensions
             σ = pm.Exponential("σ", lam=1)
@@ -524,9 +524,9 @@ class GP(Regressor):
                         "Heteroskedasticity over outputs is not yet implemented for sparse GP. \
                             Reverting to scalar-valued noise."
                     )
-                _ = gp_dict["total"].marginal_likelihood("ml", X=X, Xu=Xu, y=y, noise=σ)
+                _ = gp_dict["total"].marginal_likelihood("ml", X=X, Xu=Xu, y=y, sigma=σ)
             else:
-                _ = gp_dict["total"].marginal_likelihood("ml", X=X, y=y, noise=noise)
+                _ = gp_dict["total"].marginal_likelihood("ml", X=X, y=y, sigma=noise)
 
         # self.gp_dict = gp_dict
         return self
@@ -774,10 +774,11 @@ class GP(Regressor):
         if additive_level != "total":
             raise NotImplementedError("Prediction for additive sublevels is not yet supported.")
 
-        # Prediction means and variance as a numpy vector
-        predictions = self.gp_dict[additive_level].predict(
-            points_array, point=self.MAP, diag=True, pred_noise=with_noise, **kwargs
-        )
+        with self.model:
+            # Prediction means and variance as a numpy vector
+            predictions = self.gp_dict[additive_level].predict(
+                points_array, point=self.MAP, diag=True, pred_noise=with_noise, **kwargs
+            )
 
         return predictions
 

@@ -3,8 +3,9 @@ import pathlib as pl
 import pandas as pd
 import pymc as pm
 import pytest
+import seaborn as sns
 
-from gumbi import GP, DataSet, Standardizer
+from gumbi import GP, DataSet, ParrayPlotter, Standardizer
 
 test_dir = pl.Path(__file__).resolve().parent
 test_data = test_dir / "test_data"
@@ -179,3 +180,14 @@ def test_gp_fit(example_gp, fit_inputs, additive):
     # Basically just makes sure that `fit` runs without errors
     gp = example_gp.fit(**fit_inputs, additive=additive)
     assert isinstance(gp.MAP, dict)
+
+def test_gp_predict():
+    cars = sns.load_dataset('mpg').dropna()
+    ds = DataSet(cars, outputs=['mpg', 'acceleration'], log_vars=['mpg', 'acceleration', 'horsepower'])
+    gp = GP(ds)
+    gp.fit(outputs=['mpg'], continuous_dims=['horsepower']);
+    X = gp.prepare_grid()
+    y = gp.predict_grid()
+    ParrayPlotter(X, y).plot()
+    
+    

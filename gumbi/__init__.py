@@ -2,6 +2,7 @@
 
 # from gumbi import data, style, utils
 
+from . import data, style, utils
 from .aggregation import *
 from .arrays import *
 from .plotting import *

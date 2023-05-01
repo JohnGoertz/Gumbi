@@ -28,9 +28,10 @@
 # %% [markdown] Read in some data and store it as a Gumbi `DataSet`:
 #
 
-import seaborn as sns
 
 # %%
+import seaborn as sns
+
 import gumbi as gmb
 
 cars = sns.load_dataset("mpg").dropna()

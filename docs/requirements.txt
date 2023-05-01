@@ -2,9 +2,9 @@ pytest
 jupytext
 pandoc
 nbconvert
-sphinx
+sphinx==6.2.1
 nbsphinx
-sphinx_rtd_theme
+sphinx_rtd_theme==1.2.0
 numpydoc
 ipython
 jupyter_client

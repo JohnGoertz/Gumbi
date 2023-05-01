@@ -6,7 +6,7 @@ This will generate .html within `/docs/build/html/` that you can open and browse
 ### Setup
 Install doc dependencies
 ```
-conda install sphinx sphinx_rtd_theme numpydoc nbsphinx ipython jupytext jupyter_client
+conda install sphinx==6.2.1 sphinx_rtd_theme==1.2.0 numpydoc nbsphinx ipython jupytext jupyter_client
 ```
 
 ### Compile
