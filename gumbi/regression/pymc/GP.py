@@ -385,7 +385,7 @@ class GP(Regressor):
         **kernel_kwargs,
     ):
         continuous_kernel_factory = self._make_continuous_cov(
-            continuous_cov_func, 2, None, n_s, ℓ_μ, ℓ_σ, ARD=ARD, stabilize=False, **kernel_kwargs
+            continuous_cov_func, 2, None, n_s, ℓ_μ, ℓ_σ, ARD=ARD, **kernel_kwargs
         )
 
         zperiods = [period.z[dim + "_z"].values() for dim in self.continuous_dims]
