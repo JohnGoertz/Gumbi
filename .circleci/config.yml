@@ -26,7 +26,8 @@ jobs:
             sudo apt-get update
             sudo apt-get install pandoc
             pip install -U pip
-            pip install git+git://github.com/JohnGoertz/Gumbi.git@main
+            pip install gumbi
+            # pip install git+git://github.com/JohnGoertz/Gumbi.git@main
             git clone --branch main https://github.com/JohnGoertz/Gumbi.git
             pip install -r Gumbi/docs/requirements.txt
       # - run:  # Make notebooks locally, for now, too much overhead for free CircleCI
