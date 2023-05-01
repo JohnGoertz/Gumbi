@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ParameterArray &mdash; Gumbi 0.1.0 documentation</title>
+  <title>ParameterArray &mdash; Gumbi 0.2.1 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/green_theme.css" type="text/css" />
@@ -12,10 +12,11 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -29,11 +30,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../index.html" class="icon icon-home"> Gumbi
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Gumbi
           </a>
+              <div class="version">
+                0.2.1
+              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -58,7 +66,10 @@
 <li class="toctree-l3"><a class="reference internal" href="gumbi.arrays.LogitNormal.html">LogitNormal</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gumbi.arrays.MVUncertainParameterArray.html">MVUncertainParameterArray</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gumbi.arrays.MultivariateNormalish.html">MultivariateNormalish</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">ParameterArray</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">ParameterArray</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gumbi.arrays.ParameterArray"><code class="docutils literal notranslate"><span class="pre">ParameterArray</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="gumbi.arrays.UncertainArray.html">UncertainArray</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gumbi.arrays.UncertainParameterArray.html">UncertainParameterArray</a></li>
 </ul>
@@ -83,9 +94,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../index.html">gumbi</a> &raquo;</li>
-      <li>ParameterArray</li>
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">gumbi</a></li>
+      <li class="breadcrumb-item active">ParameterArray</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../_sources/gumbi/arrays/gumbi.arrays.ParameterArray.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -95,37 +106,9 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  
-<style>
-/* CSS overrides for sphinx_rtd_theme */
-
-/* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
-    margin-bottom: 19px;  /* padding has already 5px */
-}
-
-/* ... except between code cells! */
-.nblast.container + .nbinput.container {
-    margin-top: -19px;
-}
-
-.admonition > p:before {
-    margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
-</style>
-<section id="parameterarray">
-<h1>ParameterArray<a class="headerlink" href="#parameterarray" title="Permalink to this headline"></a></h1>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
+  <section id="parameterarray">
+<h1>ParameterArray<a class="headerlink" href="#parameterarray" title="Permalink to this heading"></a></h1>
+<table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.arrays.ParameterArray" title="gumbi.arrays.ParameterArray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ParameterArray</span></code></a>(stdzr[, stdzd])</p></td>
 <td><p>Array of parameter values, allowing simple transformation.</p></td>
@@ -133,11 +116,7 @@
 </tbody>
 </table>
 <p class="rubric">Methods</p>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
+<table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.arrays.ParameterArray.add_layers" title="gumbi.arrays.ParameterArray.add_layers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ParameterArray.add_layers</span></code></a>([stdzd])</p></td>
 <td><p>Add additional layers at each index</p></td>
@@ -166,11 +145,7 @@
 </tbody>
 </table>
 <p class="rubric">Attributes</p>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
+<table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.arrays.ParameterArray.t" title="gumbi.arrays.ParameterArray.t"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ParameterArray.t</span></code></a></p></td>
 <td><p>Transformed values</p></td>
@@ -182,15 +157,15 @@
 </table>
 <dl class="py class">
 <dt class="sig sig-object py" id="gumbi.arrays.ParameterArray">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gumbi.arrays.</span></span><span class="sig-name descname"><span class="pre">ParameterArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stdzr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../aggregation/gumbi.aggregation.Standardizer.html#gumbi.aggregation.Standardizer" title="gumbi.aggregation.Standardizer"><span class="pre">gumbi.aggregation.Standardizer</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">stdzd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">arrays</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.arrays.ParameterArray" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="gumbi.arrays.LayeredArray.html#gumbi.arrays.LayeredArray" title="gumbi.arrays.LayeredArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">gumbi.arrays.LayeredArray</span></code></a></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gumbi.arrays.</span></span><span class="sig-name descname"><span class="pre">ParameterArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stdzr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../aggregation/gumbi.aggregation.Standardizer.html#gumbi.aggregation.Standardizer" title="gumbi.aggregation.Standardizer"><span class="pre">Standardizer</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">stdzd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">arrays</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.arrays.ParameterArray" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="gumbi.arrays.LayeredArray.html#gumbi.arrays.LayeredArray" title="gumbi.arrays.LayeredArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">LayeredArray</span></code></a></p>
 <p>Array of parameter values, allowing simple transformation.</p>
 <p><a class="reference internal" href="#gumbi.arrays.ParameterArray" title="gumbi.arrays.ParameterArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParameterArray</span></code></a> stores not only the value of the variable itself but also a <code class="xref py py-class docutils literal notranslate"><span class="pre">Standardizer</span></code> instance.
 This makes it simple to switch between the natural scale of the parameter and its transformed and standardized
 values through the <a class="reference internal" href="#gumbi.arrays.ParameterArray.t" title="gumbi.arrays.ParameterArray.t"><code class="xref py py-attr docutils literal notranslate"><span class="pre">t</span></code></a> and <a class="reference internal" href="#gumbi.arrays.ParameterArray.z" title="gumbi.arrays.ParameterArray.z"><code class="xref py py-attr docutils literal notranslate"><span class="pre">z</span></code></a> properties, respectively.</p>
 <p>This class can also be accessed through the alias <a class="reference internal" href="#gumbi.arrays.ParameterArray.parray" title="gumbi.arrays.ParameterArray.parray"><code class="xref py py-class docutils literal notranslate"><span class="pre">parray</span></code></a>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>**arrays</strong> – arrays to store with their names as keywords</p></li>
 <li><p><strong>stdzr</strong> (<a class="reference internal" href="../aggregation/gumbi.aggregation.Standardizer.html#gumbi.aggregation.Standardizer" title="gumbi.aggregation.Standardizer"><em>Standardizer</em></a>) – An instance  of <code class="xref py py-class docutils literal notranslate"><span class="pre">Standardizer</span></code></p></li>
@@ -236,7 +211,7 @@ values through the <a class="reference internal" href="#gumbi.arrays.ParameterAr
 <span class="sig-name descname"><span class="pre">names</span></span><a class="headerlink" href="#gumbi.arrays.ParameterArray.names" title="Permalink to this definition"></a></dt>
 <dd><p>Names of all stored parameters</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list of str</p>
 </dd>
 </dl>
@@ -247,7 +222,7 @@ values through the <a class="reference internal" href="#gumbi.arrays.ParameterAr
 <span class="sig-name descname"><span class="pre">stdzr</span></span><a class="headerlink" href="#gumbi.arrays.ParameterArray.stdzr" title="Permalink to this definition"></a></dt>
 <dd><p>An instance  of <code class="xref py py-class docutils literal notranslate"><span class="pre">Standardizer</span></code></p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="../aggregation/gumbi.aggregation.Standardizer.html#gumbi.aggregation.Standardizer" title="gumbi.aggregation.Standardizer">Standardizer</a></p>
 </dd>
 </dl>
@@ -279,13 +254,13 @@ values through the <a class="reference internal" href="#gumbi.arrays.ParameterAr
 
 <dl class="py property">
 <dt class="sig sig-object py" id="gumbi.arrays.ParameterArray.t">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">t</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="gumbi.arrays.LayeredArray.html#gumbi.arrays.LayeredArray" title="gumbi.arrays.LayeredArray"><span class="pre">gumbi.arrays.LayeredArray</span></a></em><a class="headerlink" href="#gumbi.arrays.ParameterArray.t" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">t</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="gumbi.arrays.LayeredArray.html#gumbi.arrays.LayeredArray" title="gumbi.arrays.LayeredArray"><span class="pre">LayeredArray</span></a></em><a class="headerlink" href="#gumbi.arrays.ParameterArray.t" title="Permalink to this definition"></a></dt>
 <dd><p>Transformed values</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="gumbi.arrays.ParameterArray.z">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">z</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="gumbi.arrays.LayeredArray.html#gumbi.arrays.LayeredArray" title="gumbi.arrays.LayeredArray"><span class="pre">gumbi.arrays.LayeredArray</span></a></em><a class="headerlink" href="#gumbi.arrays.ParameterArray.z" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">z</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="gumbi.arrays.LayeredArray.html#gumbi.arrays.LayeredArray" title="gumbi.arrays.LayeredArray"><span class="pre">LayeredArray</span></a></em><a class="headerlink" href="#gumbi.arrays.ParameterArray.z" title="Permalink to this definition"></a></dt>
 <dd><p>Standardized values</p>
 </dd></dl>
 

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GP &mdash; Gumbi 0.1.0 documentation</title>
+  <title>GP &mdash; Gumbi 0.2.1 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/green_theme.css" type="text/css" />
@@ -12,17 +12,18 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
         <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
         <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Regressor" href="gumbi.regression.Regressor.html" />
+    <link rel="next" title="GPC" href="gumbi.regression.GPC.html" />
     <link rel="prev" title="ParrayPlotter" href="../plotting/gumbi.plotting.ParrayPlotter.html" /> 
 </head>
 
@@ -31,11 +32,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../index.html" class="icon icon-home"> Gumbi
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Gumbi
           </a>
+              <div class="version">
+                0.2.1
+              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -58,7 +66,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../index.html#module-gumbi.arrays">gumbi.arrays</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#module-gumbi.plotting">gumbi.plotting</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../index.html#module-gumbi.regression">gumbi.regression</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">GP</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">GP</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gumbi.regression.GP"><code class="docutils literal notranslate"><span class="pre">GP</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="gumbi.regression.GPC.html">GPC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gumbi.regression.Regressor.html">Regressor</a></li>
 </ul>
 </li>
@@ -80,9 +92,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../index.html">gumbi</a> &raquo;</li>
-      <li>GP</li>
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">gumbi</a></li>
+      <li class="breadcrumb-item active">GP</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../_sources/gumbi/regression/gumbi.regression.GP.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -92,37 +104,9 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  
-<style>
-/* CSS overrides for sphinx_rtd_theme */
-
-/* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
-    margin-bottom: 19px;  /* padding has already 5px */
-}
-
-/* ... except between code cells! */
-.nblast.container + .nbinput.container {
-    margin-top: -19px;
-}
-
-.admonition > p:before {
-    margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
-</style>
-<section id="gp">
-<h1>GP<a class="headerlink" href="#gp" title="Permalink to this headline"></a></h1>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
+  <section id="gp">
+<h1>GP<a class="headerlink" href="#gp" title="Permalink to this heading"></a></h1>
+<table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.regression.GP" title="gumbi.regression.GP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GP</span></code></a>(dataset[, outputs, seed])</p></td>
 <td><p>Gaussian Process surface learning and prediction.</p></td>
@@ -130,58 +114,62 @@
 </tbody>
 </table>
 <p class="rubric">Methods</p>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
+<table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.regression.GP.build_model" title="gumbi.regression.GP.build_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GP.build_model</span></code></a>([seed, continuous_kernel, ...])</p></td>
-<td><p>Compile a pymc3 model for the GP.</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">GP.build_latent</span></code>([seed, continuous_kernel, ...])</p></td>
+<td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#gumbi.regression.GP.find_MAP" title="gumbi.regression.GP.find_MAP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GP.find_MAP</span></code></a>(*args, **kwargs)</p></td>
-<td><p>Finds maximum a posteriori value for hyperparameters in model</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#gumbi.regression.GP.build_model" title="gumbi.regression.GP.build_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GP.build_model</span></code></a>([seed, continuous_kernel, ...])</p></td>
+<td><p>Compile a marginalized pymc model for the GP.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.regression.GP.fit" title="gumbi.regression.GP.fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GP.fit</span></code></a>([outputs, linear_dims, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.regression.GP.draw_grid_samples" title="gumbi.regression.GP.draw_grid_samples"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GP.draw_grid_samples</span></code></a>(*args[, source, ...])</p></td>
+<td><p>Draw posterior samples at points defined by <code class="xref py py-meth docutils literal notranslate"><span class="pre">prepare_grid()</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gumbi.regression.GP.draw_point_samples" title="gumbi.regression.GP.draw_point_samples"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GP.draw_point_samples</span></code></a>(points, *args[, ...])</p></td>
+<td><p>Draw posterior samples at supplied points</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.regression.GP.find_MAP" title="gumbi.regression.GP.find_MAP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GP.find_MAP</span></code></a>(*args, **kwargs)</p></td>
+<td><p>Finds maximum a posteriori value for hyperparameters in model.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gumbi.regression.GP.fit" title="gumbi.regression.GP.fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GP.fit</span></code></a>([outputs, linear_dims, ...])</p></td>
 <td><p>Fits a GP surface</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#gumbi.regression.GP.predict" title="gumbi.regression.GP.predict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GP.predict</span></code></a>(points_array[, with_noise, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.regression.GP.predict" title="gumbi.regression.GP.predict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GP.predict</span></code></a>(points_array[, with_noise, ...])</p></td>
 <td><p>Make predictions at supplied points using specified gp</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gumbi.regression.GP.sample" title="gumbi.regression.GP.sample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GP.sample</span></code></a>(*args, **kwargs)</p></td>
+<td><p>Draws samples from the posterior for the hyperparameters in model.</p></td>
 </tr>
 </tbody>
 </table>
 <p class="rubric">Attributes</p>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
+<table class="autosummary longtable docutils align-default">
 <tbody>
 </tbody>
 </table>
 <dl class="py class">
 <dt class="sig sig-object py" id="gumbi.regression.GP">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gumbi.regression.</span></span><span class="sig-name descname"><span class="pre">GP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../aggregation/gumbi.aggregation.DataSet.html#gumbi.aggregation.DataSet" title="gumbi.aggregation.DataSet"><span class="pre">gumbi.aggregation.DataSet</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2021</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.regression.GP" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="gumbi.regression.Regressor.html#gumbi.regression.Regressor" title="gumbi.regression.base.Regressor"><code class="xref py py-class docutils literal notranslate"><span class="pre">gumbi.regression.base.Regressor</span></code></a></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gumbi.regression.</span></span><span class="sig-name descname"><span class="pre">GP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../aggregation/gumbi.aggregation.DataSet.html#gumbi.aggregation.DataSet" title="gumbi.aggregation.DataSet"><span class="pre">DataSet</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2021</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.regression.GP" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="gumbi.regression.Regressor.html#gumbi.regression.Regressor" title="gumbi.regression.base.Regressor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Regressor</span></code></a></p>
 <p>Gaussian Process surface learning and prediction.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><a class="reference internal" href="gumbi.regression.Regressor.html#gumbi.regression.Regressor" title="gumbi.regression.Regressor"><code class="xref py py-class docutils literal notranslate"><span class="pre">Regressor</span></code></a></p>
 </div>
 <p class="rubric">Notes</p>
-<p>The GP class is built from a dataframe in the form of a <code class="xref py py-class docutils literal notranslate"><span class="pre">DataSet</span></code> object. The output(s) are
-taken from <code class="xref py py-attr docutils literal notranslate"><span class="pre">DataSet.outputs</span></code> and the corresponding column in the tidy data frame taken from
-<code class="xref py py-attr docutils literal notranslate"><span class="pre">DataSet.names_column</span></code>. This column will be generically referred to as the <cite>output_column</cite> in this documentation,
-but can take any value specifed when the <code class="xref py py-class docutils literal notranslate"><span class="pre">DataSet</span></code> is constructed. The model inputs are constructed by
-filtering this dataframe, extracting column values, and converting these to numerical input coordinates. The main
-entry point will be <a class="reference internal" href="#gumbi.regression.GP.fit" title="gumbi.regression.GP.fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">fit()</span></code></a>, which parses the dimensions of the model with <code class="xref py py-meth docutils literal notranslate"><span class="pre">specify_model()</span></code>,
-extracts numerical input coordinates with <code class="xref py py-meth docutils literal notranslate"><span class="pre">get_structured_data()</span></code>, compiles the Pymc3 model with
-<a class="reference internal" href="#gumbi.regression.GP.build_model" title="gumbi.regression.GP.build_model"><code class="xref py py-meth docutils literal notranslate"><span class="pre">build_model()</span></code></a>, and finally learns the hyperparameters with <a class="reference internal" href="#gumbi.regression.GP.find_MAP" title="gumbi.regression.GP.find_MAP"><code class="xref py py-meth docutils literal notranslate"><span class="pre">find_MAP()</span></code></a>.</p>
+<p>The GP class is built from a dataframe in the form of a <code class="xref py py-class docutils literal notranslate"><span class="pre">DataSet</span></code> object. The output(s) are taken from
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">DataSet.outputs</span></code> and the corresponding column in the tidy data frame taken from <code class="xref py py-attr docutils literal notranslate"><span class="pre">DataSet.names_column</span></code>.
+This column will be generically referred to as the <cite>output_column</cite> in this documentation, but can take any value
+specifed when the <code class="xref py py-class docutils literal notranslate"><span class="pre">DataSet</span></code> is constructed. The model inputs are constructed by filtering this dataframe,
+extracting column values, and converting these to numerical input coordinates. The main entry point will be
+<a class="reference internal" href="#gumbi.regression.GP.fit" title="gumbi.regression.GP.fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">fit()</span></code></a>, which parses the dimensions of the model with <code class="xref py py-meth docutils literal notranslate"><span class="pre">specify_model()</span></code>, extracts numerical input
+coordinates with <code class="xref py py-meth docutils literal notranslate"><span class="pre">get_structured_data()</span></code>, compiles the Pymc model with <a class="reference internal" href="#gumbi.regression.GP.build_model" title="gumbi.regression.GP.build_model"><code class="xref py py-meth docutils literal notranslate"><span class="pre">build_model()</span></code></a>, and finally learns
+the hyperparameters with <a class="reference internal" href="#gumbi.regression.GP.find_MAP" title="gumbi.regression.GP.find_MAP"><code class="xref py py-meth docutils literal notranslate"><span class="pre">find_MAP()</span></code></a>.</p>
 <p>Dimensions fall into several categories:</p>
 <ul class="simple">
 <li><p>Filter dimensions, those with only one level, are used to subset the dataframe but are not included as explicit
-inputs to the model. These are not specified explicitly, but rather any continuous or categorical dimension with only
-one level is treated as a filter dimension.</p></li>
+inputs to the model. These are not specified explicitly, but rather any continuous or categorical dimension with
+only one level is treated as a filter dimension.</p></li>
 <li><p>Continuous dimensions are treated as explicit coordinates and given a Radial Basis Function kernel</p>
 <ul>
 <li><p>Linear dimensions (which must be a subset of <cite>continuous_dims</cite>) have an additional linear kernel.</p></li>
@@ -195,37 +183,35 @@ one level is treated as a filter dimension.</p></li>
 </ul>
 <p>A non-additive model has the form:</p>
 <div class="math notranslate nohighlight">
-\[\begin{split}y &amp;\sim \text{Normal} \left( \mu, \sigma \right) \\
-mu &amp;\sim \mathcal{GP} \left( K \right) \\
-K &amp;= \left( K^\text{cont}+K^\text{lin} \right) K^\text{coreg}_\text{outputs} \prod_{n} K^\text{coreg}_{n} \\
-K^\text{cont} &amp;= \text{RBF} \left( \ell_{i}, \eta \right) \\
-K^\text{lin} &amp;= \text{LIN} \left( c_{j}, \tau \right) \\
-K^\text{coreg} &amp;= \text{Coreg} \left( \boldsymbol{W}, \kappa \right) \\
-\sigma &amp;\sim \text{Exponential} \left( 1 \right) \\\end{split}\]</div>
+\[\begin{split}y &amp;\sim \text{Normal} \left( \mu, \sigma \right) \\ mu &amp;\sim \mathcal{GP} \left( K \right) \\ K &amp;= \left(
+K^\text{cont}+K^\text{lin} \right) K^\text{coreg}_\text{outputs} \prod_{n} K^\text{coreg}_{n} \\ K^\text{cont}
+&amp;= \text{RBF} \left( \ell_{i}, \eta \right) \\ K^\text{lin} &amp;= \text{LIN} \left( c_{j}, \tau \right) \\
+K^\text{coreg} &amp;= \text{Coreg} \left( \boldsymbol{W}, \kappa \right) \\ \sigma &amp;\sim \text{Exponential} \left( 1
+\right) \\\end{split}\]</div>
 <p>Where <span class="math notranslate nohighlight">\(i\)</span> denotes a continuous dimension, <span class="math notranslate nohighlight">\(j\)</span> denotes a linear dimension, and <span class="math notranslate nohighlight">\(n\)</span> denotes a
-categorical dimension (excluding the <cite>output_column</cite>). <span class="math notranslate nohighlight">\(K^\text{cont}\)</span> and <span class="math notranslate nohighlight">\(K^\text{lin}\)</span> each consist of a
-joint kernel encompassing all continuous and linear dimensions, respectively, whereas <span class="math notranslate nohighlight">\(K^\text{coreg}_{n}\)</span> is
-a distinct kernel for a given categorical dimension.</p>
+categorical dimension (excluding the <cite>output_column</cite>). <span class="math notranslate nohighlight">\(K^\text{cont}\)</span> and <span class="math notranslate nohighlight">\(K^\text{lin}\)</span> each consist
+of a joint kernel encompassing all continuous and linear dimensions, respectively, whereas
+<span class="math notranslate nohighlight">\(K^\text{coreg}_{n}\)</span> is a distinct kernel for a given categorical dimension.</p>
 <p>The additive model has the form:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}mu &amp;\sim \mathcal{GP}\left( K^\text{global} \right) + \sum_{n} \mathcal{GP}\left( K_{n} \right) \\
-K^\text{global} &amp;= \left( K^\text{cont}+K^\text{lin} \right) K^\text{coreg}_\text{outputs} \\
-K_{n} &amp;= \left( K^\text{cont}_{n}+K^\text{lin}_{n} \right) K^\text{coreg}_\text{outputs} K^\text{coreg}_{n} \\\end{split}\]</div>
-<p>Note that, in the additive model, <span class="math notranslate nohighlight">\(K^\text{cont}_{n}\)</span> and <span class="math notranslate nohighlight">\(K^\text{lin}_{n}\)</span> still consist of only
-the continuous and linear dimensions, respectively, but have unique priors corresponding to each categorical dimension.
+K^\text{global} &amp;= \left( K^\text{cont}+K^\text{lin} \right) K^\text{coreg}_\text{outputs} \\ K_{n} &amp;= \left(
+K^\text{cont}_{n}+K^\text{lin}_{n} \right) K^\text{coreg}_\text{outputs} K^\text{coreg}_{n} \\\end{split}\]</div>
+<p>Note that, in the additive model, <span class="math notranslate nohighlight">\(K^\text{cont}_{n}\)</span> and <span class="math notranslate nohighlight">\(K^\text{lin}_{n}\)</span> still consist of only the
+continuous and linear dimensions, respectively, but have unique priors corresponding to each categorical dimension.
 However, there is only one <span class="math notranslate nohighlight">\(K^\text{coreg}_\text{outputs}\)</span> kernel.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>dataset</strong> (<a class="reference internal" href="../aggregation/gumbi.aggregation.DataSet.html#gumbi.aggregation.DataSet" title="gumbi.aggregation.DataSet"><em>DataSet</em></a>) – Data for fitting.</p></li>
-<li><p><strong>outputs</strong> (<em>str</em><em> or </em><em>list of str</em><em>, </em><em>default None</em>) – Name(s) of output(s) to learn. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, uses all values from <code class="docutils literal notranslate"><span class="pre">outputs</span></code> attribute of <em>dataset</em>.</p></li>
+<li><p><strong>outputs</strong> (<em>str</em><em> or </em><em>list</em><em> of </em><em>str</em><em>, </em><em>default None</em>) – Name(s) of output(s) to learn. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, uses all values from <code class="docutils literal notranslate"><span class="pre">outputs</span></code> attribute of <em>dataset</em>.</p></li>
 <li><p><strong>seed</strong> (<em>int</em>) – Random seed</p></li>
 </ul>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<p>A GP object is created from a <code class="xref py py-class docutils literal notranslate"><span class="pre">DataSet</span></code> and can be fit immediately with the default dimension
-configuration (regressing <cite>r</cite> with RBF + linear kernels for <cite>X</cite> and <cite>Y</cite>):</p>
+<p>A GP object is created from a <code class="xref py py-class docutils literal notranslate"><span class="pre">DataSet</span></code> and can be fit immediately with the default dimension configuration
+(regressing <cite>r</cite> with RBF + linear kernels for <cite>X</cite> and <cite>Y</cite>):</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">gumbi</span> <span class="k">as</span> <span class="nn">gmb</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_pickle</span><span class="p">(</span><span class="n">gmb</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">example_dataset</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="s1">&#39;e&#39;</span><span class="p">,</span> <span class="s1">&#39;f&#39;</span><span class="p">]</span>
@@ -240,8 +226,8 @@ configuration (regressing <cite>r</cite> with RBF + linear kernels for <cite>X</
 <span class="gp">&gt;&gt;&gt; </span><span class="n">gp</span><span class="o">.</span><span class="n">find_MAP</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>The model can be specified with various continuous, linear, and categorical dimensions.
-<cite>X</cite> and <cite>Y</cite> are always included in both <code class="docutils literal notranslate"><span class="pre">continuous_dims</span></code> and <code class="docutils literal notranslate"><span class="pre">linear_dims</span></code>.</p>
+<p>The model can be specified with various continuous, linear, and categorical dimensions. <cite>X</cite> and <cite>Y</cite> are always
+included in both <code class="docutils literal notranslate"><span class="pre">continuous_dims</span></code> and <code class="docutils literal notranslate"><span class="pre">linear_dims</span></code>.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">gp</span><span class="o">.</span><span class="n">specify_model</span><span class="p">(</span><span class="n">continuous_dims</span><span class="o">=</span><span class="s1">&#39;lg10_Z&#39;</span><span class="p">,</span> <span class="n">linear_dims</span><span class="o">=</span><span class="s1">&#39;lg10_Z&#39;</span><span class="p">,</span> <span class="n">categorical_dims</span><span class="o">=</span><span class="s1">&#39;Pair&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">gmb</span><span class="o">.</span><span class="n">GP</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">continuous_dims</span><span class="o">=</span><span class="s1">&#39;lg10_Z&#39;</span><span class="p">,</span> <span class="n">linear_dims</span><span class="o">=</span><span class="s1">&#39;lg10_Z&#39;</span><span class="p">,</span> <span class="n">categorical_dims</span><span class="o">=</span><span class="s1">&#39;Pair&#39;</span><span class="p">)</span>  <span class="c1"># equivalent</span>
 </pre></div>
@@ -278,7 +264,7 @@ maintaining the original shape of the array:</p>
 </div>
 <p>Finally, plot the results:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">gmb</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">futura</span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x_pa</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">predictions_X</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">y_upa</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">predictions</span>
@@ -287,14 +273,14 @@ maintaining the original shape of the array:</p>
 </div>
 <p>Plot a slice down the center of the prediction along each axis</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x_pa</span><span class="p">,</span> <span class="n">y_upa</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">get_conditional_prediction</span><span class="p">(</span><span class="n">Y</span><span class="o">=</span><span class="mi">88</span><span class="p">)</span>
-<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ax</span> <span class="o">=</span> <span class="n">gmb</span><span class="o">.</span><span class="n">ParrayPlotter</span><span class="p">(</span><span class="n">x_pa</span><span class="p">,</span> <span class="n">y_upa</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">txt</span><span class="o">.</span><span class="n">get_text</span><span class="p">())</span><span class="o">*</span><span class="mi">100</span><span class="p">)</span> <span class="k">for</span> <span class="n">txt</span> <span class="ow">in</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_xticklabels</span><span class="p">()]);</span>
 </pre></div>
 </div>
 <p>Plot a slice down the center of the prediction along each axis</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x_pa</span><span class="p">,</span> <span class="n">y_upa</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">get_conditional_prediction</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
-<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ax</span> <span class="o">=</span> <span class="n">gmb</span><span class="o">.</span><span class="n">ParrayPlotter</span><span class="p">(</span><span class="n">x_pa</span><span class="p">,</span> <span class="n">y_upa</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">txt</span><span class="o">.</span><span class="n">get_text</span><span class="p">())</span><span class="o">*</span><span class="mi">100</span><span class="p">)</span> <span class="k">for</span> <span class="n">txt</span> <span class="ow">in</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_xticklabels</span><span class="p">()]);</span>
 </pre></div>
@@ -304,7 +290,7 @@ maintaining the original shape of the array:</p>
 <span class="sig-name descname"><span class="pre">dataset</span></span><a class="headerlink" href="#gumbi.regression.GP.dataset" title="Permalink to this definition"></a></dt>
 <dd><p>Data for fitting.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="../aggregation/gumbi.aggregation.DataSet.html#gumbi.aggregation.DataSet" title="gumbi.aggregation.DataSet">DataSet</a></p>
 </dd>
 </dl>
@@ -315,7 +301,7 @@ maintaining the original shape of the array:</p>
 <span class="sig-name descname"><span class="pre">outputs</span></span><a class="headerlink" href="#gumbi.regression.GP.outputs" title="Permalink to this definition"></a></dt>
 <dd><p>Name(s) of output(s) to learn.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list of str</p>
 </dd>
 </dl>
@@ -326,7 +312,7 @@ maintaining the original shape of the array:</p>
 <span class="sig-name descname"><span class="pre">seed</span></span><a class="headerlink" href="#gumbi.regression.GP.seed" title="Permalink to this definition"></a></dt>
 <dd><p>Random seed</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>int</p>
 </dd>
 </dl>
@@ -337,7 +323,7 @@ maintaining the original shape of the array:</p>
 <span class="sig-name descname"><span class="pre">continuous_dims</span></span><a class="headerlink" href="#gumbi.regression.GP.continuous_dims" title="Permalink to this definition"></a></dt>
 <dd><p>Columns of dataframe used as continuous dimensions</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list of str</p>
 </dd>
 </dl>
@@ -348,7 +334,7 @@ maintaining the original shape of the array:</p>
 <span class="sig-name descname"><span class="pre">linear_dims</span></span><a class="headerlink" href="#gumbi.regression.GP.linear_dims" title="Permalink to this definition"></a></dt>
 <dd><p>Subset of continuous dimensions to apply an additional linear kernel.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list of str</p>
 </dd>
 </dl>
@@ -359,7 +345,7 @@ maintaining the original shape of the array:</p>
 <span class="sig-name descname"><span class="pre">continuous_levels</span></span><a class="headerlink" href="#gumbi.regression.GP.continuous_levels" title="Permalink to this definition"></a></dt>
 <dd><p>Values considered within each continuous column as <code class="docutils literal notranslate"><span class="pre">{dim:</span> <span class="pre">[level1,</span> <span class="pre">level2]}</span></code></p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
@@ -370,7 +356,7 @@ maintaining the original shape of the array:</p>
 <span class="sig-name descname"><span class="pre">continuous_coords</span></span><a class="headerlink" href="#gumbi.regression.GP.continuous_coords" title="Permalink to this definition"></a></dt>
 <dd><p>Numerical coordinates of each continuous level within each continuous dimension as <code class="docutils literal notranslate"><span class="pre">{dim:</span> <span class="pre">{level:</span> <span class="pre">coord}}</span></code></p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
@@ -381,7 +367,7 @@ maintaining the original shape of the array:</p>
 <span class="sig-name descname"><span class="pre">categorical_dims</span></span><a class="headerlink" href="#gumbi.regression.GP.categorical_dims" title="Permalink to this definition"></a></dt>
 <dd><p>Columns of dataframe used as categorical dimensions</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list of str</p>
 </dd>
 </dl>
@@ -392,7 +378,7 @@ maintaining the original shape of the array:</p>
 <span class="sig-name descname"><span class="pre">categorical_levels</span></span><a class="headerlink" href="#gumbi.regression.GP.categorical_levels" title="Permalink to this definition"></a></dt>
 <dd><p>Values considered within each categorical column as <code class="docutils literal notranslate"><span class="pre">{dim:</span> <span class="pre">[level1,</span> <span class="pre">level2]}</span></code></p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
@@ -403,7 +389,7 @@ maintaining the original shape of the array:</p>
 <span class="sig-name descname"><span class="pre">categorical_coords</span></span><a class="headerlink" href="#gumbi.regression.GP.categorical_coords" title="Permalink to this definition"></a></dt>
 <dd><p>Numerical coordinates of each categorical level within each categorical dimension as <code class="docutils literal notranslate"><span class="pre">{dim:</span> <span class="pre">{level:</span> <span class="pre">coord}}</span></code></p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
@@ -414,7 +400,7 @@ maintaining the original shape of the array:</p>
 <span class="sig-name descname"><span class="pre">additive</span></span><a class="headerlink" href="#gumbi.regression.GP.additive" title="Permalink to this definition"></a></dt>
 <dd><p>Whether to treat categorical dimensions as additive or joint</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
@@ -425,7 +411,7 @@ maintaining the original shape of the array:</p>
 <span class="sig-name descname"><span class="pre">filter_dims</span></span><a class="headerlink" href="#gumbi.regression.GP.filter_dims" title="Permalink to this definition"></a></dt>
 <dd><p>Dictionary of column-value pairs used to filter dataset before fitting</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
@@ -436,7 +422,7 @@ maintaining the original shape of the array:</p>
 <span class="sig-name descname"><span class="pre">X</span></span><a class="headerlink" href="#gumbi.regression.GP.X" title="Permalink to this definition"></a></dt>
 <dd><p>A 2D tall array of input coordinates.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>array</p>
 </dd>
 </dl>
@@ -447,7 +433,7 @@ maintaining the original shape of the array:</p>
 <span class="sig-name descname"><span class="pre">y</span></span><a class="headerlink" href="#gumbi.regression.GP.y" title="Permalink to this definition"></a></dt>
 <dd><p>A 1D vector of observations</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>array</p>
 </dd>
 </dl>
@@ -456,10 +442,10 @@ maintaining the original shape of the array:</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="gumbi.regression.GP.model">
 <span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#gumbi.regression.GP.model" title="Permalink to this definition"></a></dt>
-<dd><p>Compiled pymc3 model</p>
+<dd><p>Compiled pymc model</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>pymc3.model.Model</p>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pymc.model.Model</p>
 </dd>
 </dl>
 </dd></dl>
@@ -469,7 +455,7 @@ maintaining the original shape of the array:</p>
 <span class="sig-name descname"><span class="pre">gp_dict</span></span><a class="headerlink" href="#gumbi.regression.GP.gp_dict" title="Permalink to this definition"></a></dt>
 <dd><p>Dictionary of model GP objects. Contains at least ‘total’.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
@@ -477,27 +463,82 @@ maintaining the original shape of the array:</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gumbi.regression.GP.build_model">
-<span class="sig-name descname"><span class="pre">build_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">continuous_kernel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ExpQuad'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">heteroskedastic_inputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">heteroskedastic_outputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sparse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_u</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.regression.GP.build_model" title="Permalink to this definition"></a></dt>
-<dd><p>Compile a pymc3 model for the GP.</p>
+<span class="sig-name descname"><span class="pre">build_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">continuous_kernel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ExpQuad'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">period</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">heteroskedastic_inputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">heteroskedastic_outputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sparse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_u</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ARD</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.regression.GP.build_model" title="Permalink to this definition"></a></dt>
+<dd><p>Compile a marginalized pymc model for the GP.</p>
 <p>Each dimension in <a class="reference internal" href="#gumbi.regression.GP.continuous_dims" title="gumbi.regression.GP.continuous_dims"><code class="xref py py-attr docutils literal notranslate"><span class="pre">continuous_dims</span></code></a> is combined in an ExpQuad kernel with a principled
-<span class="math notranslate nohighlight">\(\text{InverseGamma}\)</span> prior for each lengthscale (as <a class="reference external" href="https://betanalpha.github.io/assets/case_studies/gp_part3/part3.html#4_adding_an_informative_prior_for_the_length_scale">suggested by Michael Betancourt</a>) and a
+<span class="math notranslate nohighlight">\(\text{InverseGamma}\)</span> prior for each lengthscale (as <a class="reference external" href="https://betanalpha.github.io/assets/case_studies/gp_part3/part3.html#4_adding_an_informative_prior_for_the_length_scale#noqa:E501">suggested by Michael Betancourt</a>) and a
 <span class="math notranslate nohighlight">\(\text{Gamma}\left(2, 1\right)\)</span> prior for variance.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>seed</strong> (<em>int</em><em>, </em><em>optional.</em>) – Random seed. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, <a class="reference internal" href="#gumbi.regression.GP.seed" title="gumbi.regression.GP.seed"><code class="xref py py-attr docutils literal notranslate"><span class="pre">seed</span></code></a> is used.</p></li>
-<li><p><strong>continuous_kernel</strong> (<em>{'ExpQuad'</em><em>, </em><em>'RatQuad'</em><em>, </em><em>'Matern32'</em><em>, </em><em>'Matern52'</em><em>, </em><em>'Exponential'</em><em>, or </em><em>'Cosine'}</em>) – Covariance function to use for continuous dimensions. See <a class="reference external" href="https://docs.pymc.io/en/v3/api/gp/cov.html">pymc3 docs</a> for more details.</p></li>
+<li><p><strong>continuous_kernel</strong> (<em>{'ExpQuad'</em><em>, </em><em>'Matern32'</em><em>, </em><em>'Matern52'</em><em>, </em><em>'Exponential'</em><em>, </em><em>'Cosine'</em><em>, or </em><em>'Periodic'}</em>) – Covariance function to use for continuous dimensions. See <a class="reference external" href="https://docs.pymc.io/en/v3/api/gp/cov.html">pymc docs</a> for more details.</p></li>
+<li><p><strong>period</strong> (<a class="reference internal" href="../arrays/gumbi.arrays.ParameterArray.html#gumbi.arrays.ParameterArray" title="gumbi.arrays.ParameterArray"><em>ParameterArray</em></a><em>, </em><em>optional</em>) – A single parray of length 1 with one layer for each <cite>continuous_dims</cite> by name containing the period of the kernel, if periodic-like kernel is used.</p></li>
 <li><p><strong>heteroskedastic_inputs</strong> (<em>bool</em><em>, </em><em>default False</em>) – Whether to allow heteroskedasticity along continuous dimensions (input-dependent noise).</p></li>
-<li><p><strong>heteroskedastic_outputs</strong> (<em>bool</em><em>, </em><em>default True</em>) – Whether to allow heteroskedasticity between multiple outputs (output-dependent noise). <cite>Not yet implemented</cite>.</p></li>
-<li><p><strong>sparse</strong> (<em>bool</em><em>, </em><em>default False</em>) – Whether to use a <a class="reference external" href="https://docs.pymc.io/en/v3/pymc-examples/examples/gaussian_processes/GP-SparseApprox.html">sparse approximation</a> to the GP.</p></li>
+<li><p><strong>heteroskedastic_outputs</strong> (<em>bool</em><em>, </em><em>default True</em>) – Whether to allow heteroskedasticity between multiple outputs (output-dependent noise). <cite>Not yet
+implemented</cite>.</p></li>
+<li><p><strong>sparse</strong> (<em>bool</em><em>, </em><em>default False</em>) – Whether to use a <a class="reference external" href="https://docs.pymc.io/en/v3/pymc-examples/examples/gaussian_processes/GP-SparseApprox.html#noqa:E501">sparse approximation</a> to the GP.</p></li>
 <li><p><strong>n_u</strong> (<em>int</em><em>, </em><em>default 100</em>) – Number of inducing points to use for the sparse approximation, if required.</p></li>
+<li><p><strong>ARD</strong> (<em>bool</em><em>, </em><em>default True</em>) – Whether to use “Automatic Relevance Determination” in the continuous kernel. If _True_, each continuous
+dimension receives its own lengthscale; otherwise a single lengthscale is used for all continuous
+dimensions.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>self</strong></p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#gumbi.regression.GP" title="gumbi.regression.GP"><code class="xref py py-class docutils literal notranslate"><span class="pre">GP</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gumbi.regression.GP.draw_grid_samples">
+<span class="sig-name descname"><span class="pre">draw_grid_samples</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">categorical_levels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'posterior_samples'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">additive_level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'total'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">increment_var</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.regression.GP.draw_grid_samples" title="Permalink to this definition"></a></dt>
+<dd><p>Draw posterior samples at points defined by <code class="xref py py-meth docutils literal notranslate"><span class="pre">prepare_grid()</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source</strong> (<em>{None</em><em>, </em><em>dict</em><em>, </em><em>az.data.inference_data.InferenceData}</em>) – GP parameters for which to draw samples. Should be the result of <a class="reference internal" href="#gumbi.regression.GP.find_MAP" title="gumbi.regression.GP.find_MAP"><code class="xref py py-meth docutils literal notranslate"><span class="pre">find_MAP()</span></code></a>, <a class="reference internal" href="#gumbi.regression.GP.sample" title="gumbi.regression.GP.sample"><code class="xref py py-meth docutils literal notranslate"><span class="pre">sample()</span></code></a>, or
+_None_.</p></li>
+<li><p><strong>output</strong> (<em>str</em><em> or </em><em>list</em><em> of </em><em>str</em><em>, </em><em>optional</em>) – Variable(s) for which to make predictions</p></li>
+<li><p><strong>categorical_levels</strong> (<em>dict</em><em>, </em><em>optional</em>) – Level for each <a class="reference internal" href="#gumbi.regression.GP.categorical_dims" title="gumbi.regression.GP.categorical_dims"><code class="xref py py-attr docutils literal notranslate"><span class="pre">categorical_dims</span></code></a> at which to make prediction</p></li>
+<li><p><strong>var_name</strong> (<em>str</em><em>, </em><em>default &quot;posterior_samples&quot;</em>) – Name to assign new variable to contain conditional predictions.</p></li>
+<li><p><strong>additive_level</strong> (<em>str</em><em>, </em><em>default &quot;total&quot;</em>) – Level of additive GP at which to make predictions.</p></li>
+<li><p><strong>increment_var</strong> (<em>bool</em><em>, </em><em>default True</em>) – Whether to append ‘_’ to the end of _var_name_ if it already exists in model.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>samples</strong> – Samples as a ‘Parray’ reshaped into a grid with _len(<a class="reference internal" href="#gumbi.regression.GP.continuous_dims" title="gumbi.regression.GP.continuous_dims"><code class="xref py py-attr docutils literal notranslate"><span class="pre">continuous_dims</span></code></a>)_ dimensions</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../arrays/gumbi.arrays.ParameterArray.html#gumbi.arrays.ParameterArray" title="gumbi.arrays.ParameterArray">ParameterArray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gumbi.regression.GP.draw_point_samples">
+<span class="sig-name descname"><span class="pre">draw_point_samples</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'posterior_samples'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">additive_level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'total'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">increment_var</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.regression.GP.draw_point_samples" title="Permalink to this definition"></a></dt>
+<dd><p>Draw posterior samples at supplied points</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>points</strong> (<a class="reference internal" href="../arrays/gumbi.arrays.ParameterArray.html#gumbi.arrays.ParameterArray" title="gumbi.arrays.ParameterArray"><em>ParameterArray</em></a>) – 1-D ParameterArray vector of coordinates for prediction, must have one layer per <code class="docutils literal notranslate"><span class="pre">self.dims</span></code></p></li>
+<li><p><strong>output</strong> (<em>str</em><em> or </em><em>list</em><em> of </em><em>str</em><em>, </em><em>optional</em>) – Variable for which to make predictions</p></li>
+<li><p><strong>source</strong> (<em>{None</em><em>, </em><em>dict</em><em>, </em><em>az.data.inference_data.InferenceData}</em>) – GP parameters for which to draw samples. Should be the result of <a class="reference internal" href="#gumbi.regression.GP.find_MAP" title="gumbi.regression.GP.find_MAP"><code class="xref py py-meth docutils literal notranslate"><span class="pre">find_MAP()</span></code></a>, <a class="reference internal" href="#gumbi.regression.GP.sample" title="gumbi.regression.GP.sample"><code class="xref py py-meth docutils literal notranslate"><span class="pre">sample()</span></code></a>, or
+_None_.</p></li>
+<li><p><strong>var_name</strong> (<em>str</em><em>, </em><em>default &quot;posterior_samples&quot;</em>) – Name to assign new variable to contain conditional predictions.</p></li>
+<li><p><strong>additive_level</strong> (<em>str</em><em>, </em><em>default &quot;total&quot;</em>) – Level of additive GP at which to make predictions.</p></li>
+<li><p><strong>increment_var</strong> (<em>bool</em><em>, </em><em>default True</em>) – Whether to append ‘_’ to the end of _var_name_ if it already exists in model.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>samples</strong> – Samples as a ‘Parray’</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>parray</p>
 </dd>
 </dl>
 </dd></dl>
@@ -505,9 +546,9 @@ maintaining the original shape of the array:</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="gumbi.regression.GP.find_MAP">
 <span class="sig-name descname"><span class="pre">find_MAP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.regression.GP.find_MAP" title="Permalink to this definition"></a></dt>
-<dd><p>Finds maximum a posteriori value for hyperparameters in model</p>
+<dd><p>Finds maximum a posteriori value for hyperparameters in model.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>*args</strong> – Positional arguments passed to <code class="xref py py-func docutils literal notranslate"><span class="pre">pm.find_MAP()</span></code></p></li>
 <li><p><strong>**kwargs</strong> – Keyword arguments passed to <code class="xref py py-func docutils literal notranslate"><span class="pre">pm.find_MAP()</span></code></p></li>
@@ -518,44 +559,51 @@ maintaining the original shape of the array:</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gumbi.regression.GP.fit">
-<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linear_dims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">continuous_dims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">continuous_levels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">continuous_coords</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">categorical_dims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">categorical_levels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">additive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">heteroskedastic_inputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">heteroskedastic_outputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sparse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_u</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">MAP_kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.regression.GP.fit" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linear_dims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">continuous_dims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">continuous_levels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">continuous_coords</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">categorical_dims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">categorical_levels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">additive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">continuous_kernel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ExpQuad'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">period</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">heteroskedastic_inputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">heteroskedastic_outputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sparse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_u</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ARD</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spec_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">build_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">MAP_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.regression.GP.fit" title="Permalink to this definition"></a></dt>
 <dd><p>Fits a GP surface</p>
-<p>Parses inputs, compiles a Pymc3 model, then finds the MAP value for the hyperparameters. <cite>{}_dims</cite> arguments
+<p>Parses inputs, compiles a Pymc model, then finds the MAP value for the hyperparameters. <cite>{}_dims</cite> arguments
 indicate the columns of the dataframe to be included in the model, with <cite>{}_levels</cite> indicating which values of
 those columns are to be included (<code class="docutils literal notranslate"><span class="pre">None</span></code> implies all values).</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">additive==True</span></code>, the model is constructed as the sum of a global GP and a distinct GP for each categorical
-dimension. Each of these GPs, including the global GP, consists of an RBF+linear kernel multiplied by a
-coregion kernel for the <cite>output_column</cite> if necessary. Although the same continuous kernel structure is used for each
-GP in this model, unique priors are assigned to each distinct kernel. However, there is always only one
-coregion kernel for the <cite>output_column</cite>. The kernel for each dimension-specific GP is further multiplied by a
-coregion kernel that provides an output for each level in that dimension.</p>
+dimension. Each of these GPs, including the global GP, consists of an RBF+linear kernel multiplied by a coregion
+kernel for the <cite>output_column</cite> if necessary. Although the same continuous kernel structure is used for each GP
+in this model, unique priors are assigned to each distinct kernel. However, there is always only one coregion
+kernel for the <cite>output_column</cite>. The kernel for each dimension-specific GP is further multiplied by a coregion
+kernel that provides an output for each level in that dimension.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><a class="reference internal" href="#gumbi.regression.GP.build_model" title="gumbi.regression.GP.build_model"><code class="xref py py-meth docutils literal notranslate"><span class="pre">build_model()</span></code></a></p>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>outputs</strong> (<em>str</em><em> or </em><em>list of str</em><em>, </em><em>default None</em>) – Name(s) of output(s) to learn. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, <a class="reference internal" href="#gumbi.regression.GP.outputs" title="gumbi.regression.GP.outputs"><code class="xref py py-attr docutils literal notranslate"><span class="pre">outputs</span></code></a> is used.</p></li>
-<li><p><strong>linear_dims</strong> (<em>str</em><em> or </em><em>list of str</em><em>, </em><em>optional</em>) – Subset of continuous dimensions to apply an additional linear kernel. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, defaults to <code class="docutils literal notranslate"><span class="pre">['Y','X']</span></code>.</p></li>
-<li><p><strong>continuous_dims</strong> (<em>str</em><em> or </em><em>list of str</em><em>, </em><em>optional</em>) – Columns of dataframe used as continuous dimensions.</p></li>
+<li><p><strong>outputs</strong> (<em>str</em><em> or </em><em>list</em><em> of </em><em>str</em><em>, </em><em>default None</em>) – Name(s) of output(s) to learn. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, <a class="reference internal" href="#gumbi.regression.GP.outputs" title="gumbi.regression.GP.outputs"><code class="xref py py-attr docutils literal notranslate"><span class="pre">outputs</span></code></a> is used.</p></li>
+<li><p><strong>linear_dims</strong> (<em>str</em><em> or </em><em>list</em><em> of </em><em>str</em><em>, </em><em>optional</em>) – Subset of continuous dimensions to apply an additional linear kernel. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, defaults to
+<code class="docutils literal notranslate"><span class="pre">['Y','X']</span></code>.</p></li>
+<li><p><strong>continuous_dims</strong> (<em>str</em><em> or </em><em>list</em><em> of </em><em>str</em><em>, </em><em>optional</em>) – Columns of dataframe used as continuous dimensions.</p></li>
 <li><p><strong>continuous_levels</strong> (<em>str</em><em>, </em><em>list</em><em>, or </em><em>dict</em><em>, </em><em>optional</em>) – Values considered within each continuous column as <code class="docutils literal notranslate"><span class="pre">{dim:</span> <span class="pre">[level1,</span> <span class="pre">level2]}</span></code>.</p></li>
-<li><p><strong>continuous_coords</strong> (<em>list</em><em> or </em><em>dict</em><em>, </em><em>optional</em>) – Numerical coordinates of each continuous level within each continuous dimension as <code class="docutils literal notranslate"><span class="pre">{dim:</span> <span class="pre">{level:</span> <span class="pre">coord}}</span></code>.</p></li>
-<li><p><strong>categorical_dims</strong> (<em>str</em><em> or </em><em>list of str</em><em>, </em><em>optional</em>) – Columns of dataframe used as categorical dimensions.</p></li>
+<li><p><strong>continuous_coords</strong> (<em>list</em><em> or </em><em>dict</em><em>, </em><em>optional</em>) – Numerical coordinates of each continuous level within each continuous dimension as <code class="docutils literal notranslate"><span class="pre">{dim:</span> <span class="pre">{level:</span>
+<span class="pre">coord}}</span></code>.</p></li>
+<li><p><strong>categorical_dims</strong> (<em>str</em><em> or </em><em>list</em><em> of </em><em>str</em><em>, </em><em>optional</em>) – Columns of dataframe used as categorical dimensions.</p></li>
 <li><p><strong>categorical_levels</strong> (<em>str</em><em>, </em><em>list</em><em>, or </em><em>dict</em><em>, </em><em>optional</em>) – Values considered within each categorical column as <code class="docutils literal notranslate"><span class="pre">{dim:</span> <span class="pre">[level1,</span> <span class="pre">level2]}</span></code>.</p></li>
 <li><p><strong>additive</strong> (<em>bool</em><em>, </em><em>default False</em>) – Whether to treat categorical_dims as additive or joint (default).</p></li>
 <li><p><strong>seed</strong> (<em>int</em><em>, </em><em>optional.</em>) – Random seed for model instantiation. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, <a class="reference internal" href="#gumbi.regression.GP.seed" title="gumbi.regression.GP.seed"><code class="xref py py-attr docutils literal notranslate"><span class="pre">seed</span></code></a> is used.</p></li>
+<li><p><strong>continuous_kernel</strong> (<em>{'ExpQuad'</em><em>, </em><em>'Matern32'</em><em>, </em><em>'Matern52'</em><em>, </em><em>'Exponential'</em><em>, or </em><em>'Cosine'}</em>) – Covariance function to use for continuous dimensions. See <a class="reference external" href="https://docs.pymc.io/en/v3/api/gp/cov.html">pymc docs</a> for more details.</p></li>
+<li><p><strong>period</strong> (<a class="reference internal" href="../arrays/gumbi.arrays.ParameterArray.html#gumbi.arrays.ParameterArray" title="gumbi.arrays.ParameterArray"><em>ParameterArray</em></a><em>, </em><em>optional</em>) – A single parray of length 1 with one layer for each <cite>continuous_dims</cite> by name containing the period of the kernel, if periodic-like kernel is used.</p></li>
 <li><p><strong>heteroskedastic_inputs</strong> (<em>bool</em><em>, </em><em>default False</em>) – Whether to allow heteroskedasticity along continuous dimensions (input-dependent noise)</p></li>
 <li><p><strong>heteroskedastic_outputs</strong> (<em>bool</em><em>, </em><em>default True</em>) – Whether to allow heteroskedasticity between multiple outputs (output-dependent noise). <cite>Not yet implemented</cite></p></li>
-<li><p><strong>sparse</strong> (<em>bool</em><em>, </em><em>default False</em>) – Whether to use a <a class="reference external" href="https://docs.pymc.io/en/v3/pymc-examples/examples/gaussian_processes/GP-SparseApprox.html">sparse approximation</a> to the GP.</p></li>
+<li><p><strong>sparse</strong> (<em>bool</em><em>, </em><em>default False</em>) – Whether to use a <a class="reference external" href="https://docs.pymc.io/en/v3/pymc-examples/examples/gaussian_processes/GP-SparseApprox.html#noqa:E501">sparse approximation</a> to the GP.</p></li>
 <li><p><strong>n_u</strong> (<em>int</em><em>, </em><em>default 100</em>) – Number of inducing points to use for the sparse approximation, if required.</p></li>
+<li><p><strong>ARD</strong> (<em>bool</em><em>, </em><em>default True</em>) – Whether to use “Automatic Relevance Determination” in the continuous kernel. If _True_, each continuous
+dimension receives its own lengthscale; otherwise a single lengthscale is used for all continuous
+dimensions.</p></li>
 <li><p><strong>**MAP_kwargs</strong> – Additional keyword arguments passed to <code class="xref py py-func docutils literal notranslate"><span class="pre">pm.find_MAP()</span></code>.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>self</strong></p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#gumbi.regression.GP" title="gumbi.regression.GP"><code class="xref py py-class docutils literal notranslate"><span class="pre">GP</span></code></a></p>
 </dd>
 </dl>
@@ -566,18 +614,31 @@ coregion kernel that provides an output for each level in that dimension.</p>
 <span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points_array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_noise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">additive_level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'total'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.regression.GP.predict" title="Permalink to this definition"></a></dt>
 <dd><p>Make predictions at supplied points using specified gp</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>output</strong> (<em>str</em>) – </p></li>
-<li><p><strong>points</strong> (<a class="reference internal" href="../arrays/gumbi.arrays.ParameterArray.html#gumbi.arrays.ParameterArray" title="gumbi.arrays.ParameterArray"><em>ParameterArray</em></a>) – Tall ParameterArray vector of coordinates for prediction, must have one layer per <code class="docutils literal notranslate"><span class="pre">self.dims</span></code></p></li>
+<li><p><strong>output</strong> (<em>str points : ParameterArray</em>) – Tall ParameterArray vector of coordinates for prediction, must have one layer per <code class="docutils literal notranslate"><span class="pre">self.dims</span></code></p></li>
 <li><p><strong>with_noise</strong> (<em>bool</em><em>, </em><em>default True</em>) – Whether to incorporate aleatoric uncertainty into prediction error</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>prediction</strong> – Predictions as a <cite>uparray</cite></p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="../arrays/gumbi.arrays.UncertainParameterArray.html#gumbi.arrays.UncertainParameterArray" title="gumbi.arrays.UncertainParameterArray">UncertainParameterArray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gumbi.regression.GP.sample">
+<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.regression.GP.sample" title="Permalink to this definition"></a></dt>
+<dd><p>Draws samples from the posterior for the hyperparameters in model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>*args</strong> – Positional arguments passed to <code class="xref py py-func docutils literal notranslate"><span class="pre">pm.sample()</span></code></p></li>
+<li><p><strong>**kwargs</strong> – Keyword arguments passed to <code class="xref py py-func docutils literal notranslate"><span class="pre">pm.sample()</span></code></p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -591,7 +652,7 @@ coregion kernel that provides an output for each level in that dimension.</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="../plotting/gumbi.plotting.ParrayPlotter.html" class="btn btn-neutral float-left" title="ParrayPlotter" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="gumbi.regression.Regressor.html" class="btn btn-neutral float-right" title="Regressor" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="gumbi.regression.GPC.html" class="btn btn-neutral float-right" title="GPC" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ParrayPlotter &mdash; Gumbi 0.1.0 documentation</title>
+  <title>ParrayPlotter &mdash; Gumbi 0.2.1 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/green_theme.css" type="text/css" />
@@ -12,10 +12,11 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
         <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
         <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -31,11 +32,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../index.html" class="icon icon-home"> Gumbi
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Gumbi
           </a>
+              <div class="version">
+                0.2.1
+              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -57,7 +65,10 @@
 <li class="toctree-l2"><a class="reference internal" href="../index.html#module-gumbi.aggregation">gumbi.aggregation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#module-gumbi.arrays">gumbi.arrays</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../index.html#module-gumbi.plotting">gumbi.plotting</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">ParrayPlotter</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">ParrayPlotter</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gumbi.plotting.ParrayPlotter"><code class="docutils literal notranslate"><span class="pre">ParrayPlotter</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#module-gumbi.regression">gumbi.regression</a></li>
@@ -79,9 +90,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../index.html">gumbi</a> &raquo;</li>
-      <li>ParrayPlotter</li>
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">gumbi</a></li>
+      <li class="breadcrumb-item active">ParrayPlotter</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../_sources/gumbi/plotting/gumbi.plotting.ParrayPlotter.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -91,37 +102,9 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  
-<style>
-/* CSS overrides for sphinx_rtd_theme */
-
-/* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
-    margin-bottom: 19px;  /* padding has already 5px */
-}
-
-/* ... except between code cells! */
-.nblast.container + .nbinput.container {
-    margin-top: -19px;
-}
-
-.admonition > p:before {
-    margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
-</style>
-<section id="parrayplotter">
-<h1>ParrayPlotter<a class="headerlink" href="#parrayplotter" title="Permalink to this headline"></a></h1>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
+  <section id="parrayplotter">
+<h1>ParrayPlotter<a class="headerlink" href="#parrayplotter" title="Permalink to this heading"></a></h1>
+<table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.plotting.ParrayPlotter" title="gumbi.plotting.ParrayPlotter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ParrayPlotter</span></code></a>(x, y[, z, stdzr, x_scale, ...])</p></td>
 <td><p>Wrapper for a <code class="docutils literal notranslate"><span class="pre">matplotlib.pyplot</span></code> function; adjusts ticks and labels according to plotter settings.</p></td>
@@ -129,18 +112,14 @@
 </tbody>
 </table>
 <p class="rubric">Methods</p>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
+<table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.plotting.ParrayPlotter.colorbar" title="gumbi.plotting.ParrayPlotter.colorbar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ParrayPlotter.colorbar</span></code></a>([mappable, cax, ax])</p></td>
 <td><p>Wrapper for <code class="docutils literal notranslate"><span class="pre">matplotlib.pyplot.colorbar</span></code>; adjusts ticks and labels according to plotter settings.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#gumbi.plotting.ParrayPlotter.plot" title="gumbi.plotting.ParrayPlotter.plot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ParrayPlotter.plot</span></code></a>([ci, ax, palette, ...])</p></td>
 <td><p><dl class="field-list simple">
-<dt class="field-odd">param ci</dt>
+<dt class="field-odd">param ci<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Confidence interval on <span class="math notranslate nohighlight">\(0&lt;\mathtt{ci}&lt;1\)</span>. If None, no confidence intervals will be drawn.</p>
 </dd>
 </dl>
@@ -155,11 +134,7 @@
 </tbody>
 </table>
 <p class="rubric">Attributes</p>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
+<table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ParrayPlotter.stdzr</span></code></p></td>
 <td><p></p></td>
@@ -198,23 +173,24 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gumbi.plotting.</span></span><span class="sig-name descname"><span class="pre">ParrayPlotter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../arrays/gumbi.arrays.ParameterArray.html#gumbi.arrays.ParameterArray" title="gumbi.arrays.ParameterArray"><span class="pre">ParameterArray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../arrays/gumbi.arrays.LayeredArray.html#gumbi.arrays.LayeredArray" title="gumbi.arrays.LayeredArray"><span class="pre">LayeredArray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">np.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../arrays/gumbi.arrays.UncertainParameterArray.html#gumbi.arrays.UncertainParameterArray" title="gumbi.arrays.UncertainParameterArray"><span class="pre">UncertainParameterArray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../arrays/gumbi.arrays.UncertainArray.html#gumbi.arrays.UncertainArray" title="gumbi.arrays.UncertainArray"><span class="pre">UncertainArray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../arrays/gumbi.arrays.ParameterArray.html#gumbi.arrays.ParameterArray" title="gumbi.arrays.ParameterArray"><span class="pre">ParameterArray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../arrays/gumbi.arrays.LayeredArray.html#gumbi.arrays.LayeredArray" title="gumbi.arrays.LayeredArray"><span class="pre">LayeredArray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">np.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../arrays/gumbi.arrays.UncertainParameterArray.html#gumbi.arrays.UncertainParameterArray" title="gumbi.arrays.UncertainParameterArray"><span class="pre">UncertainParameterArray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../arrays/gumbi.arrays.UncertainArray.html#gumbi.arrays.UncertainArray" title="gumbi.arrays.UncertainArray"><span class="pre">UncertainArray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../arrays/gumbi.arrays.ParameterArray.html#gumbi.arrays.ParameterArray" title="gumbi.arrays.ParameterArray"><span class="pre">ParameterArray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../arrays/gumbi.arrays.LayeredArray.html#gumbi.arrays.LayeredArray" title="gumbi.arrays.LayeredArray"><span class="pre">LayeredArray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">np.ndarray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stdzr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../aggregation/gumbi.aggregation.Standardizer.html#gumbi.aggregation.Standardizer" title="gumbi.aggregation.Standardizer"><span class="pre">Standardizer</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'natural'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_tick_scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'natural'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'natural'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_tick_scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'natural'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'natural'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_tick_scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'natural'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.plotting.ParrayPlotter" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Wrapper for a <code class="docutils literal notranslate"><span class="pre">matplotlib.pyplot</span></code> function; adjusts ticks and labels according to plotter settings.</p>
-<p>Provides a consistent interface to matplotlib plotting functions that allows easy iteration between permutations
-of plotting and tick labeling in  natural, transformed, standardized space. When called on a plotting function,
-a <a class="reference internal" href="#gumbi.plotting.ParrayPlotter" title="gumbi.plotting.ParrayPlotter"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParrayPlotter</span></code></a> instance passes pre-formated x and y (and z) arrays to the function as positional
-arguments, along with any additional keyword arguments supplied. <a class="reference internal" href="#gumbi.plotting.ParrayPlotter" title="gumbi.plotting.ParrayPlotter"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParrayPlotter</span></code></a> then adjusts tick labels
-according to its <em>*_tick_scale</em> arguments.</p>
+<p>Provides a consistent interface to matplotlib plotting functions that allows easy iteration between permutations of
+plotting and tick labeling in  natural, transformed, standardized space. When called on a plotting function, a
+<a class="reference internal" href="#gumbi.plotting.ParrayPlotter" title="gumbi.plotting.ParrayPlotter"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParrayPlotter</span></code></a> instance passes pre-formated x and y (and z) arrays to the function as positional arguments,
+along with any additional keyword arguments supplied. <a class="reference internal" href="#gumbi.plotting.ParrayPlotter" title="gumbi.plotting.ParrayPlotter"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParrayPlotter</span></code></a> then adjusts tick labels according to
+its <em>*_tick_scale</em> arguments.</p>
 <p>Passing a <code class="docutils literal notranslate"><span class="pre">.t</span></code> or <code class="docutils literal notranslate"><span class="pre">.z</span></code> child of a parray automatically overrides the respective <em>_scale</em> argument. This is
 achieved by inspecting the variable name for a <code class="docutils literal notranslate"><span class="pre">'_t'</span></code> or <code class="docutils literal notranslate"><span class="pre">'_z'</span></code> suffix, so avoiding using variable names with
-those suffixes to avoid confusion. Note that not all permutations of <em>*_scale</em> and <em>*_tick_scale</em> are
-permitted: <em>_tick_scale</em> should generally either match the respective <em>_scale</em> argument or be <code class="docutils literal notranslate"><span class="pre">'natural'</span></code>.</p>
+those suffixes to avoid confusion. Note that not all permutations of <em>*_scale</em> and <em>*_tick_scale</em> are permitted:
+<em>_tick_scale</em> should generally either match the respective <em>_scale</em> argument or be <code class="docutils literal notranslate"><span class="pre">'natural'</span></code>.</p>
 <p><a class="reference internal" href="#gumbi.plotting.ParrayPlotter" title="gumbi.plotting.ParrayPlotter"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParrayPlotter</span></code></a> also provides a <a class="reference internal" href="#gumbi.plotting.ParrayPlotter.colorbar" title="gumbi.plotting.ParrayPlotter.colorbar"><code class="xref py py-meth docutils literal notranslate"><span class="pre">colorbar()</span></code></a> method that adds a colorbar and reformats its ticks and
 labels according to the <em>z_scale</em> and <em>z_tick_scale</em> attributes.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x_pa</strong> (<a class="reference internal" href="../arrays/gumbi.arrays.ParameterArray.html#gumbi.arrays.ParameterArray" title="gumbi.arrays.ParameterArray"><em>ParameterArray</em></a><em> | </em><a class="reference internal" href="../arrays/gumbi.arrays.LayeredArray.html#gumbi.arrays.LayeredArray" title="gumbi.arrays.LayeredArray"><em>LayeredArray</em></a><em> | </em><em>np.ndarray</em>) – X and Y arrays. If <em>z_pa</em> or <em>stdzr</em> are not supplied, x_pa or y_pa must contain a Standardizer instance.</p></li>
 <li><p><strong>y_pa</strong> (<a class="reference internal" href="../arrays/gumbi.arrays.ParameterArray.html#gumbi.arrays.ParameterArray" title="gumbi.arrays.ParameterArray"><em>ParameterArray</em></a><em> | </em><a class="reference internal" href="../arrays/gumbi.arrays.LayeredArray.html#gumbi.arrays.LayeredArray" title="gumbi.arrays.LayeredArray"><em>LayeredArray</em></a><em> | </em><em>np.ndarray</em>) – X and Y arrays. If <em>z_pa</em> or <em>stdzr</em> are not supplied, x_pa or y_pa must contain a Standardizer instance.</p></li>
-<li><p><strong>z_pa</strong> (<a class="reference internal" href="../arrays/gumbi.arrays.ParameterArray.html#gumbi.arrays.ParameterArray" title="gumbi.arrays.ParameterArray"><em>ParameterArray</em></a><em> | </em><a class="reference internal" href="../arrays/gumbi.arrays.LayeredArray.html#gumbi.arrays.LayeredArray" title="gumbi.arrays.LayeredArray"><em>LayeredArray</em></a><em> | </em><em>np.ndarray</em><em>, </em><em>optional</em>) – Z array for 2D plots. If <em>stdzr</em> is not supplied, <em>z_pa</em>, <em>x_pa</em>, or <em>y_pa</em> must contain a Standardizer instance.</p></li>
+<li><p><strong>z_pa</strong> (<a class="reference internal" href="../arrays/gumbi.arrays.ParameterArray.html#gumbi.arrays.ParameterArray" title="gumbi.arrays.ParameterArray"><em>ParameterArray</em></a><em> | </em><a class="reference internal" href="../arrays/gumbi.arrays.LayeredArray.html#gumbi.arrays.LayeredArray" title="gumbi.arrays.LayeredArray"><em>LayeredArray</em></a><em> | </em><em>np.ndarray</em><em>, </em><em>optional</em>) – Z array for 2D plots. If <em>stdzr</em> is not supplied, <em>z_pa</em>, <em>x_pa</em>, or <em>y_pa</em> must contain a Standardizer
+instance.</p></li>
 <li><p><strong>stdzr</strong> (<a class="reference internal" href="../aggregation/gumbi.aggregation.Standardizer.html#gumbi.aggregation.Standardizer" title="gumbi.aggregation.Standardizer"><em>Standardizer</em></a><em>, </em><em>optional</em>) – Standardizer for converting ticks. Only optional if <em>z_pa</em>, <em>x_pa</em>, or <em>y_pa</em> contain a Standardizer instance.</p></li>
 <li><p><strong>x_scale</strong> (<em>{'natural'</em><em>, </em><em>'transformed'</em><em>, </em><em>'standardized'}</em>) – Space in which to plot respective array. Ignored if array is not a <code class="xref py py-class docutils literal notranslate"><span class="pre">ParameterArray</span></code>.</p></li>
 <li><p><strong>y_scale</strong> (<em>{'natural'</em><em>, </em><em>'transformed'</em><em>, </em><em>'standardized'}</em>) – Space in which to plot respective array. Ignored if array is not a <code class="xref py py-class docutils literal notranslate"><span class="pre">ParameterArray</span></code>.</p></li>
@@ -250,9 +226,9 @@ labels according to the <em>z_scale</em> and <em>z_tick_scale</em> attributes.</
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cbar</span> <span class="o">=</span> <span class="n">pp</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">pcm</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">())</span>
 </pre></div>
 </div>
-<p>Make a filled contour plot with <em>x</em> plotted in natural-space and <em>x</em> tick labels displayed in natural-space,
-<em>y</em> plotted in transformed space but <em>y</em> tick lables displayed in natural-space, and <em>z</em> plotted in standardized
-space with a colorbar displaying standardized-space tick labels:</p>
+<p>Make a filled contour plot with <em>x</em> plotted in natural-space and <em>x</em> tick labels displayed in natural-space, <em>y</em>
+plotted in transformed space but <em>y</em> tick lables displayed in natural-space, and <em>z</em> plotted in standardized space
+with a colorbar displaying standardized-space tick labels:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pp</span> <span class="o">=</span> <span class="n">ParrayPlotter</span><span class="p">(</span><span class="n">xyz</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">],</span> <span class="n">xyz</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">t</span><span class="p">,</span> <span class="n">xyz</span><span class="p">[</span><span class="s1">&#39;z&#39;</span><span class="p">],</span> <span class="n">z_scale</span><span class="o">=</span><span class="s1">&#39;standardized&#39;</span><span class="p">,</span> <span class="n">z_tick_scale</span><span class="o">=</span><span class="s1">&#39;standardized&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cs</span> <span class="o">=</span> <span class="n">pp</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">contourf</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cbar</span> <span class="o">=</span> <span class="n">pp</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">cs</span><span class="p">)</span>
@@ -268,7 +244,7 @@ space with a colorbar displaying standardized-space tick labels:</p>
 <dt class="sig sig-object py" id="gumbi.plotting.ParrayPlotter.plot">
 <span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ci</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.95</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">palette</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_kws</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ci_kws</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.plotting.ParrayPlotter.plot" title="Permalink to this definition"></a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>ci</strong> (<em>float</em><em> or </em><em>None</em><em>, </em><em>default 0.95</em>) – Confidence interval on <span class="math notranslate nohighlight">\(0&lt;\mathtt{ci}&lt;1\)</span>. If None, no confidence intervals will be drawn.</p></li>
 <li><p><strong>ax</strong> (<em>plt.Axes</em><em>, </em><em>optional</em>) – Axes on which to plot. Defaults to <code class="docutils literal notranslate"><span class="pre">plt.gca()</span></code>.</p></li>
@@ -277,10 +253,10 @@ space with a colorbar displaying standardized-space tick labels:</p>
 <li><p><strong>ci_kws</strong> (<em>dict</em><em>, </em><em>optional</em>) – Additional keyword arguments passed to :meth:<code class="docutils literal notranslate"><span class="pre">plot_ci</span></code>.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>ax</strong> – Axes for the plot</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>plt.Axes</p>
 </dd>
 </dl>
@@ -291,7 +267,7 @@ space with a colorbar displaying standardized-space tick labels:</p>
 <span class="sig-name descname"><span class="pre">plot_ci</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ci</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.95</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ci_style</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'fill'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'median'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.plotting.ParrayPlotter.plot_ci" title="Permalink to this definition"></a></dt>
 <dd><p>Plots the confidence interval for an UncertainParameterArray.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>ci</strong> (<em>float</em><em> or </em><em>None</em><em>, </em><em>default 0.95</em>) – Confidence interval on <span class="math notranslate nohighlight">\(0&lt;\mathtt{ci}&lt;1\)</span>. If None, no confidence intervals will be drawn.</p></li>
 <li><p><strong>ci_style</strong> (<em>{'fill'</em><em>, </em><em>'band'</em><em>, </em><em>'errorbar'</em><em>, </em><em>'bar'}</em>) – Whether to plot CI using <code class="docutils literal notranslate"><span class="pre">plt.fill_between</span></code> (<em>fill</em> or <em>band</em>) or <code class="docutils literal notranslate"><span class="pre">plt.errorbar</span></code> (<em>errorbar</em> or <em>bar</em>).</p></li>
@@ -300,10 +276,10 @@ space with a colorbar displaying standardized-space tick labels:</p>
 <li><p><strong>**kwargs</strong> – Additional keyword arguments passed to <code class="docutils literal notranslate"><span class="pre">plt.fill_between</span></code> or <code class="docutils literal notranslate"><span class="pre">plt.errorbar</span></code>.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>ax</strong> – Axes for the plot</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>plt.Axes</p>
 </dd>
 </dl>

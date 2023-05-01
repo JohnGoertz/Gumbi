@@ -1,0 +1,30 @@
+﻿GPC
+===
+
+.. currentmodule:: gumbi.regression
+
+.. autosummary:: GPC
+
+
+
+.. rubric:: Methods
+
+.. autosummary::
+
+  GPC.build_model
+  GPC.draw_point_samples
+
+
+
+
+
+.. rubric:: Attributes
+
+.. autosummary::
+
+
+
+
+.. autoclass:: GPC
+   :members:
+   :show-inheritance:

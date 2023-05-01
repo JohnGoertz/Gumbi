@@ -11,10 +11,14 @@
 
 .. autosummary::
 
+  GP.build_latent
   GP.build_model
+  GP.draw_grid_samples
+  GP.draw_point_samples
   GP.find_MAP
   GP.fit
   GP.predict
+  GP.sample
 
 
 

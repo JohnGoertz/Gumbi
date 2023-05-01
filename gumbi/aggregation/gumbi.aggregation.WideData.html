@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WideData &mdash; Gumbi 0.1.0 documentation</title>
+  <title>WideData &mdash; Gumbi 0.2.1 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/green_theme.css" type="text/css" />
@@ -12,10 +12,11 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -29,11 +30,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../index.html" class="icon icon-home"> Gumbi
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Gumbi
           </a>
+              <div class="version">
+                0.2.1
+              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -57,7 +65,10 @@
 <li class="toctree-l3"><a class="reference internal" href="gumbi.aggregation.MetaFrame.html">MetaFrame</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gumbi.aggregation.Standardizer.html">Standardizer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gumbi.aggregation.TidyData.html">TidyData</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">WideData</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">WideData</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gumbi.aggregation.WideData"><code class="docutils literal notranslate"><span class="pre">WideData</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#module-gumbi.arrays">gumbi.arrays</a></li>
@@ -81,9 +92,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../index.html">gumbi</a> &raquo;</li>
-      <li>WideData</li>
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">gumbi</a></li>
+      <li class="breadcrumb-item active">WideData</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../_sources/gumbi/aggregation/gumbi.aggregation.WideData.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -93,37 +104,9 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  
-<style>
-/* CSS overrides for sphinx_rtd_theme */
-
-/* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
-    margin-bottom: 19px;  /* padding has already 5px */
-}
-
-/* ... except between code cells! */
-.nblast.container + .nbinput.container {
-    margin-top: -19px;
-}
-
-.admonition > p:before {
-    margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
-</style>
-<section id="widedata">
-<h1>WideData<a class="headerlink" href="#widedata" title="Permalink to this headline"></a></h1>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
+  <section id="widedata">
+<h1>WideData<a class="headerlink" href="#widedata" title="Permalink to this heading"></a></h1>
+<table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.aggregation.WideData" title="gumbi.aggregation.WideData"><code class="xref py py-obj docutils literal notranslate"><span class="pre">WideData</span></code></a>(df, outputs[, log_vars, ...])</p></td>
 <td><p>Container for wide-form tabular data, allowing simple access to standardized and/or transformed values.</p></td>
@@ -131,11 +114,7 @@
 </tbody>
 </table>
 <p class="rubric">Methods</p>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
+<table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.aggregation.WideData.from_tidy" title="gumbi.aggregation.WideData.from_tidy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">WideData.from_tidy</span></code></a>(tidy[, outputs, ...])</p></td>
 <td><p>Constructs <cite>WideData</cite> from a tidy-form dataframe.</p></td>
@@ -146,11 +125,7 @@
 </tbody>
 </table>
 <p class="rubric">Attributes</p>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
+<table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.aggregation.WideData.t" title="gumbi.aggregation.WideData.t"><code class="xref py py-obj docutils literal notranslate"><span class="pre">WideData.t</span></code></a></p></td>
 <td><p>Transformed data values.</p></td>
@@ -158,19 +133,25 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#gumbi.aggregation.WideData.z" title="gumbi.aggregation.WideData.z"><code class="xref py py-obj docutils literal notranslate"><span class="pre">WideData.z</span></code></a></p></td>
 <td><p>Standardized data values.</p></td>
 </tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">WideData.df</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">WideData.outputs</span></code></p></td>
+<td><p></p></td>
+</tr>
 </tbody>
 </table>
 <dl class="py class">
 <dt class="sig sig-object py" id="gumbi.aggregation.WideData">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gumbi.aggregation.</span></span><span class="sig-name descname"><span class="pre">WideData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_vars</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logit_vars</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Variable'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Value'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stdzr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="gumbi.aggregation.Standardizer.html#gumbi.aggregation.Standardizer" title="gumbi.aggregation.Standardizer"><span class="pre">gumbi.aggregation.Standardizer</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.aggregation.WideData" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="gumbi.aggregation.MetaFrame.html#gumbi.aggregation.MetaFrame" title="gumbi.aggregation.MetaFrame"><code class="xref py py-class docutils literal notranslate"><span class="pre">gumbi.aggregation.MetaFrame</span></code></a></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gumbi.aggregation.</span></span><span class="sig-name descname"><span class="pre">WideData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_vars</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logit_vars</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Variable'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Value'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stdzr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gumbi.aggregation.Standardizer.html#gumbi.aggregation.Standardizer" title="gumbi.aggregation.Standardizer"><span class="pre">Standardizer</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.aggregation.WideData" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="gumbi.aggregation.MetaFrame.html#gumbi.aggregation.MetaFrame" title="gumbi.aggregation.MetaFrame"><code class="xref py py-class docutils literal notranslate"><span class="pre">MetaFrame</span></code></a></p>
 <p>Container for wide-form tabular data, allowing simple access to standardized and/or transformed values.</p>
 <p>Note that <a class="reference internal" href="#gumbi.aggregation.WideData" title="gumbi.aggregation.WideData"><code class="xref py py-class docutils literal notranslate"><span class="pre">WideData</span></code></a> is instantiated with a <strong>wide-form</strong> dataframe. This class is not intended to be
 instantiated directly, use <a class="reference internal" href="gumbi.aggregation.DataSet.html#gumbi.aggregation.DataSet" title="gumbi.aggregation.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataSet</span></code></a> instead. <a class="reference internal" href="#gumbi.aggregation.WideData" title="gumbi.aggregation.WideData"><code class="xref py py-class docutils literal notranslate"><span class="pre">WideData</span></code></a> subclasses pandas’ DataFrame,
 which everyone says is a bad idea, so be prepared for unexpected behavior if instantiated directly. Namely, in-place
 modifications return a <a class="reference internal" href="#gumbi.aggregation.WideData" title="gumbi.aggregation.WideData"><code class="xref py py-class docutils literal notranslate"><span class="pre">WideData</span></code></a> type correctly, but slices return a <cite>pd.DataFrame</cite> type.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> (<em>pd.DataFrame</em>) – A wide-form dataframe.</p></li>
 <li><p><strong>outputs</strong> (<em>list</em>) – Columns of <cite>data</cite> to be treated as outputs.</p></li>
@@ -190,19 +171,19 @@ modifications return a <a class="reference internal" href="#gumbi.aggregation.Wi
 
 <dl class="py property">
 <dt class="sig sig-object py" id="gumbi.aggregation.WideData.t">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">t</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">pandas.core.frame.DataFrame</span></em><a class="headerlink" href="#gumbi.aggregation.WideData.t" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">t</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">DataFrame</span></em><a class="headerlink" href="#gumbi.aggregation.WideData.t" title="Permalink to this definition"></a></dt>
 <dd><p>Transformed data values.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gumbi.aggregation.WideData.to_tidy">
-<span class="sig-name descname"><span class="pre">to_tidy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="gumbi.aggregation.TidyData.html#gumbi.aggregation.TidyData" title="gumbi.aggregation.TidyData"><span class="pre">gumbi.aggregation.TidyData</span></a></span></span><a class="headerlink" href="#gumbi.aggregation.WideData.to_tidy" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">to_tidy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="gumbi.aggregation.TidyData.html#gumbi.aggregation.TidyData" title="gumbi.aggregation.TidyData"><span class="pre">TidyData</span></a></span></span><a class="headerlink" href="#gumbi.aggregation.WideData.to_tidy" title="Permalink to this definition"></a></dt>
 <dd><p>Converts to TidyData</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="gumbi.aggregation.WideData.z">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">z</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">pandas.core.frame.DataFrame</span></em><a class="headerlink" href="#gumbi.aggregation.WideData.z" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">z</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">DataFrame</span></em><a class="headerlink" href="#gumbi.aggregation.WideData.z" title="Permalink to this definition"></a></dt>
 <dd><p>Standardized data values.</p>
 </dd></dl>
 

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>UncertainParameterArray &mdash; Gumbi 0.1.0 documentation</title>
+  <title>UncertainParameterArray &mdash; Gumbi 0.2.1 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/green_theme.css" type="text/css" />
@@ -12,10 +12,11 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
         <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
         <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -31,11 +32,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../index.html" class="icon icon-home"> Gumbi
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Gumbi
           </a>
+              <div class="version">
+                0.2.1
+              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -62,7 +70,10 @@
 <li class="toctree-l3"><a class="reference internal" href="gumbi.arrays.MultivariateNormalish.html">MultivariateNormalish</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gumbi.arrays.ParameterArray.html">ParameterArray</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gumbi.arrays.UncertainArray.html">UncertainArray</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">UncertainParameterArray</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">UncertainParameterArray</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gumbi.arrays.UncertainParameterArray"><code class="docutils literal notranslate"><span class="pre">UncertainParameterArray</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#module-gumbi.plotting">gumbi.plotting</a></li>
@@ -85,9 +96,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../index.html">gumbi</a> &raquo;</li>
-      <li>UncertainParameterArray</li>
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">gumbi</a></li>
+      <li class="breadcrumb-item active">UncertainParameterArray</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../_sources/gumbi/arrays/gumbi.arrays.UncertainParameterArray.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -97,37 +108,9 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  
-<style>
-/* CSS overrides for sphinx_rtd_theme */
-
-/* 24px margin */
-.nbinput.nblast.container,
-.nboutput.nblast.container {
-    margin-bottom: 19px;  /* padding has already 5px */
-}
-
-/* ... except between code cells! */
-.nblast.container + .nbinput.container {
-    margin-top: -19px;
-}
-
-.admonition > p:before {
-    margin-right: 4px;  /* make room for the exclamation icon */
-}
-
-/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
-.math {
-    text-align: unset;
-}
-</style>
-<section id="uncertainparameterarray">
-<h1>UncertainParameterArray<a class="headerlink" href="#uncertainparameterarray" title="Permalink to this headline"></a></h1>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
+  <section id="uncertainparameterarray">
+<h1>UncertainParameterArray<a class="headerlink" href="#uncertainparameterarray" title="Permalink to this heading"></a></h1>
+<table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.arrays.UncertainParameterArray" title="gumbi.arrays.UncertainParameterArray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UncertainParameterArray</span></code></a>(name, μ, σ2, stdzr)</p></td>
 <td><p>Structured array of parameter means and variances, allowing transformation with uncertainty handling.</p></td>
@@ -135,11 +118,7 @@
 </tbody>
 </table>
 <p class="rubric">Methods</p>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
+<table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.arrays.UncertainParameterArray.mean" title="gumbi.arrays.UncertainParameterArray.mean"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UncertainParameterArray.mean</span></code></a>([axis, dtype, ...])</p></td>
 <td><p>The natural-space distribution parameters which represent the mean of the transformed-space distributions</p></td>
@@ -150,11 +129,7 @@
 </tbody>
 </table>
 <p class="rubric">Attributes</p>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
+<table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.arrays.UncertainParameterArray.dist" title="gumbi.arrays.UncertainParameterArray.dist"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UncertainParameterArray.dist</span></code></a></p></td>
 <td><p>Array of <code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.stats.rv_continuous()</span></code> objects.</p></td>
@@ -169,8 +144,8 @@
 </table>
 <dl class="py class">
 <dt class="sig sig-object py" id="gumbi.arrays.UncertainParameterArray">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gumbi.arrays.</span></span><span class="sig-name descname"><span class="pre">UncertainParameterArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">μ</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">σ2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stdzr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../aggregation/gumbi.aggregation.Standardizer.html#gumbi.aggregation.Standardizer" title="gumbi.aggregation.Standardizer"><span class="pre">gumbi.aggregation.Standardizer</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">stdzd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.arrays.UncertainParameterArray" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="gumbi.arrays.UncertainArray.html#gumbi.arrays.UncertainArray" title="gumbi.arrays.UncertainArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">gumbi.arrays.UncertainArray</span></code></a></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gumbi.arrays.</span></span><span class="sig-name descname"><span class="pre">UncertainParameterArray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">μ</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">σ2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stdzr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../aggregation/gumbi.aggregation.Standardizer.html#gumbi.aggregation.Standardizer" title="gumbi.aggregation.Standardizer"><span class="pre">Standardizer</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">stdzd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.arrays.UncertainParameterArray" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="gumbi.arrays.UncertainArray.html#gumbi.arrays.UncertainArray" title="gumbi.arrays.UncertainArray"><code class="xref py py-class docutils literal notranslate"><span class="pre">UncertainArray</span></code></a></p>
 <p>Structured array of parameter means and variances, allowing transformation with uncertainty handling.</p>
 <p>The primary role of this class is to compactly store the outputs of our regression models
 (e.g., <code class="xref py py-class docutils literal notranslate"><span class="pre">gumbi.GP</span></code>). We typically use these models
@@ -229,7 +204,7 @@ given dimensions in the underlying model than a true natural-space average.</p><
 <p><code class="xref py py-class docutils literal notranslate"><span class="pre">Standardizer</span></code></p>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> (<em>str</em>) – Name of variable.</p></li>
 <li><p><strong>μ</strong> (<em>array</em>) – Mean at each point</p></li>
@@ -318,7 +293,7 @@ transformed space.</p>
 <span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#gumbi.arrays.UncertainParameterArray.name" title="Permalink to this definition"></a></dt>
 <dd><p>Name of variable.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -329,7 +304,7 @@ transformed space.</p>
 <span class="sig-name descname"><span class="pre">μ</span></span><a class="headerlink" href="#gumbi.arrays.UncertainParameterArray." title="Permalink to this definition"></a></dt>
 <dd><p>Mean at each point</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>array</p>
 </dd>
 </dl>
@@ -340,7 +315,7 @@ transformed space.</p>
 <span class="sig-name descname"><span class="pre">σ2</span></span><a class="headerlink" href="#gumbi.arrays.UncertainParameterArray.2" title="Permalink to this definition"></a></dt>
 <dd><p>Variance at each point</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>array</p>
 </dd>
 </dl>
@@ -351,7 +326,7 @@ transformed space.</p>
 <span class="sig-name descname"><span class="pre">fields</span></span><a class="headerlink" href="#gumbi.arrays.UncertainParameterArray.fields" title="Permalink to this definition"></a></dt>
 <dd><p>Names of each level held in the array</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list of str</p>
 </dd>
 </dl>
@@ -362,7 +337,7 @@ transformed space.</p>
 <span class="sig-name descname"><span class="pre">stdzr</span></span><a class="headerlink" href="#gumbi.arrays.UncertainParameterArray.stdzr" title="Permalink to this definition"></a></dt>
 <dd><p>An instance  of <code class="xref py py-class docutils literal notranslate"><span class="pre">Standardizer</span></code> created from the supplied <code class="xref py py-class docutils literal notranslate"><span class="pre">Standardizer</span></code> object</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="../aggregation/gumbi.aggregation.Standardizer.html#gumbi.aggregation.Standardizer" title="gumbi.aggregation.Standardizer">Standardizer</a></p>
 </dd>
 </dl>
@@ -370,7 +345,7 @@ transformed space.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="gumbi.arrays.UncertainParameterArray.dist">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dist</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">scipy.stats._distn_infrastructure.rv_continuous</span></em><a class="headerlink" href="#gumbi.arrays.UncertainParameterArray.dist" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dist</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">rv_continuous</span></em><a class="headerlink" href="#gumbi.arrays.UncertainParameterArray.dist" title="Permalink to this definition"></a></dt>
 <dd><p>Array of <code class="xref py py-func docutils literal notranslate"><span class="pre">scipy.stats.rv_continuous()</span></code> objects.</p>
 <p>If the transformation associated with the array’s parameter is log/exp, this is a <cite>lognorm</cite> distribution object
 with <code class="docutils literal notranslate"><span class="pre">scale=self.μ</span></code> and <code class="docutils literal notranslate"><span class="pre">s=self.t.σ</span></code>. Otherwise it is a <cite>norm</cite> distribution with <code class="docutils literal notranslate"><span class="pre">loc=self.μ</span></code> and
@@ -392,13 +367,13 @@ explanation and a list of methods.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="gumbi.arrays.UncertainParameterArray.t">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">t</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="gumbi.arrays.UncertainArray.html#gumbi.arrays.UncertainArray" title="gumbi.arrays.UncertainArray"><span class="pre">gumbi.arrays.UncertainArray</span></a></em><a class="headerlink" href="#gumbi.arrays.UncertainParameterArray.t" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">t</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="gumbi.arrays.UncertainArray.html#gumbi.arrays.UncertainArray" title="gumbi.arrays.UncertainArray"><span class="pre">UncertainArray</span></a></em><a class="headerlink" href="#gumbi.arrays.UncertainParameterArray.t" title="Permalink to this definition"></a></dt>
 <dd><p>Transformed values</p>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="gumbi.arrays.UncertainParameterArray.z">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">z</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="gumbi.arrays.UncertainArray.html#gumbi.arrays.UncertainArray" title="gumbi.arrays.UncertainArray"><span class="pre">gumbi.arrays.UncertainArray</span></a></em><a class="headerlink" href="#gumbi.arrays.UncertainParameterArray.z" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">z</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="gumbi.arrays.UncertainArray.html#gumbi.arrays.UncertainArray" title="gumbi.arrays.UncertainArray"><span class="pre">UncertainArray</span></a></em><a class="headerlink" href="#gumbi.arrays.UncertainParameterArray.z" title="Permalink to this definition"></a></dt>
 <dd><p>Standardized values</p>
 </dd></dl>
 

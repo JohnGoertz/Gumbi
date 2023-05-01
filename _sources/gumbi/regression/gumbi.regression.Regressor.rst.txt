@@ -19,6 +19,7 @@
   Regressor.get_filtered_data
   Regressor.get_shaped_data
   Regressor.get_structured_data
+  Regressor.marginal_grids
   Regressor.mvuparray
   Regressor.parray
   Regressor.predict
