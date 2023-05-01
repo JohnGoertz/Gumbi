@@ -26,8 +26,7 @@ jobs:
             sudo apt-get update
             sudo apt-get install pandoc
             pip install -U pip
-            pip install git+git://github.com/JohnGoertz/Gumbi.git@main
-            git clone --branch main https://github.com/JohnGoertz/Gumbi.git
+            pip install git+https://github.com/JohnGoertz/Gumbi.git@main
             pip install -r Gumbi/docs/requirements.txt
       # - run:  # Make notebooks locally, for now, too much overhead for free CircleCI
       #     name: Make notebooks
@@ -78,7 +77,7 @@ jobs:
             git config user.name "Docs Bot"
       - add_ssh_keys:
           fingerprints:
-            - "ee:db:2d:7c:29:39:a8:8e:c8:f3:09:9a:9a:23:d7:ab"
+            - "e0:61:d6:8f:c2:bc:d9:23:1c:ee:70:c9:b8:f3:de:26"
       - run:
           name: Deploy docs to gh-pages branch
           command: gh-pages --dotfiles --message "Deploy docs [skip ci]" --dist docs/build/html
