@@ -523,7 +523,7 @@ class Regressor(ABC):
             # Convert input points to tall array and tile once for each output, adding the respective coordinate
             tall_points = parray.vstack([points.add_layers(**{self.out_col: coord})[:, None] for coord in param_coords])
         else:
-            # If self.out_col is not in categorical_dims, it must be in filter_dims, and only one is possible Convert
+            # If self.out_col is not in categorical_dims, it must be in filter_dims, and only one is possible. Convert
             # input points to tall array
             param_coords = None
             tall_points = points[:, None]

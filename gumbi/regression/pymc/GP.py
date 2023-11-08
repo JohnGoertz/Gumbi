@@ -783,7 +783,7 @@ class GP(Regressor):
         return predictions
 
     def _recursively_append(self, var_name, suffix="_", increment_var=True):
-        if var_name in [v.name for v in self.model.vars]:
+        if var_name in self.model.named_vars:
             if increment_var:
                 var_name += suffix
                 return self._recursively_append(var_name)
@@ -850,7 +850,7 @@ class GP(Regressor):
         with self.model:
             samples = pm.sample_posterior_predictive(*args, source, var_names=[var_name], **kwargs)
 
-        self.predictions = self.parray(**{var_name: samples[var_name]}, stdzd=True)
+        self.predictions = self.parray(**{output: samples[var_name]}, stdzd=True)
         self.predictions_X = points
 
         return self.predictions
