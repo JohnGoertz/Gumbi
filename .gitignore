@@ -15,3 +15,4 @@ dist/*
 *.pub
 build/
 *.swp
+sandbox/*
