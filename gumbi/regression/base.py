@@ -13,7 +13,7 @@ from gumbi.arrays import UncertainParameterArray as uparray
 from gumbi.arrays import *
 from gumbi.utils.misc import assert_in, assert_is_subset
 
-# from gumbi.utils.gp_utils import get_ℓ_prior
+# from gumbi.utils.gp_utils import get_ls_prior
 
 __all__ = ["Regressor"]
 
@@ -799,7 +799,7 @@ class Regressor(ABC):
         best_yet = np.min(np.sqrt(np.mean(np.square(observed.z - target.z))))
 
         if acquisition == "EI":
-            self.proposal_surface = self.predictions.z.EI(target.z, best_yet.z)
+            self.proposal_surface = self.predictions.z.vEI(target.z, best_yet.z)
         elif acquisition == "PD":
             self.proposal_surface = self.predictions.z.nlpd(target.z)
 

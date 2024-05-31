@@ -5,6 +5,7 @@
 from . import data, style, utils
 from .aggregation import *
 from .arrays import *
+from .array_utils import *
 from .plotting import *
 from .regression import *
 from .versions import __version__

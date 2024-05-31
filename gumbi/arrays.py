@@ -664,8 +664,8 @@ class UncertainArray(np.ndarray):
         """Negative log posterior density"""
         return -np.log(self.dist.pdf(target))
 
-    def EI(self, target, best_yet, k=1) -> float:
-        """Expected improvement
+    def vEI(self, target, best_yet, k=1) -> float:
+        """Vector expected improvement
 
         Taken from https://github.com/akuhren/target_vector_estimation
 
@@ -677,7 +677,7 @@ class UncertainArray(np.ndarray):
 
         Returns
         -------
-        EI : float
+        vEI : float
         """
 
         nc = ((target - self.μ) ** 2) / self.σ2
