@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 from scipy.special import expit, logit
 
-from .utils import skip
+from .utils import skip, listify
 
 __all__ = ["Standardizer", "TidyData", "WideData", "DataSet"]
 
@@ -17,32 +17,41 @@ __all__ = ["Standardizer", "TidyData", "WideData", "DataSet"]
 class Standardizer(dict):
     r"""Container for dict of mean (μ) and variance (σ2) for every parameter.
 
-    :class:`Standardizer` objects allow transformation and normalization of datasets. The main methods are :meth:`stdz`,
-    which attempts to coerce the values of a given variable to a standard normal distribution (`z-scores`), and its
-    complement :meth:`unstdz`. The steps are
+    :class:`Standardizer` objects allow transformation and normalization of
+    datasets. The main methods are :meth:`stdz`, which attempts to coerce the
+    values of a given variable to a standard normal distribution (`z-scores`),
+    and its complement :meth:`unstdz`. The steps are
 
     .. math::
         \mathbf{\text{tidy}} \rightarrow \text{transform} \rightarrow \text{mean-center} \rightarrow \text{scale}
         \rightarrow \mathbf{\text{tidy.z}}
 
-    For example, reaction `rate` must clearly be strictly positive, so we use a `log` transformation so that it behaves
-    as a normally-distributed random variable. We then mean-center and scale this transformed value to obtain `z-scores`
-    indicating how similar a given estimate is to all the other estimates we've observed. `Standardizer` stores the
-    transforms and population mean and variance for every parameter, allowing us to convert back and forth
-    between natural space (:math:`rate`), transformed space (:math:`\text{ln}\; rate`), and standardized space
-    (:math:`\left( \text{ln}\; rate  - \mu_{\text{ln}\; rate} \right)/\sigma_{\text{ln}\; rate}`).
+    For example, reaction `rate` must clearly be strictly positive, so we use a
+    `log` transformation so that it behaves as a normally-distributed random
+    variable. We then mean-center and scale this transformed value to obtain
+    `z-scores` indicating how similar a given estimate is to all the other
+    estimates we've observed. `Standardizer` stores the transforms and
+    population mean and variance for every parameter, allowing us to convert
+    back and forth between natural space (:math:`rate`), transformed space
+    (:math:`\text{ln}\; rate`), and standardized space (:math:`\left(
+    \text{ln}\; rate  - \mu_{\text{ln}\; rate} \right)/\sigma_{\text{ln}\;
+    rate}`).
 
-    Typically, a :class:`Standardizer` will be constructed from a dataframe (:meth:`from_DataFrame`),
-    but the individual means and variances can be provided at instantiation as well. Note, however,
-    that these should be the mean/std of the *transformed* variable. For example, if `r` should be treated as
-    log-normal with a natural-space mean of 1 and variance of 0.1, the right way to instantiate the class
-    would be `Standardizer(d={'μ': 0, 'σ2': 0.1}, log_vars=['d'])`.
+    Typically, a :class:`Standardizer` will be constructed from a dataframe
+    (:meth:`from_DataFrame`), but the individual means and variances can be
+    provided at instantiation as well. Note, however, that these should be the
+    mean/std of the *transformed* variable. For example, if `r` should be
+    treated as log-normal with a natural-space mean of 1 and variance of 0.1,
+    the right way to instantiate the class would be `Standardizer(d={'μ': 0,
+    'σ2': 0.1}, log_vars=['d'])`.
 
 
     Notes
     -----
-    :class:`Standardizer` is just a `dictionary <https://docs.python.org/3/tutorial/datastructures.html#dictionaries>`_
-    with some extra methods and defaults, so standard dictionary methods like :meth:`dict.update` still work.
+    :class:`Standardizer` is just a `dictionary
+    <https://docs.python.org/3/tutorial/datastructures.html#dictionaries>`_ with
+    some extra methods and defaults, so standard dictionary methods like
+    :meth:`dict.update` still work.
 
 
     Parameters
@@ -52,7 +61,8 @@ class Standardizer(dict):
     logit_vars: list, optional
         List of input and output variables to be treated as logit-normal.
     **kwargs
-        Mean and variance of each variable as a dictionary, e.g. d={'μ': 0, 'σ2': 0.1}
+        Mean and variance of each variable as a dictionary, e.g. d={'μ': 0,
+        'σ2': 0.1}
 
 
     Examples
@@ -109,9 +119,10 @@ class Standardizer(dict):
 
     """
 
-    # TODO: Standardizer: make transform suggestions based on provided tidy? e.g., all>0 -> log/exp
+    # TODO: Standardizer: make transform suggestions based on provided tidy?
+    # e.g., all>0 -> log/exp
 
-    def __init__(self, log_vars=None, logit_vars=None, **kwargs):
+    def __init__(self, log_vars=None, logit_vars=None, isotropic_vars=None, **kwargs):
         self.validate(kwargs)
         for name, stats in kwargs.items():
             if "σ2" not in stats:
@@ -129,8 +140,9 @@ class Standardizer(dict):
             if not isinstance(logit_vars, list):
                 raise TypeError("logit_vars must be a list or str")
             self._transforms.update({var: [logit, expit] for var in logit_vars})
-        self._log_vars = log_vars if log_vars is not None else []
-        self._logit_vars = logit_vars if logit_vars is not None else []
+        self._log_vars = listify(log_vars)
+        self._logit_vars = listify(logit_vars)
+        self._isotropic_vars = listify(isotropic_vars)
 
     def __or__(self, __dct) -> Standardizer:
         # new_dct = super().__or__(__dct)  # Use when Python>=3.9
@@ -193,7 +205,8 @@ class Standardizer(dict):
 
     @property
     def transforms(self) -> dict:
-        """Collection of forward and reverse transform functions for each variable"""
+        """Collection of forward and reverse transform functions for each
+        variable"""
         return self._transforms
 
     @transforms.setter
@@ -209,21 +222,40 @@ class Standardizer(dict):
         assert all(("σ" in sub.keys() or "σ2" in sub.keys()) for sub in dct.values())
 
     @classmethod
-    def from_DataFrame(cls, df: pd.DataFrame, log_vars=None, logit_vars=None):
+    def from_DataFrame(cls, df: pd.DataFrame, log_vars=None, logit_vars=None, isotropic_vars=None):
         """Construct from wide-form DataFrame"""
+        isotropic_vars = listify(isotropic_vars)
+        
         float_columns = df.dtypes[df.dtypes == "float64"].index.to_list()
+        anis_columns = [col for col in float_columns if col not in isotropic_vars]
 
         new = cls(log_vars=log_vars, logit_vars=logit_vars)
 
-        dct = (
-            df[float_columns]
-            .apply(new.transform)
-            .agg([np.mean, np.var])
-            .rename(index={"mean": "μ", "var": "σ2"})
-            .to_dict()
-        )
+        if anis_columns:
+            anis_dct = (
+                df[anis_columns]
+                .apply(new.transform)
+                .agg(["mean", "var"])
+                .rename(index={"mean": "μ", "var": "σ2"})
+                .to_dict()
+            )
+        else:
+            anis_dct = {}
 
-        return new | dct
+        if isotropic_vars:        
+            iso_df = (
+                df[isotropic_vars]
+                .apply(new.transform)
+            )
+
+            iso_μ = iso_df.values.mean()
+            iso_σ2 = iso_df.values.var()
+            
+            iso_dct = {col : {"μ": iso_μ, "σ2": iso_σ2} for col in isotropic_vars}
+        else:
+            iso_dct = {}
+
+        return new | anis_dct | iso_dct
 
     def transform(self, name: str | pd.Series, μ: float = None, σ2: float = None) -> float | tuple | pd.Series:
         """Transforms a parameter, distribution, or Series
@@ -231,16 +263,19 @@ class Standardizer(dict):
         Parameters
         ----------
         name: str or pd.Series
-            Name of parameter. If a Series is supplied, the name of the series must be the parameter name.
+            Name of parameter. If a Series is supplied, the name of the series
+            must be the parameter name.
         μ: float, optional
-            Value of parameter or mean of parameter distribution. Only optional if first argument is a Series.
+            Value of parameter or mean of parameter distribution. Only optional
+            if first argument is a Series.
         σ2: float, optional
             Variance of parameter distribution.
 
         Returns
         -------
         float, tuple, or pd.Series
-            Transformed parameter, (mean, variance) of untransformed distribution, or untransformed Series
+            Transformed parameter, (mean, variance) of untransformed
+            distribution, or untransformed Series
         """
         if isinstance(name, pd.Series):
             series = name
@@ -258,16 +293,19 @@ class Standardizer(dict):
         Parameters
         ----------
         name: str or pd.Series
-            Name of parameter. If a Series is supplied, the name of the series must be the parameter name.
+            Name of parameter. If a Series is supplied, the name of the series
+            must be the parameter name.
         μ: float, optional
-            Value of parameter or mean of parameter distribution. Only optional if first argument is a Series.
+            Value of parameter or mean of parameter distribution. Only optional
+            if first argument is a Series.
         σ2: float, optional
             Variance of parameter distribution.
 
         Returns
         -------
         float, tuple, or pd.Series
-            Untransformed parameter, (mean, variance) of untransformed distribution, or untransformed Series
+            Untransformed parameter, (mean, variance) of untransformed
+            distribution, or untransformed Series
         """
         if isinstance(name, pd.Series):
             series = name
@@ -278,21 +316,24 @@ class Standardizer(dict):
             return self._untransform_dist(name, μ, σ2)
 
     def stdz(self, name: str | pd.Series, μ: float = None, σ2: float = None) -> float | tuple | pd.Series:
-        """Transforms, mean-centers, and scales a parameter, distribution, or Series
+        """Transforms, centers, and scales a parameter, distribution, or Series
 
         Parameters
         ----------
         name: str or pd.Series
-            Name of parameter. If a Series is supplied, the name of the series must be the parameter name.
+            Name of parameter. If a Series is supplied, the name of the series
+            must be the parameter name.
         μ: float, optional
-            Value of parameter or mean of parameter distribution. Only optional if first argument is a Series.
+            Value of parameter or mean of parameter distribution. Only optional
+            if first argument is a Series.
         σ2: float, optional
             Variance of parameter distribution.
 
         Returns
         -------
         float, tuple, or pd.Series
-            Standardized parameter, (mean, variance) of standardized distribution, or standardized Series
+            Standardized parameter, (mean, variance) of standardized
+            distribution, or standardized Series
         """
 
         if isinstance(name, pd.Series):
@@ -304,21 +345,25 @@ class Standardizer(dict):
             return self._stdz_dist(name, μ, σ2)
 
     def unstdz(self, name: str | pd.Series, μ: float = None, σ2: float = None) -> float | tuple | pd.Series:
-        """Untransforms, un-centers, and un-scales a parameter, distribution, or Series
+        """Untransforms, un-centers, and un-scales a parameter, distribution, or
+        Series
 
         Parameters
         ----------
         name: str or pd.Series
-            Name of parameter. If a Series is supplied, the name of the series must be the parameter name.
+            Name of parameter. If a Series is supplied, the name of the series
+            must be the parameter name.
         μ: float, optional
-            Value of parameter or mean of parameter distribution. Only optional if first argument is a Series.
+            Value of parameter or mean of parameter distribution. Only optional
+            if first argument is a Series.
         σ2: float, optional
             Variance of parameter distribution.
 
         Returns
         -------
         float, tuple, or pd.Series
-            Unstandardized parameter, (mean, variance) of unstandardized distribution, or unstandardized Series
+            Unstandardized parameter, (mean, variance) of unstandardized
+            distribution, or unstandardized Series
         """
 
         if isinstance(name, pd.Series):
@@ -345,34 +390,38 @@ class Standardizer(dict):
         μ = self.get(name, {"μ": 0})["μ"]
         σ2 = self.get(name, {"σ2": 1})["σ2"]
         σ = np.sqrt(σ2)
-        return (x_ - μ) / σ
+        return np.divide((x_ - μ), σ)
 
     def _unstdz_value(self, name: str, z: float) -> float:
         μ = self.get(name, {"μ": 0})["μ"]
         σ2 = self.get(name, {"σ2": 1})["σ2"]
         σ = np.sqrt(σ2)
-        x_ = z * σ + μ
+        x_ = np.multiply(z, σ) + μ
         return self.untransform(name, x_)
 
     @property
     def mean_transforms(self):
         """Function that transforms the mean of a distribution.
 
-        These transform's should follow scipy's conventions such that a distribution can be defined in the given
-        space by passing (loc=μ, scale=σ2**0.5). For a lognormal variable, an RV defined as ``lognorm(loc=μ,
-        scale=σ2**0.5)`` in "natural" space is equivalent to ``norm(loc=np.log(μ), scale=σ2**0.5)`` in log space,
-        so this transform should return ``np.log(μ)`` when converting from natural to log space, and ``np.exp(μ)``
-        when converting from log to natural space. Similarly for a logit-normal variable, an RV defined as
-        ``logitnorm(loc=μ, scale=σ2**0.5))`` in natural space is equivalent to ``norm(loc=logit(μ), scale=σ2**0.5)``
-        in logit space, so this transform should return ``logit(μ)`` when converting from natural to logit space,
-        and ``expit(μ)`` when converting from logit to natural space.
+        These transform's should follow scipy's conventions such that a
+        distribution can be defined in the given space by passing (loc=μ,
+        scale=σ2**0.5). For a lognormal variable, an RV defined as
+        ``lognorm(loc=μ, scale=σ2**0.5)`` in "natural" space is equivalent to
+        ``norm(loc=np.log(μ), scale=σ2**0.5)`` in log space, so this transform
+        should return ``np.log(μ)`` when converting from natural to log space,
+        and ``np.exp(μ)`` when converting from log to natural space. Similarly
+        for a logit-normal variable, an RV defined as ``logitnorm(loc=μ,
+        scale=σ2**0.5))`` in natural space is equivalent to ``norm(loc=logit(μ),
+        scale=σ2**0.5)`` in logit space, so this transform should return
+        ``logit(μ)`` when converting from natural to logit space, and
+        ``expit(μ)`` when converting from logit to natural space.
         """
 
         # Forward and reverse transform for each variable type
         transforms = {
             skip: [lambda μ, σ2: μ, lambda μ, σ2: μ],
-            # Note these are no longer strictly mean and variance. They are defined to be compatible with
-            # scipy.stats.lognormal definition
+            # Note these are no longer strictly mean and variance. They are
+            # defined to be compatible with scipy.stats.lognormal definition
             np.log: [lambda μ, σ2: np.log(μ), lambda μ, σ2: np.exp(μ)],
             logit: [lambda μ, σ2: logit(μ), lambda μ, σ2: expit(μ)],
         }
@@ -382,10 +431,12 @@ class Standardizer(dict):
     def var_transforms(self):
         """Function that transforms the variance of a distribution.
 
-        These transform's should follow scipy's conventions such that a distribution can be defined in the given
-        space by passing (loc=μ, scale=σ2**0.5). Accordingly, since both log-normal and logit-normal variables are
-        defined in terms of the scale (standard deviation) in their respective transformed spaces, this function
-        simply returns the variance unchanged in these cases.
+        These transform's should follow scipy's conventions such that a
+        distribution can be defined in the given space by passing (loc=μ,
+        scale=σ2**0.5). Accordingly, since both log-normal and logit-normal
+        variables are defined in terms of the scale (standard deviation) in
+        their respective transformed spaces, this function simply returns the
+        variance unchanged in these cases.
         """
 
         # Forward and reverse transform for each variable type
@@ -442,6 +493,7 @@ class MetaFrame(pd.DataFrame, ABC):
     outputs: list
     log_vars: list = None
     logit_vars: list = None
+    isotropic_vars: list = None
     names_column: str = "Variable"
     values_column: str = "Value"
     stdzr: Standardizer = None
@@ -459,7 +511,7 @@ class MetaFrame(pd.DataFrame, ABC):
     def __post_init__(self):
         super(MetaFrame, self).__init__(self.df)
         if self.stdzr is None:
-            self.stdzr = Standardizer.from_DataFrame(self.df, log_vars=self.log_vars, logit_vars=self.logit_vars)
+            self.stdzr = Standardizer.from_DataFrame(self.df, log_vars=self.log_vars, logit_vars=self.logit_vars, isotropic_vars=self.isotropic_vars)
         else:
             self.log_vars = self.stdzr.log_vars
             self.logit_vars = self.stdzr.logit_vars
@@ -496,7 +548,8 @@ class MetaFrame(pd.DataFrame, ABC):
 
     @property
     def specs(self) -> dict:
-        """Provides keyword arguments for easy instantiation of a similar object."""
+        """Provides keyword arguments for easy instantiation of a similar
+        object."""
         return dict(
             outputs=self.outputs,
             names_column=self.names_column,
@@ -537,12 +590,15 @@ class MetaFrame(pd.DataFrame, ABC):
 
 
 class WideData(MetaFrame):
-    """Container for wide-form tabular data, allowing simple access to standardized and/or transformed values.
+    """Container for wide-form tabular data, allowing simple access to
+    standardized and/or transformed values.
 
-    Note that :class:`WideData` is instantiated with a **wide-form** dataframe. This class is not intended to be
-    instantiated directly, use :class:`DataSet` instead. :class:`WideData` subclasses pandas' DataFrame,
-    which everyone says is a bad idea, so be prepared for unexpected behavior if instantiated directly. Namely, in-place
-    modifications return a :class:`WideData` type correctly, but slices return a `pd.DataFrame` type.
+    Note that :class:`WideData` is instantiated with a **wide-form** dataframe.
+    This class is not intended to be instantiated directly, use :class:`DataSet`
+    instead. :class:`WideData` subclasses pandas' DataFrame, which everyone says
+    is a bad idea, so be prepared for unexpected behavior if instantiated
+    directly. Namely, in-place modifications return a :class:`WideData` type
+    correctly, but slices return a `pd.DataFrame` type.
 
     Parameters
     ----------
@@ -555,11 +611,14 @@ class WideData(MetaFrame):
     values_column: str, default 'Value'
         Name to be used in tidy view for column containing output values.
     log_vars: list, optional
-        List of input and output variables to be treated as log-normal. Ignored if `stdzr` is supplied.
+        List of input and output variables to be treated as log-normal. Ignored
+        if `stdzr` is supplied.
     logit_vars: list, optional
-        List of input and output variables to be treated as logit-normal. Ignored if `stdzr` is supplied.
+        List of input and output variables to be treated as logit-normal.
+        Ignored if `stdzr` is supplied.
     stdzr: Standardizer, optional
-        An :class:`Standardizer` instance. If not supplied, one will be created automatically.
+        An :class:`Standardizer` instance. If not supplied, one will be created
+        automatically.
     """
 
     @property
@@ -594,7 +653,8 @@ class WideData(MetaFrame):
         log_vars=None,
         logit_vars=None,
     ):
-        """Constructs `WideData` from a tidy-form dataframe. See :class:`WideData` for explanation of arguments."""
+        """Constructs `WideData` from a tidy-form dataframe. See
+        :class:`WideData` for explanation of arguments."""
         outputs = outputs if outputs is not None else list(tidy[names_column].unique())
         wide = cls._tidy_to_wide_(tidy, names_column=names_column, values_column=values_column)
         return cls(
@@ -609,12 +669,15 @@ class WideData(MetaFrame):
 
 
 class TidyData(MetaFrame):
-    """Container for tidy-form tabular data, allowing simple access to standardized and/or transformed values.
+    """Container for tidy-form tabular data, allowing simple access to
+    standardized and/or transformed values.
 
-    Note that :class:`TidyData` is instantiated with a **wide-form** dataframe. This class is not intended to be
-    instantiated directly, use :class:`DataSet` instead. :class:`TidyData` subclasses pandas' DataFrame,
-    which everyone says is a bad idea, so be prepared for unexpected behavior if instantiated directly. Namely, in-place
-    modifications return a :class:`TidyData` type correctly, but slices return a `pd.DataFrame` type.
+    Note that :class:`TidyData` is instantiated with a **wide-form** dataframe.
+    This class is not intended to be instantiated directly, use :class:`DataSet`
+    instead. :class:`TidyData` subclasses pandas' DataFrame, which everyone says
+    is a bad idea, so be prepared for unexpected behavior if instantiated
+    directly. Namely, in-place modifications return a :class:`TidyData` type
+    correctly, but slices return a `pd.DataFrame` type.
 
     Parameters
     ----------
@@ -627,11 +690,14 @@ class TidyData(MetaFrame):
     values_column: str, default 'Value'
         Name to be used in tidy view for column containing output values.
     log_vars: list, optional
-        List of input and output variables to be treated as log-normal. Ignored if `stdzr` is supplied.
+        List of input and output variables to be treated as log-normal. Ignored
+        if `stdzr` is supplied.
     logit_vars: list, optional
-        List of input and output variables to be treated as logit-normal. Ignored if `stdzr` is supplied.
+        List of input and output variables to be treated as logit-normal.
+        Ignored if `stdzr` is supplied.
     stdzr: Standardizer, optional
-        An :class:`Standardizer` instance. If not supplied, one will be created automatically.
+        An :class:`Standardizer` instance. If not supplied, one will be created
+        automatically.
     """
 
     def __post_init__(self):
@@ -679,32 +745,44 @@ class TidyData(MetaFrame):
 
 @dataclass
 class DataSet:
-    """Container for tabular data, allowing simple access to standardized values and wide or tidy dataframe formats.
+    """Container for tabular data, allowing simple access to standardized values
+    and wide or tidy dataframe formats.
 
-    :class:`DataSet` is instantiated with a **wide-form** dataframe, with all outputs of a given observation in a
-    single row, but allows easy access to the corresponding **tidy** dataframe, with each output in a separate row (
-    the :meth:`from_tidy` also allows construction from tidy data`). The titles of the tidy-form columns for the
-    output names and their values are supplied at instantiation, defaulting to "Variable" and "Value". For example,
-    say we have an observation at position (x,y) with measurements of i, j, and k. The wide-form dataframe would have
-    one column for each of x, y, i, j, and k, while the tidy-form dataframe would have a column for each of x and y,
-    a "Variable" column where each row contains either "i", "j", or "k" as strings, and a "Value" column containing
-    the corresponding measurement. Wide data is more space-efficient and perhaps more intuitive to construct and
-    inspect, while tidy data more clearly distinguishes inputs and outputs. These views are accessible through the
-    :attr:`wide` and :attr:`tidy` attributes as instances of :class:`WideData` and :class:`TidyData`, respectively.
+    :class:`DataSet` is instantiated with a **wide-form** dataframe, with all
+    outputs of a given observation in a single row, but allows easy access to
+    the corresponding **tidy** dataframe, with each output in a separate row (
+    the :meth:`from_tidy` also allows construction from tidy data`). The titles
+    of the tidy-form columns for the output names and their values are supplied
+    at instantiation, defaulting to "Variable" and "Value". For example, say we
+    have an observation at position (x,y) with measurements of i, j, and k. The
+    wide-form dataframe would have one column for each of x, y, i, j, and k,
+    while the tidy-form dataframe would have a column for each of x and y, a
+    "Variable" column where each row contains either "i", "j", or "k" as
+    strings, and a "Value" column containing the corresponding measurement. Wide
+    data is more space-efficient and perhaps more intuitive to construct and
+    inspect, while tidy data more clearly distinguishes inputs and outputs.
+    These views are accessible through the :attr:`wide` and :attr:`tidy`
+    attributes as instances of :class:`WideData` and :class:`TidyData`,
+    respectively.
 
-    As a container for :class:`WideData` and :class:`TidyData`, this class also provides simple access to
-    standardized values of the data through `wide.z` and `tidy.z` or transformed values through `wide.t` and
-    `tidy.t`. A :class:`Standardizer` instance can be supplied as a keyword argument, otherwise one will be
-    constructed automatically from the supplied dataframe with the supplied values of `log_vars` and `logit_vars`.
-    Unlike :class:`WideData` and :class:`TidyData`, the :attr:`wide` and :attr:`tidy` attributes of a *DataSet* can
-    be altered and sliced while retaining their functionality, with a cursory integrity check. The
-    :class:`Standardizer` instance can be updated with :meth:`update_stdzr`, for example following manipulation of
-    the data or alteration of :attr:`log_vars` and :attr:`logit_vars`.
+    As a container for :class:`WideData` and :class:`TidyData`, this class also
+    provides simple access to standardized values of the data through `wide.z`
+    and `tidy.z` or transformed values through `wide.t` and `tidy.t`. A
+    :class:`Standardizer` instance can be supplied as a keyword argument,
+    otherwise one will be constructed automatically from the supplied dataframe
+    with the supplied values of `log_vars` and `logit_vars`. Unlike
+    :class:`WideData` and :class:`TidyData`, the :attr:`wide` and :attr:`tidy`
+    attributes of a *DataSet* can be altered and sliced while retaining their
+    functionality, with a cursory integrity check. The :class:`Standardizer`
+    instance can be updated with :meth:`update_stdzr`, for example following
+    manipulation of the data or alteration of :attr:`log_vars` and
+    :attr:`logit_vars`.
 
     Parameters
     ----------
     data: pd.DataFrame
-        A wide-form dataframe. See class method :meth:`from_tidy` for instantiation from tidy data.
+        A wide-form dataframe. See class method :meth:`from_tidy` for
+        instantiation from tidy data.
     outputs: list
         Columns of `data` to be treated as outputs.
     names_column: str, default 'Variable'
@@ -712,11 +790,14 @@ class DataSet:
     values_column: str, default 'Value'
         Name to be used in tidy view for column containing output values.
     log_vars: list, optional
-        List of input and output variables to be treated as log-normal. Ignored if `stdzr` is supplied.
+        List of input and output variables to be treated as log-normal. Ignored
+        if `stdzr` is supplied.
     logit_vars: list, optional
-        List of input and output variables to be treated as logit-normal. Ignored if `stdzr` is supplied.
+        List of input and output variables to be treated as logit-normal.
+        Ignored if `stdzr` is supplied.
     stdzr: Standardizer, optional
-        An :class:`Standardizer` instance. If not supplied, one will be created automatically.
+        An :class:`Standardizer` instance. If not supplied, one will be created
+        automatically.
 
     Examples
     --------
@@ -746,11 +827,12 @@ class DataSet:
     values_column: str = "Value"
     log_vars: list = None
     logit_vars: list = None
+    isotropic_vars: list = None
     stdzr: Standardizer = None
 
     def __post_init__(self):
         if self.stdzr is None:
-            self.stdzr = Standardizer.from_DataFrame(self.wide, log_vars=self.log_vars, logit_vars=self.logit_vars)
+            self.stdzr = Standardizer.from_DataFrame(self.wide, log_vars=self.log_vars, logit_vars=self.logit_vars, isotropic_vars=self.isotropic_vars)
         else:
             self.log_vars = self.stdzr.log_vars
             self.logit_vars = self.stdzr.logit_vars
@@ -771,7 +853,8 @@ class DataSet:
 
     @property
     def specs(self):
-        """Provides keyword arguments for easy instantiation of a similar :class:`DataSet`."""
+        """Provides keyword arguments for easy instantiation of a similar
+        :class:`DataSet`."""
         return dict(
             outputs=self.outputs,
             names_column=self.names_column,
@@ -826,7 +909,8 @@ class DataSet:
         log_vars=None,
         logit_vars=None,
     ):
-        """Constructs a `DataSet` from a tidy-form dataframe. See :class:`DataSet` for explanation of arguments."""
+        """Constructs a `DataSet` from a tidy-form dataframe. See
+        :class:`DataSet` for explanation of arguments."""
         assert all(
             [col in tidy.columns for col in [names_column, values_column]]
         ), f"Dataframe must have both columns {[names_column, values_column]}"
@@ -852,7 +936,8 @@ class DataSet:
         log_vars=None,
         logit_vars=None,
     ):
-        """Constructs a `DataSet` from a wide-form dataframe. See :class:`DataSet` for explanation of arguments."""
+        """Constructs a `DataSet` from a wide-form dataframe. See
+        :class:`DataSet` for explanation of arguments."""
         return cls(
             wide,
             outputs=outputs,
@@ -864,7 +949,8 @@ class DataSet:
         )
 
     def update_stdzr(self):
-        """Updates internal :class:`Standardizer` with current data, :attr:`log_vars`, and :attr:`logit_vars`."""
+        """Updates internal :class:`Standardizer` with current data,
+        :attr:`log_vars`, and :attr:`logit_vars`."""
         self.stdzr.update(
-            Standardizer.from_DataFrame(self.wide, log_vars=self.log_vars, logit_vars=self.logit_vars)
+            Standardizer.from_DataFrame(self.wide, log_vars=self.log_vars, logit_vars=self.logit_vars, isotropic_vars=self.isotropic_vars)
         )  # Fix once Python >= 3.9
