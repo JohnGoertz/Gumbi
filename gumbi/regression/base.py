@@ -409,7 +409,7 @@ class Regressor(ABC):
         assert len(set(sum(df[self.out_col] == output) for output in self.outputs)) == 1
 
         # Assuming all parameters observed at the same points
-        inputs = inputs[inputs[self.out_col] == self.outputs[0]]
+        inputs = df[df[self.out_col] == self.outputs[0]]
         inputs = inputs.replace(self.coords)
 
         # Extract the model dimensions from the dataframe

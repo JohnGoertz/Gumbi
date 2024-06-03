@@ -1,7 +1,8 @@
 import numpy as np
 
-from .utils import assert_in
+from .utils import assert_in, first, one
 from .arrays import ParameterArray as parray
+from .arrays import UncertainParameterArray as uparray
 
 
 def make_deltas_parray(*, stdzr, scale, **deltas):
@@ -30,3 +31,96 @@ def make_deltas_parray(*, stdzr, scale, **deltas):
     }
     ls_bounds = parray(**deltas, stdzr=stdzr, stdzd=True)
     return ls_bounds
+
+
+def stack(array_list, axis=0, **kwargs):
+    ndims = {pa.ndim for pa in array_list}
+    if ndims == {1}:
+        return np.hstack(array_list)
+    types = {type(pa) for pa in array_list}
+    if not len(types) == 1:
+        raise ValueError("Arrays are not all of the same type.")
+    cls = one(types)
+    if cls == parray:
+        return _stack_parray(array_list, **kwargs)
+    elif cls == uparray:
+        all_names = [upa.name for upa in array_list]
+        if not len(set(all_names)) == 1:
+            raise ValueError("Arrays do not have the same name.")
+    else:
+        raise ValueError(f"Unknown array type: {cls}")
+    new = np.stack(array_list, axis=axis, **kwargs)
+    stdzr = _get_stdzr(array_list)
+    return cls(**{dim: new[dim] for dim in new.dtype.names}, stdzr=stdzr)
+
+
+def vstack(array_list, **kwargs):
+    types = {type(pa) for pa in array_list}
+    if not len(types) == 1:
+        raise ValueError("Arrays are not all of the same type.")
+    cls = one(types)
+    if cls == parray:
+        return _vstack_parray(array_list, **kwargs)
+    elif cls == uparray:
+        all_names = [upa.name for upa in array_list]
+        if not len(set(all_names)) == 1:
+            raise ValueError("Arrays do not have the same name.")
+    else:
+        raise ValueError(f"Unknown array type: {cls}")
+    new = np.vstack(array_list, **kwargs)
+    stdzr = _get_stdzr(array_list)
+    return cls(**{dim: new[dim] for dim in new.dtype.names}, stdzr=stdzr)
+
+
+def hstack(array_list, **kwargs):
+    types = {type(pa) for pa in array_list}
+    if not len(types) == 1:
+        raise ValueError("Arrays are not all of the same type.")
+    cls = one(types)
+    if cls == parray:
+        return _hstack_parray(array_list, **kwargs)
+    elif cls == uparray:
+        all_names = [upa.name for upa in array_list]
+        if not len(set(all_names)) == 1:
+            raise ValueError("Arrays do not have the same name.")
+    else:
+        raise ValueError(f"Unknown array type: {cls}")
+    new = np.hstack(array_list, **kwargs)
+    stdzr = _get_stdzr(array_list)
+    return cls(**{dim: new[dim] for dim in new.dtype.names}, stdzr=stdzr)
+
+
+def _stack_parray(array_list, axis=0, **kwargs):
+    _check_parrays_compatible(array_list)
+    new = np.stack(array_list, axis=axis, **kwargs)
+    stdzr = _get_stdzr(array_list)
+    return parray(**{dim: new[dim] for dim in new.dtype.names}, stdzr=stdzr)
+
+
+def _vstack_parray(array_list, **kwargs):
+    _check_parrays_compatible(array_list)
+    new = np.vstack(array_list, **kwargs)
+    stdzr = _get_stdzr(array_list)
+    return parray(**{dim: new[dim] for dim in new.dtype.names}, stdzr=stdzr)
+
+
+def _hstack_parray(array_list, **kwargs):
+    _check_parrays_compatible(array_list)
+    new = np.hstack(array_list, **kwargs)
+    stdzr = _get_stdzr(array_list)
+    return parray(**{dim: new[dim] for dim in new.dtype.names}, stdzr=stdzr)
+
+
+def _check_parrays_compatible(array_list):
+    all_names = [pa.names for pa in array_list]
+    if not len(set(all_names)) == 1:
+        raise ValueError("Arrays do not have the same names.")
+    if not all(names == first(all_names) for names in all_names):
+        raise ValueError("Arrays names are not in the same order.")
+
+
+def _get_stdzr(array_list):
+    stdzr = first(array_list).stdzr
+    if not all(a.stdzr is stdzr for a in array_list):
+        raise ValueError("Arrays do not have the same standardizer.")
+    return stdzr

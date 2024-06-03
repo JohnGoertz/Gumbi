@@ -12,7 +12,7 @@ from scipy.stats._multivariate import multivariate_normal_frozen
 from uncertainties import unumpy as unp
 
 from .aggregation import Standardizer
-from .utils import skip
+from .utils import skip, assert_in
 
 __all__ = [
     "LayeredArray",
@@ -1130,6 +1130,11 @@ class UncertainParameterArray(UncertainArray):
 
     # def __repr__(self):
     #     return f'{self.name}{self.fields}: {np.asarray(self)}'
+    
+    def extract(self, field):
+        assert_in(field, self.fields)
+        vals = getattr(self, field)
+        return ParameterArray(**{self.name: vals}, stdzr=self.stdzr, stdzd=False)
 
     def __getitem__(self, item):
         default = super(UncertainArray, self).__getitem__(item)
