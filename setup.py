@@ -1,3 +1,12 @@
+"""
+Instructions for building the package.
+
+$ python -m build
+$ twine check dist/*
+$ twine upload dist/*
+
+"""
+
 import pathlib as pl
 
 from setuptools import find_packages, setup

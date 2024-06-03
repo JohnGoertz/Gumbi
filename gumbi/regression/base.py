@@ -408,10 +408,13 @@ class Regressor(ABC):
         # Ensure same number of observations for every output (only possible if something broke)
         assert len(set(sum(df[self.out_col] == output) for output in self.outputs)) == 1
 
-        # Assuming all parameters observed at the same points Extract the model dimensions from the dataframe for one of
-        # the parameters
-        dims = set(self.dims) - set([self.out_col])
-        dim_values = {dim: df[df[self.out_col] == self.outputs[0]].replace(self.coords)[dim].values for dim in dims}
+        # Assuming all parameters observed at the same points
+        inputs = inputs[inputs[self.out_col] == self.outputs[0]]
+        inputs = inputs.replace(self.coords)
+
+        # Extract the model dimensions from the dataframe
+        dims = [dim for dim in self.dims if dim != self.out_col]
+        dim_values = inputs[dims].to_dict(orient='list')
         X = self.parray(**dim_values, stdzd=False)
 
         # List of parrays for each output

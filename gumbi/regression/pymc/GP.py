@@ -637,11 +637,11 @@ class GP(Regressor):
                 for dim in self.continuous_dims
             ]
             lower, upper = list(zip(*zbounds))
+            if not ARD and len(lower) != 1 or len(upper) != 1:
+                raise ValueError("Bounds must be specified for only a single dimension if ARD is False")
         else:
             lower, upper = None, None
             
-        if not ARD and len(lower) != 1 or len(upper) != 1:
-            raise ValueError("Bounds must be specified for only a single dimension if ARD is False")
         ls_params = get_ls_prior(X_s, ARD=ARD, lower=lower, upper=upper, mass=mass)
 
         # ls_μ, ls_σ = [stat for stat in np.array([get_ls_prior(dim) for dim in X_s.T]).T]
