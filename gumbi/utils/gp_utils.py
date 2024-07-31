@@ -2,6 +2,7 @@ from scipy.spatial.distance import pdist
 import numpy as np
 import pymc as pm
 from .misc import listify, first
+from warnings import warn
 
 
 def get_ls_prior(X, *, ARD, lower=None, upper=None, mass=0.98):
@@ -25,7 +26,7 @@ def get_ls_prior(X, *, ARD, lower=None, upper=None, mass=0.98):
 
     params = []
 
-    for points, lower_, upper_ in zip(all_points, lowers, uppers):
+    for i, (points, lower_, upper_) in enumerate(zip(all_points, lowers, uppers)):
         distances = pdist(points)
         distinct = distances != 0
         
@@ -37,13 +38,28 @@ def get_ls_prior(X, *, ARD, lower=None, upper=None, mass=0.98):
         if upper_ is None:
             upper_ = distances[distinct].max() if sum(distinct) > 0 else 1
 
-        params_ls = pm.find_constrained_prior(
-            distribution=pm.InverseGamma,
-            lower=lower_,
-            upper=upper_,
-            init_guess={"alpha": lower_, "beta": upper_},
-            mass=mass,
-        )
+        converged = False
+        mass_ = mass
+        while not converged:
+            try:
+                params_ls = pm.find_constrained_prior(
+                    distribution=pm.InverseGamma,
+                    lower=lower_,
+                    upper=upper_,
+                    init_guess={"alpha": lower_, "beta": upper_},
+                    mass=mass_,
+                )
+            except ValueError as e:
+                if 'Optimization of parameters failed' in str(e):
+                    mass_ -= 0.01
+                else:
+                    raise e
+            else:
+                converged = True
+                if mass_ != mass:
+                    warn("Mass of constrained lengthscale prior was "
+                         f"reduced from {mass:.3f} to {mass_:.3f} to enable "
+                         f"convergence for dimension {i}.")
 
         params.append(params_ls)
 
