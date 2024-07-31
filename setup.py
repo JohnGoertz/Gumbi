@@ -3,7 +3,7 @@ Instructions for building the package.
 
 $ python -m build
 $ twine check dist/*
-$ twine upload dist/*
+$ twine upload dist/gumbi-$(cat VERSION)*
 
 """
 

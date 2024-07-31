@@ -28,10 +28,12 @@ def get_ls_prior(X, *, ARD, lower=None, upper=None, mass=0.98):
     for points, lower_, upper_ in zip(all_points, lowers, uppers):
         distances = pdist(points)
         distinct = distances != 0
+        
+        default_lower = distances[distinct].min() if sum(distinct) > 0 else 0.1
 
         if lower_ is None:
-            lower_ = distances[distinct].min() if sum(distinct) > 0 else 0.1
-        lower_ = max(lower_, 0.01)
+            lower_ = default_lower
+        lower_ = max(lower_, default_lower, 0.01)
         if upper_ is None:
             upper_ = distances[distinct].max() if sum(distinct) > 0 else 1
 

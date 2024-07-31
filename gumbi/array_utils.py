@@ -36,7 +36,7 @@ def make_deltas_parray(*, stdzr, scale, **deltas):
 def stack(array_list, axis=0, **kwargs):
     ndims = {pa.ndim for pa in array_list}
     if ndims == {1}:
-        return np.hstack(array_list)
+        return hstack(array_list)
     types = {type(pa) for pa in array_list}
     if not len(types) == 1:
         raise ValueError("Arrays are not all of the same type.")
@@ -112,7 +112,7 @@ def _hstack_parray(array_list, **kwargs):
 
 
 def _check_parrays_compatible(array_list):
-    all_names = [pa.names for pa in array_list]
+    all_names = [tuple(pa.names) for pa in array_list]
     if not len(set(all_names)) == 1:
         raise ValueError("Arrays do not have the same names.")
     if not all(names == first(all_names) for names in all_names):

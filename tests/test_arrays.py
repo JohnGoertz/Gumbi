@@ -4,6 +4,7 @@ import pathlib as pl
 
 import numpy as np
 
+import gumbi as gmb
 from gumbi import Standardizer, mvuparray, parray, uarray, uparray
 
 test_dir = pl.Path(__file__).resolve().parent
@@ -178,3 +179,21 @@ def test_mvuparray():
     rvs = mvup[0].dist.rvs(2, random_state=2021)
     assert np.allclose(rvs["d"].values(), np.array([0.61310678, 0.59268474]))
     assert np.allclose(rvs["c"].values(), np.array([0.08709257, 0.10308707]))
+
+
+def test_utils():
+    stdzr = Standardizer(**example_stdzr, log_vars=log_vars, logit_vars=logit_vars)
+    pa1 = parray(param=np.arange(5), other=np.arange(5) * 10, stdzr=stdzr)
+    pa2 = parray(param=np.arange(5), other=np.arange(5) * 10, stdzr=stdzr)
+    pa_out = gmb.stack([pa1, pa2])
+    assert np.allclose(pa_out.get("param").values(), np.array([0, 1, 2, 3, 4, 0, 1, 2, 3, 4]))
+    assert isinstance(pa_out, parray)
+    pa_out = gmb.hstack([pa1, pa2])
+    assert np.allclose(pa_out.get("param").values(), np.array([0, 1, 2, 3, 4, 0, 1, 2, 3, 4]))
+    assert isinstance(pa_out, parray)
+    pa_out = gmb.hstack([pa1[:, None], pa2[:, None]])
+    assert np.allclose(pa_out.get("param").values(), np.array([[0, 1, 2, 3, 4], [0, 1, 2, 3, 4]]).T)
+    assert isinstance(pa_out, parray)
+    pa_out = gmb.vstack([pa1[:, None], pa2[:, None]])
+    assert np.allclose(pa_out.get("param").values(), np.array([[0, 1, 2, 3, 4, 0, 1, 2, 3, 4]]).T)
+    assert isinstance(pa_out, parray)

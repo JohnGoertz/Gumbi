@@ -633,8 +633,9 @@ class GP(Regressor):
         if ls_bounds is not None:
             zbounds = [
                 [b if not np.isnan(b) else None for b in ls_bounds[dim].z.values().squeeze()]
-                if dim in ls_bounds.names else (None, None)
+                # if dim in ls_bounds.names else (None, None)
                 for dim in self.continuous_dims
+                if dim in ls_bounds.names
             ]
             lower, upper = list(zip(*zbounds))
             if not ARD and len(lower) != 1 or len(upper) != 1:

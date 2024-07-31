@@ -259,6 +259,9 @@ class LayeredArray(np.ndarray):
 
     def __repr__(self):
         return f"{tuple(self.names)}: {np.asarray(self)}"
+    
+    def __str__(self):
+        return repr(self)
 
     def get(self, name, default=None):
         """Return value given by `name` if it exists, otherwise return `default`."""
@@ -407,6 +410,8 @@ class ParameterArray(LayeredArray):
         """Return value given by `name` if it exists, otherwise return `default`"""
         if name in self.names:
             return self[name]
+        elif isinstance(name, (list, tuple)):
+            return self.parray(**{p: arr for p, arr in self.as_dict().items() if p in name})
         elif default is None:
             return None
         else:
@@ -749,6 +754,9 @@ class UncertainArray(np.ndarray):
 
     def __repr__(self):
         return f"{self.name}{self.fields}: {np.asarray(self)}"
+    
+    def __str__(self):
+        return repr(self)
 
     def __getitem__(self, item):
         default = super().__getitem__(item)
@@ -1132,7 +1140,7 @@ class UncertainParameterArray(UncertainArray):
     #     return f'{self.name}{self.fields}: {np.asarray(self)}'
     
     def extract(self, field):
-        assert_in(field, self.fields)
+        assert_in('field', field, self.fields)
         vals = getattr(self, field)
         return ParameterArray(**{self.name: vals}, stdzr=self.stdzr, stdzd=False)
 
