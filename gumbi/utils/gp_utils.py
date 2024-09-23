@@ -5,8 +5,7 @@ from .misc import listify, first
 from warnings import warn
 
 
-def get_ls_prior(X, *, ARD, lower=None, upper=None, mass=0.98):
-
+def parse_ls_limits(X, *, ARD, lower=None, upper=None):
     if ARD:
         all_points = np.hsplit(X, X.shape[1])
     else:
@@ -24,19 +23,31 @@ def get_ls_prior(X, *, ARD, lower=None, upper=None, mass=0.98):
     if len(uppers) != len(all_points):
         raise ValueError("Number of upper bounds must match number of dimensions")
 
-    params = []
-
-    for i, (points, lower_, upper_) in enumerate(zip(all_points, lowers, uppers)):
+    for i, (points, lower, upper) in enumerate(zip(all_points, lowers, uppers)):
         distances = pdist(points)
         distinct = distances != 0
         
-        default_lower = distances[distinct].min() if sum(distinct) > 0 else 0.1
+        default_lower = distances[distinct].min() if sum(distinct) > 0 else 0.01
 
-        if lower_ is None:
-            lower_ = default_lower
-        lower_ = max(lower_, default_lower, 0.01)
-        if upper_ is None:
-            upper_ = distances[distinct].max() if sum(distinct) > 0 else 1
+        if lower is None:
+            lower = default_lower
+        lower = max(lower, default_lower, 0.01)
+        if upper is None:
+            upper = distances[distinct].max() if sum(distinct) > 0 else 1
+
+        lowers[i] = lower
+        uppers[i] = upper
+
+    return lowers, uppers
+
+
+def get_ls_prior(X, *, ARD, lower=None, upper=None, mass=0.98):
+    
+    lowers, uppers = parse_ls_limits(X, ARD=ARD, lower=lower, upper=upper)
+
+    params = []
+
+    for i, (lower, upper) in enumerate(zip(lowers, uppers)):
 
         converged = False
         mass_ = mass
@@ -44,9 +55,9 @@ def get_ls_prior(X, *, ARD, lower=None, upper=None, mass=0.98):
             try:
                 params_ls = pm.find_constrained_prior(
                     distribution=pm.InverseGamma,
-                    lower=lower_,
-                    upper=upper_,
-                    init_guess={"alpha": lower_, "beta": upper_},
+                    lower=lower,
+                    upper=upper,
+                    init_guess={"alpha": lower, "beta": upper},
                     mass=mass_,
                 )
             except ValueError as e:
