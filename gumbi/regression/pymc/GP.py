@@ -835,20 +835,6 @@ class GP(Regressor):
         return self.trace
 
     def predict(self, points_array, with_noise=True, additive_level="total", **kwargs):
-        """Make predictions at supplied points using specified gp
-
-        Parameters
-        ----------
-        output : str points : ParameterArray
-            Tall ParameterArray vector of coordinates for prediction, must have one layer per ``self.dims``
-        with_noise : bool, default True
-            Whether to incorporate aleatoric uncertainty into prediction error
-
-        Returns
-        -------
-        prediction : UncertainParameterArray
-            Predictions as a `uparray`
-        """
 
         # TODO: need to supply "given" dict for additive GP sublevel predictions
         if additive_level != "total":
