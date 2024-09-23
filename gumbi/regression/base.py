@@ -410,7 +410,9 @@ class Regressor(ABC):
 
         # Assuming all parameters observed at the same points
         inputs = df[df[self.out_col] == self.outputs[0]]
-        inputs = inputs.replace(self.coords)
+        
+        with pd.set_option('future.no_silent_downcasting', True):
+            inputs = inputs.replace(self.coords)
 
         # Extract the model dimensions from the dataframe
         dims = [dim for dim in self.dims if dim != self.out_col]
