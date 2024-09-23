@@ -633,22 +633,38 @@ class Regressor(ABC):
         # If there are no remaining dimensions
         if limit_dims == set():
             raise ValueError("At least one dimension must be non-degenerate to generate grid.")
+        
+        X, _ = self.get_structured_data("mean")
+
+        default_values = np.stack(
+            [np.minimum(X.z.values().min(1), -2.), np.maximum(X.z.values().max(1), 2.)]
+        ).T
+        
+        padding = np.diff(default_values, axis=1) * 0.1
+        
+        default_values += np.concatenate([-padding, padding], axis=1)
+        
+        default_parray = self.parray(
+            **{
+                dim: default
+                for dim, default in zip(self.dims, default_values)
+                if dim in limit_dims
+            },
+            stdzd=True
+        )
 
         # If no limits are supplied
         if limits is None:
             # Fill limits with default values
-            limits = self.parray(
-                **{dim: [-2.5, +2.5] for dim in self.dims if dim in limit_dims},
-                stdzd=True,
-            )
+            limits = default_parray
         else:
             # Append default limits to `limits` for unspecified dimensions
             if not isinstance(limits, ParameterArray):
                 raise TypeError('"limits" must be a ParameterArray')
             remaining_dims = limit_dims - set(limits.names)
             if remaining_dims:
-                dflt_limits = self.parray(**{dim: [-2.5, +2.5] for dim in remaining_dims}, stdzd=True)
-                limits = limits.add_layers(**dflt_limits.as_dict())
+                # dflt_limits = self.parray(**{dim: [-2.5, +2.5] for dim in remaining_dims}, stdzd=True)
+                limits = limits.add_layers(**default_parray[remaining_dims].as_dict())
 
         # Ensure all dimensions are specified without conflicts
         limit_dims = set(limits.names)
