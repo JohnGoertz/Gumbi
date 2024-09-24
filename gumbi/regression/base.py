@@ -374,10 +374,10 @@ class Regressor(ABC):
         df = self.data.tidy
 
         allowed = df.isin(self.filter_dims)[self.filter_dims.keys()].all(axis=1)
-        if ("Metric" in df.columns and metric == "mean") or ("Metric" not in df.columns and metric == "mean"):
+        if "Metric" in df.columns and metric == "mean":
             assert_in("Metric", metric, self.data.tidy["Metric"].unique())
             allowed &= df["Metric"] == metric
-        elif "Metric" not in df.columns:
+        elif "Metric" not in df.columns and metric != "mean":
             raise KeyError(f"No 'Metric' column found in dataset. Cannot filter by {metric}")
         elif metric != "mean":
             raise ValueError(f"Only 'mean' is supported for 'metric'. Got {metric}")
