@@ -416,7 +416,7 @@ class Regressor(ABC):
         inputs = df[df[self.out_col] == self.outputs[0]]
         
         try:
-            with pd.set_option('future.no_silent_downcasting', True):
+            with pd.option_context('future.no_silent_downcasting', True):
                 inputs = inputs.replace(self.coords)
         except pd.errors.OptionError:
             inputs = inputs.replace(self.coords)
