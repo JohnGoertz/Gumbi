@@ -644,9 +644,10 @@ class Regressor(ABC):
             raise ValueError("At least one dimension must be non-degenerate to generate grid.")
         
         X, _ = self.get_structured_data("mean")
+        X_values = np.atleast_2d(X.z.values()).T
 
         default_values = np.stack(
-            [np.minimum(X.z.values().min(1), -2.), np.maximum(X.z.values().max(1), 2.)]
+            [np.minimum(X_values.min(0), -2.), np.maximum(X_values.max(0), 2.)]
         ).T
         
         padding = np.diff(default_values, axis=1) * 0.1
