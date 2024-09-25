@@ -1,4 +1,4 @@
-from gumbi import Regressor
+from gumbi import Regressor, ParameterArray
 from gumbi.utils import listify, assert_in
 import numpy as np
 
@@ -34,6 +34,7 @@ class BotorchGP(Regressor):
         self.model = None
         self.mll = None
         self.structure = None
+        self.optimization_bounds = None
 
     def fit(
         self,
@@ -524,6 +525,12 @@ class BotorchGP(Regressor):
                 bounds = torch.stack(
                     [X[:, :-1].min(0).values, X[:, :-1].max(0).values]
                 ).to(self.device)
+        else:
+            if isinstance(bounds, ParameterArray):
+                bounds = bounds.z.values().T
+            bounds = torch.tensor(bounds).to(self.device)
+            
+        self.optimization_bounds = bounds
 
         if D_out == 1:
             # Construct the objective function for the acquisition function
