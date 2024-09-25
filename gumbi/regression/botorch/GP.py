@@ -212,7 +212,9 @@ class BotorchGP(Regressor):
         else:
             # Decide between Kronecker and Hadamard structure
             Xs, ys = self.get_separated_data("mean")
-            kronecker_possible = all([torch.allclose(Xs[0], x) for x in Xs[1:]])
+            kronecker_possible = all([Xs[0].shape == x.shape for x in Xs[1:]])
+            if kronecker_possible:
+                kronecker_possible = all([torch.allclose(Xs[0], x) for x in Xs[1:]])
             kronecker_default = D_out > 2
             force_kronecker = multitask_kernel == 'Kronecker'
             if kronecker_possible and (kronecker_default or force_kronecker):
