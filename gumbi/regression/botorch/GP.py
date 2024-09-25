@@ -112,7 +112,7 @@ class BotorchGP(Regressor):
         continuous_kernel="ExpQuad",
         period=None,
         heteroskedastic_inputs=False,
-        heteroskedastic_outputs=True,
+        heteroskedastic_outputs=False,
         sparse=False,
         n_u=100,
         ARD=False,
