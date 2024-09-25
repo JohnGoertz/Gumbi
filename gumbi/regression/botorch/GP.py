@@ -138,10 +138,10 @@ class BotorchGP(Regressor):
             raise NotImplementedError(
                 "Heteroskedasticity over inputs is not yet implemented in BotorchGP."
             )
-        if ls_bounds is not None:
-            raise NotImplementedError(
-                "User-defined lengthscale bounds are not yet implemented in BotorchGP."
-            )
+        # if ls_bounds is not None:
+        #     raise NotImplementedError(
+        #         "User-defined lengthscale bounds are not yet implemented in BotorchGP."
+        #     )
         if mass != self.build_model.__kwdefaults__["mass"]:
             warnings.warn(f"`mass` keyword ignored in {self.__class__.__name__}")
             
@@ -270,8 +270,8 @@ class BotorchGP(Regressor):
         default_lower, default_upper = self._get_default_bounds(ard)
         if ls_bounds is not None:
             lower, upper = ls_bounds
-            lower = max(lower, default_lower)
-            upper = min(upper, default_upper)
+            lower = np.maximum(lower, default_lower)
+            upper = np.minimum(upper, default_upper)
         else:
             lower, upper = default_lower, default_upper
 
