@@ -1,12 +1,19 @@
 from gumbi import Regressor, ParameterArray
-from gumbi.utils import listify, assert_in
+from gumbi.utils import listify, assert_in, first
 from gumbi.utils.gp_utils import get_ls_prior, GPyTorchInverseGammaPrior
 import numpy as np
 
 import torch
 from torch.nn.functional import pdist
 from botorch import fit_gpytorch_mll
-from botorch.models import SingleTaskGP, MixedSingleTaskGP, HeteroskedasticSingleTaskGP, MultiTaskGP, KroneckerMultiTaskGP
+from botorch.models import (
+    SingleTaskGP,
+    MixedSingleTaskGP,
+    HeteroskedasticSingleTaskGP,
+    MultiTaskGP,
+    KroneckerMultiTaskGP,
+    ModelListGP,
+)
 from botorch.models.transforms.input import Normalize
 from botorch.acquisition import qLogNoisyExpectedImprovement
 from botorch.acquisition.objective import GenericMCObjective, IdentityMCObjective
@@ -17,7 +24,7 @@ from botorch.optim.optimize import optimize_acqf
 from botorch.utils.transforms import unnormalize as bt_unnormalize
 from botorch.utils.transforms import normalize as bt_normalize
 from gpytorch.kernels import RBFKernel, MaternKernel
-from gpytorch.mlls import ExactMarginalLogLikelihood
+from gpytorch.mlls import ExactMarginalLogLikelihood, SumMarginalLogLikelihood
 import gpytorch
 
 from warnings import simplefilter
@@ -30,9 +37,7 @@ class BotorchGP(Regressor):
 
     def __init__(self, *args, gpu=True, **kwargs):
         super().__init__(*args, **kwargs)
-        self.device = torch.device(
-            "cuda" if torch.cuda.is_available() and gpu else "cpu"
-        )
+        self.device = torch.device("cuda" if torch.cuda.is_available() and gpu else "cpu")
         self.model = None
         self.mll = None
         self.structure = None
@@ -65,17 +70,11 @@ class BotorchGP(Regressor):
     ):
 
         if additive:
-            raise NotImplementedError(
-                "Additive models are not yet supported in BotorchGP."
-            )
+            raise NotImplementedError("Additive models are not yet supported in BotorchGP.")
         if period is not None:
-            raise NotImplementedError(
-                "Periodic kernels are not yet supported in BotorchGP."
-            )
+            raise NotImplementedError("Periodic kernels are not yet supported in BotorchGP.")
         if linear_dims is not None:
-            warnings.warn(
-                "Linear dimensions are not yet supported in BotorchGP and will be ignored."
-            )
+            warnings.warn("Linear dimensions are not yet supported in BotorchGP and will be ignored.")
         if categorical_dims is not None and len(listify(outputs)) > 1:
             raise NotImplementedError(
                 "Categorical dimensions with multiple outputs are not yet supported in BotorchGP."
@@ -122,35 +121,27 @@ class BotorchGP(Regressor):
         ls_bounds=None,
         seed=None,
         mass=0.98,
-        multitask_kernel=None
+        multitask_kernel=None,
     ):
 
         if period is not None:
-            raise NotImplementedError(
-                "Periodic kernels are not yet supported in BotorchGP."
-            )
+            raise NotImplementedError("Periodic kernels are not yet supported in BotorchGP.")
         if sparse:
-            raise NotImplementedError(
-                "Sparse models are not yet supported in BotorchGP."
-            )
+            raise NotImplementedError("Sparse models are not yet supported in BotorchGP.")
         if heteroskedastic_inputs:
-            raise NotImplementedError(
-                "Heteroskedasticity over inputs is not yet implemented in BotorchGP."
-            )
+            raise NotImplementedError("Heteroskedasticity over inputs is not yet implemented in BotorchGP.")
         if heteroskedastic_outputs:
-            raise NotImplementedError(
-                "Heteroskedasticity over inputs is not yet implemented in BotorchGP."
-            )
+            raise NotImplementedError("Heteroskedasticity over inputs is not yet implemented in BotorchGP.")
         # if ls_bounds is not None:
         #     raise NotImplementedError(
         #         "User-defined lengthscale bounds are not yet implemented in BotorchGP."
         #     )
         # if mass != self.build_model.__kwdefaults__["mass"]:
         #     warnings.warn(f"`mass` keyword ignored in {self.__class__.__name__}")
-            
+
         if multitask_kernel is not None:
             multitask_kernel = multitask_kernel.capitalize()
-        assert_in('multitask_kernel', multitask_kernel, [None, 'Kronecker','Hadamard'])
+        assert_in("multitask_kernel", multitask_kernel, [None, "Kronecker", "Hadamard", "Independent"])
 
         X, y = self.get_shaped_data("mean")
 
@@ -171,13 +162,13 @@ class BotorchGP(Regressor):
         self.latent = False
 
         Yvar = None
-            
+
         if D_out == 1:
             cat_dims = [d for d in self.categorical_dims if d != self.out_col]
             n_cats = len(cat_dims)
             if n_cats == 0:
                 if heteroskedastic_inputs:
-                    self.structure = 'HeteroskedasticSingleTask'
+                    self.structure = "HeteroskedasticSingleTask"
                     self.model = HeteroskedasticSingleTaskGP(
                         X,
                         y,
@@ -188,18 +179,16 @@ class BotorchGP(Regressor):
                         input_transform=Normalize(d=D_in),
                     ).to(self.device)
                 else:
-                    self.structure = 'SingleTask'
+                    self.structure = "SingleTask"
                     self.model = SingleTaskGP(
                         X,
                         y,
                         train_Yvar=Yvar,
-                        covar_module=self._get_kernel(
-                            continuous_kernel, ARD, mass=mass, ls_bounds=ls_bounds
-                        ),
+                        covar_module=self._get_kernel(continuous_kernel, ARD, mass=mass, ls_bounds=ls_bounds),
                         input_transform=Normalize(d=D_in),
                     ).to(self.device)
             else:
-                self.structure = 'MixedSingleTaskGP'
+                self.structure = "MixedSingleTaskGP"
                 cat_idxs = [self.dims.index(dim) for dim in cat_dims]
                 self.model = MixedSingleTaskGP(
                     X,
@@ -218,34 +207,55 @@ class BotorchGP(Regressor):
             if kronecker_possible:
                 kronecker_possible = all([torch.allclose(Xs[0], x) for x in Xs[1:]])
             kronecker_default = D_out > 2
-            force_kronecker = multitask_kernel == 'Kronecker'
+            force_kronecker = multitask_kernel == "Kronecker"
             if kronecker_possible and (kronecker_default or force_kronecker):
-                # Kronecker structure: all outputs observed at every input point
-                # Allows performance improvements for high-dimensional outputs
-                self.structure = 'KroneckerMultiTaskGP'
-                self.model = KroneckerMultiTaskGP(
-                    Xs[0],
-                    torch.cat(ys, dim=1),
-                    data_covar_module=self._get_kernel(
-                        continuous_kernel, ARD, mass=mass, ls_bounds=ls_bounds
-                    ),
-                    input_transform=Normalize(d=D_in),
-                ).to(self.device)
+                multitask_kernel = "Kronecker"
+            elif multitask_kernel == "Independent":
+                multitask_kernel = "Independent"
             else:
-                # Hadamard structure: outputs observed at different input points
-                self.structure = 'MultiTaskGP'
-                self.model = MultiTaskGP(
-                    X,
-                    y,
-                    task_feature=-1,
-                    train_Yvar=Yvar,
-                    covar_module=self._get_kernel(
-                        continuous_kernel, ARD, mass=mass, ls_bounds=ls_bounds
-                    ),
-                    input_transform=Normalize(d=D_in + 1),
-                ).to(self.device)
+                multitask_kernel = "Hadamard"
+            match multitask_kernel:
+                case "Kronecker":
+                    # Kronecker structure: all outputs observed at every input point
+                    # Allows performance improvements for high-dimensional outputs
+                    self.structure = "KroneckerMultiTaskGP"
+                    self.model = KroneckerMultiTaskGP(
+                        Xs[0],
+                        torch.cat(ys, dim=1),
+                        data_covar_module=self._get_kernel(continuous_kernel, ARD, mass=mass, ls_bounds=ls_bounds),
+                        input_transform=Normalize(d=D_in),
+                    ).to(self.device)
+                case "Hadamard":
+                    # Hadamard structure: outputs observed at different input points
+                    self.structure = "HadamardMultiTaskGP"
+                    self.model = MultiTaskGP(
+                        X,
+                        y,
+                        task_feature=-1,
+                        train_Yvar=Yvar,
+                        covar_module=self._get_kernel(continuous_kernel, ARD, mass=mass, ls_bounds=ls_bounds),
+                        input_transform=Normalize(d=D_in + 1),
+                    ).to(self.device)
+                case "Independent":
+                    # Independent structure: no learned correlations between outputs
+                    self.structure = "IndependentMultiTaskGP"
+                    self.model = ModelListGP(
+                        *[
+                            SingleTaskGP(
+                                X_,
+                                y_,
+                                # train_Yvar=Yvar,
+                                covar_module=self._get_kernel(continuous_kernel, ARD, mass=mass, ls_bounds=ls_bounds),
+                                input_transform=Normalize(d=D_in),
+                            ).to(self.device)
+                            for X_, y_ in zip(Xs, ys)
+                        ]
+                    )
 
-        self.mll = ExactMarginalLogLikelihood(self.model.likelihood, self.model)
+        if self.structure != "IndependentMultiTaskGP":
+            self.mll = ExactMarginalLogLikelihood(self.model.likelihood, self.model)
+        else:
+            self.mll = SumMarginalLogLikelihood(self.model.likelihood, self.model)
 
         return self.model, self.mll
 
@@ -268,7 +278,7 @@ class BotorchGP(Regressor):
                 Xs.append(X[idx, :-1])
                 ys.append(y[idx])
             return Xs, ys
-        
+
     def _get_kernel_factory(self, kernel_type, ard, mass=0.98, ls_bounds=None):
 
         # Apply lengthscale constraints if provided
@@ -284,11 +294,11 @@ class BotorchGP(Regressor):
 
         Xs, _ = self.get_separated_data("mean")
         X = torch.cat(Xs, dim=0)
-        lengthscale_prior_params = get_ls_prior(X, ARD=ard, lower=lower, upper=upper, mass=mass, dist='InverseGamma')
-        alpha = torch.tensor(lengthscale_prior_params['alpha'])
-        beta = torch.tensor(lengthscale_prior_params['beta'])
+        lengthscale_prior_params = get_ls_prior(X, ARD=ard, lower=lower, upper=upper, mass=mass, dist="InverseGamma")
+        alpha = torch.tensor(lengthscale_prior_params["alpha"])
+        beta = torch.tensor(lengthscale_prior_params["beta"])
         lengthscale_prior = GPyTorchInverseGammaPrior(concentration=alpha, rate=beta)
-        
+
         def kernel_factory(*, batch_shape=None, ard_num_dims=None, active_dims=None):
 
             match kernel_type:
@@ -323,13 +333,14 @@ class BotorchGP(Regressor):
                         "Invalid kernel type. Choose 'RBF', 'ExpQuad', 'Matern32', 'Matern3/2', 'Matern5/2', or 'Matern52'."
                     )
             return base_kernel
+
         return kernel_factory
 
     def _get_kernel(self, continuous_kernel, ard, mass=0.98, ls_bounds=None):
         """
         Returns the appropriate kernel based on user settings.
         """
-                
+
         kernel_factory = self._get_kernel_factory(continuous_kernel, ard, mass=mass, ls_bounds=ls_bounds)
         D_in = len([d for d in self.dims if d != self.out_col])
         base_kernel = kernel_factory(ard_num_dims=D_in if ard else None)
@@ -351,9 +362,7 @@ class BotorchGP(Regressor):
         X = torch.cat(Xs, dim=0)
 
         if ard:
-            lengthscale_bounds = torch.stack(
-                [torch.tensor(_get_default_lower_upper(X_.unsqueeze(1))) for X_ in X.T]
-            ).T
+            lengthscale_bounds = torch.stack([torch.tensor(_get_default_lower_upper(X_.unsqueeze(1))) for X_ in X.T]).T
             lower, upper = lengthscale_bounds.cpu().numpy().squeeze().tolist()
         else:
             lengthscale_bounds = torch.tensor(_get_default_lower_upper(X))
@@ -387,26 +396,40 @@ class BotorchGP(Regressor):
         points_tensor = torch.tensor(points_array).float().to(self.device)
 
         if additive_level != "total":
-            raise NotImplementedError(
-                "Prediction for additive sublevels is not yet supported."
-            )
+            raise NotImplementedError("Prediction for additive sublevels is not yet supported.")
 
         self.model.eval()
         self.model.likelihood.eval()
 
+        D_out = len(self.outputs)
+
         with torch.no_grad(), gpytorch.settings.fast_pred_var():
-            t_points_tensor = self.model.input_transform.transform(points_tensor)
-            predictive_distribution = self.model.likelihood(self.model(t_points_tensor))
-            self.predictive_distribution = predictive_distribution
-            if with_noise:
-                # The likelihood will add noise to the posterior
-                mean = predictive_distribution.mean
-                variance = predictive_distribution.stddev**2
-                # lower, upper = predictive_distribution.confidence_region()
+            simplefilter("ignore", category=NumericalWarning)
+            posterior = self.model.posterior(points_tensor)
+            if self.structure == "IndependentMultiTaskGP":
+                transform = first(self.model.models).input_transform
+                t_points_tensor = transform.transform(points_tensor)
+                t_points_tensor = [t_points_tensor]*D_out
+                predictions = self.model(*t_points_tensor)
+                predictive_distribution = self.model.likelihood(*predictions)
+                if with_noise:
+                    mean = torch.column_stack([pd.mean for pd in predictive_distribution])
+                    variance = torch.column_stack([pd.stddev**2 for pd in predictive_distribution])
+                else:
+                    mean = posterior.mean
+                    variance = posterior.variance
             else:
-                posterior = self.model.posterior(points_tensor)
-                mean = posterior.mean
-                variance = posterior.variance
+                t_points_tensor = self.model.input_transform.transform(points_tensor)
+                prediction = self.model(t_points_tensor)
+                predictive_distribution = self.model.likelihood(prediction)
+                # predictive_distribution = self.model.likelihood(posterior.mean.squeeze())
+                if with_noise:
+                    mean = predictive_distribution.mean
+                    variance = predictive_distribution.stddev**2
+                else:
+                    mean = posterior.mean
+                    variance = posterior.variance
+            self.predictive_distribution = predictive_distribution
 
         return mean.cpu().numpy(), variance.cpu().numpy()
 
@@ -434,44 +457,37 @@ class BotorchGP(Regressor):
 
         output = self._parse_prediction_output(output)
         D_out = len(output)
-        points_array, tall_points, param_coords = self._prepare_points_for_prediction(
-            points, output=output
-        )
-        
-        if self.structure == 'KroneckerMultiTaskGP':
-            # Kronecker structure: all outputs observed at every input point
-            points_array = points_array[points_array[:,-1]==0, :-1]
+        points_array, tall_points, param_coords = self._prepare_points_for_prediction(points, output=output)
+
+        if self.structure in ["KroneckerMultiTaskGP", "IndependentMultiTaskGP"]:
+            points_array = points_array[points_array[:, -1] == 0, :-1]
 
         # Prediction means and variance as a list of numpy vectors
-        pred_mean, pred_variance = self.predict(
-            points_array, with_noise=with_noise, **kwargs
-        )
+        pred_mean, pred_variance = self.predict(points_array, with_noise=with_noise, **kwargs)
         self.predictions_X = points
-        
-        if self.structure == 'KroneckerMultiTaskGP':
-            pred_mean
+
+        # if self.structure == 'KroneckerMultiTaskGP':
+        #     pred_mean
 
         # Store predictions in appropriate structured array format
         if D_out == 1:
             # Predicting one output, return an UncertainParameterArray
-            self.predictions = self.uparray(
-                output[0], pred_mean, pred_variance, stdzd=True
-            )
+            self.predictions = self.uparray(output[0], pred_mean, pred_variance, stdzd=True)
         else:
             # Predicting multiple parameters, return an MVUncertainParameterArray First split prediction into
             # UncertainParameterArrays
             uparrays = []
-            out_coords = {v:k for k, v in self.categorical_coords[self.out_col].items()}
+            out_coords = {v: k for k, v in self.categorical_coords[self.out_col].items()}
             for i in range(D_out):
-                if self.structure != 'KroneckerMultiTaskGP':
+                if self.structure not in ["KroneckerMultiTaskGP", "IndependentMultiTaskGP"]:
                     # idx = (tall_points[self.out_col].values() == param_coords[i]).squeeze()
-                    idx = points_array[:,-1] == i
+                    idx = points_array[:, -1] == i
                     μ = pred_mean[idx]
                     σ2 = pred_variance[idx]
                     name = out_coords[i]
                 else:
-                    μ = pred_mean[:,i]
-                    σ2 = pred_variance[:,i]
+                    μ = pred_mean[:, i]
+                    σ2 = pred_variance[:, i]
                     name = out_coords[i]
                 uparrays.append(self.uparray(name, μ, σ2, stdzd=True))
 
@@ -482,22 +498,26 @@ class BotorchGP(Regressor):
                 warnings.catch_warnings(),
             ):
                 simplefilter("ignore", category=NumericalWarning)
-                if self.structure == 'KroneckerMultiTaskGP':
-                    task_covar_module = self.model.covar_module.task_covar_module
+                
+                if self.structure == "IndependentMultiTaskGP":
+                    # Calculate the correlation matrix from the hyperparameters of the coregion kernel
+                    cor = torch.eye(D_out).numpy()
                 else:
-                    task_covar_module = self.model.task_covar_module
+                    if self.structure == "KroneckerMultiTaskGP":
+                        task_covar_module = self.model.covar_module.task_covar_module
+                    else:
+                        task_covar_module = self.model.task_covar_module
 
-                W = task_covar_module.covar_factor
-                κ = task_covar_module.var
+                    W = task_covar_module.covar_factor
+                    κ = task_covar_module.var
 
-                cov = W @ W.T + torch.diag(κ)
+                    cov = W @ W.T + torch.diag(κ)
 
-                σ_task = torch.sqrt(torch.diag(cov))
+                    σ_task = torch.sqrt(torch.diag(cov))
 
-                σ_outer = σ_task.unsqueeze(0) * σ_task.unsqueeze(1)  # Outer product
-                cor = cov / σ_outer
-
-            cor = cor.cpu().numpy()
+                    σ_outer = σ_task.unsqueeze(0) * σ_task.unsqueeze(1)  # Outer product
+                    cor = cov / σ_outer
+                    cor = cor.cpu().numpy()
 
             # Store predictions as MVUncertainParameterArray
             self.predictions = self.mvuparray(*uparrays, cor=cor)
@@ -524,9 +544,7 @@ class BotorchGP(Regressor):
         seed = seed if seed is not None else self.seed
         torch.manual_seed(seed)
 
-        qmc_sampler = SobolQMCNormalSampler(
-            sample_shape=torch.Size([mc_samples]), seed=seed
-        )
+        qmc_sampler = SobolQMCNormalSampler(sample_shape=torch.Size([mc_samples]), seed=seed)
 
         X, y = self.get_shaped_data("mean")
         D_out = len(self.outputs)
@@ -535,21 +553,19 @@ class BotorchGP(Regressor):
             if D_out == 1:
                 bounds = torch.stack([X.min(0).values, X.max(0).values]).to(self.device)
             else:
-                bounds = torch.stack(
-                    [X[:, :-1].min(0).values, X[:, :-1].max(0).values]
-                ).to(self.device)
+                bounds = torch.stack([X[:, :-1].min(0).values, X[:, :-1].max(0).values]).to(self.device)
         else:
             if isinstance(bounds, ParameterArray):
                 bounds = bounds.z.values().T
             bounds = torch.tensor(bounds).to(self.device)
-            
+
         self.optimization_bounds = bounds
 
         if D_out == 1:
             # Construct the objective function for the acquisition function
 
             def identity(samples, X=None):
-                return IdentityMCObjective(samples, X)
+                return IdentityMCObjective()(samples, X)
 
             def neg_identity(samples, X=None):
                 return -identity(samples, X)  # Negate the samples for minimization
@@ -558,7 +574,7 @@ class BotorchGP(Regressor):
                 objective = GenericMCObjective(identity)
             else:
                 objective = GenericMCObjective(neg_identity)
-            
+
             with warnings.catch_warnings():
                 simplefilter("ignore", category=NumericalWarning)
 
@@ -595,7 +611,7 @@ class BotorchGP(Regressor):
                         ref_point.append(y_.max().item() + 1e-3)
 
             self.ref_point = ref_point
-            
+
             with warnings.catch_warnings():
                 simplefilter("ignore", category=NumericalWarning)
 
@@ -603,7 +619,7 @@ class BotorchGP(Regressor):
                 acq_func = qLogNoisyExpectedHypervolumeImprovement(
                     model=self.model,
                     ref_point=torch.tensor(ref_point),  # use known reference point
-                    X_baseline=X_baseline, #bt_normalize(X_baseline, bounds),
+                    X_baseline=X_baseline,  # bt_normalize(X_baseline, bounds),
                     prune_baseline=True,  # prune baseline points that have estimated zero probability of being Pareto optimal
                     objective=objective,
                     sampler=qmc_sampler,
