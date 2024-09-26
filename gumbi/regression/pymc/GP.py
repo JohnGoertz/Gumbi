@@ -15,10 +15,10 @@ from gumbi.utils.misc import assert_in
 
 from ..base import Regressor
 
-__all__ = ["GP"]
+__all__ = ["PymcGP"]
 
 
-class GP(Regressor):
+class PymcGP(Regressor):
     r"""Gaussian Process surface learning and prediction.
 
     See Also
@@ -225,7 +225,7 @@ class GP(Regressor):
     """
 
     def __init__(self, dataset: DataSet, outputs=None, seed=2021):
-        super(GP, self).__init__(dataset, outputs, seed)
+        super(PymcGP, self).__init__(dataset, outputs, seed)
 
         self.model = None
         self.gp_dict = None
