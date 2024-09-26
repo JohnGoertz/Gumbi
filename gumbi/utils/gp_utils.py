@@ -5,6 +5,13 @@ from .misc import listify, first
 from warnings import warn
 
 
+import torch
+from torch.distributions import Gamma, InverseGamma
+from torch.nn import Module as TModule
+
+from gpytorch.priors.prior import Prior
+from gpytorch.priors.utils import _bufferize_attributes, _del_attributes
+
 def parse_ls_limits(X, *, ARD, lower=None, upper=None):
     if ARD:
         all_points = np.hsplit(X, X.shape[1])
@@ -41,9 +48,10 @@ def parse_ls_limits(X, *, ARD, lower=None, upper=None):
     return lowers, uppers
 
 
-def get_ls_prior(X, *, ARD, lower=None, upper=None, mass=0.98):
+def get_ls_prior(X, *, ARD, lower=None, upper=None, mass=0.98, dist='InverseGamma'):
     
     lowers, uppers = parse_ls_limits(X, ARD=ARD, lower=lower, upper=upper)
+    distribution = getattr(pm, dist)
 
     params = []
 
@@ -54,7 +62,7 @@ def get_ls_prior(X, *, ARD, lower=None, upper=None, mass=0.98):
         while not converged:
             try:
                 params_ls = pm.find_constrained_prior(
-                    distribution=pm.InverseGamma,
+                    distribution=distribution,
                     lower=lower,
                     upper=upper,
                     init_guess={"alpha": lower, "beta": upper},
@@ -87,3 +95,30 @@ def get_ls_prior(X, *, ARD, lower=None, upper=None, mass=0.98):
 #     ls_σ = max(0.1, (ls_u - ls_l) / 6)
 #     ls_μ = ls_l + 3 * ls_σ
 #     return ls_μ, ls_σ
+
+
+
+class GPyTorchInverseGammaPrior(Prior, InverseGamma):
+    """
+    Creates an inverse gamma distribution parameterized by concentration and rate where:
+
+    X ~ Gamma(concentration, rate)
+    Y = 1 / X ~ InverseGamma(concentration, rate)
+
+    concentration (float or Tensor): shape parameter of the distribution (often referred to as alpha)
+    rate (float or Tensor): rate = 1 / scale of the distribution (often referred to as beta)
+
+    """
+
+    def __init__(self, concentration, rate, validate_args=False, transform=None):
+        TModule.__init__(self)
+        InverseGamma.__init__(self, concentration=concentration, rate=rate, validate_args=validate_args)
+        _bufferize_attributes(self, ("concentration", "rate"))
+        self._transform = transform
+
+    def expand(self, batch_shape):
+        batch_shape = torch.Size(batch_shape)
+        return GPyTorchInverseGammaPrior(self.concentration.expand(batch_shape), self.rate.expand(batch_shape))
+
+    def __call__(self, *args, **kwargs):
+        return super(InverseGamma, self).__call__(*args, **kwargs)

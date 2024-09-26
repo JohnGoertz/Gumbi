@@ -1,5 +1,6 @@
 from gumbi import Regressor, ParameterArray
 from gumbi.utils import listify, assert_in
+from gumbi.utils.gp_utils import get_ls_prior, GPyTorchInverseGammaPrior
 import numpy as np
 
 import torch
@@ -143,8 +144,8 @@ class BotorchGP(Regressor):
         #     raise NotImplementedError(
         #         "User-defined lengthscale bounds are not yet implemented in BotorchGP."
         #     )
-        if mass != self.build_model.__kwdefaults__["mass"]:
-            warnings.warn(f"`mass` keyword ignored in {self.__class__.__name__}")
+        # if mass != self.build_model.__kwdefaults__["mass"]:
+        #     warnings.warn(f"`mass` keyword ignored in {self.__class__.__name__}")
             
         if multitask_kernel is not None:
             multitask_kernel = multitask_kernel.capitalize()
@@ -181,7 +182,7 @@ class BotorchGP(Regressor):
                         y,
                         train_Yvar=Yvar,
                         # covar_module=self._get_kernel(
-                        #     continuous_kernel, ARD, ls_bounds=ls_bounds
+                        #     continuous_kernel, ARD, mass=mass, ls_bounds=ls_bounds
                         # ),
                         input_transform=Normalize(d=D_in),
                     ).to(self.device)
@@ -192,7 +193,7 @@ class BotorchGP(Regressor):
                         y,
                         train_Yvar=Yvar,
                         covar_module=self._get_kernel(
-                            continuous_kernel, ARD, ls_bounds=ls_bounds
+                            continuous_kernel, ARD, mass=mass, ls_bounds=ls_bounds
                         ),
                         input_transform=Normalize(d=D_in),
                     ).to(self.device)
@@ -205,7 +206,7 @@ class BotorchGP(Regressor):
                     cat_dims=cat_idxs,
                     train_Yvar=Yvar,
                     cont_kernel_factory=self._get_kernel_factory(
-                        continuous_kernel, ARD, ls_bounds=ls_bounds
+                        continuous_kernel, ARD, mass=mass, ls_bounds=ls_bounds
                     ),
                     input_transform=Normalize(d=D_in),
                 ).to(self.device)
@@ -225,7 +226,7 @@ class BotorchGP(Regressor):
                     Xs[0],
                     torch.cat(ys, dim=1),
                     data_covar_module=self._get_kernel(
-                        continuous_kernel, ARD, ls_bounds=ls_bounds
+                        continuous_kernel, ARD, mass=mass, ls_bounds=ls_bounds
                     ),
                     input_transform=Normalize(d=D_in),
                 ).to(self.device)
@@ -238,7 +239,7 @@ class BotorchGP(Regressor):
                     task_feature=-1,
                     train_Yvar=Yvar,
                     covar_module=self._get_kernel(
-                        continuous_kernel, ARD, ls_bounds=ls_bounds
+                        continuous_kernel, ARD, mass=mass, ls_bounds=ls_bounds
                     ),
                     input_transform=Normalize(d=D_in + 1),
                 ).to(self.device)
@@ -267,7 +268,7 @@ class BotorchGP(Regressor):
                 ys.append(y[idx])
             return Xs, ys
         
-    def _get_kernel_factory(self, kernel_type, ard, ls_bounds=None):
+    def _get_kernel_factory(self, kernel_type, ard, mass=0.98, ls_bounds=None):
 
         # Apply lengthscale constraints if provided
         default_lower, default_upper = self._get_default_bounds(ard)
@@ -280,6 +281,12 @@ class BotorchGP(Regressor):
 
         lengthscale_constraint = gpytorch.constraints.Interval(lower, upper)
 
+        Xs, _ = self.get_separated_data("mean")
+        X = torch.cat(Xs, dim=0)
+        lengthscale_prior_params = get_ls_prior(X, ARD=ard, lower=lower, upper=upper, mass=mass, dist='InverseGamma')
+        alpha = torch.tensor(lengthscale_prior_params['alpha'])
+        beta = torch.tensor(lengthscale_prior_params['beta'])
+        lengthscale_prior = GPyTorchInverseGammaPrior(concentration=alpha, rate=beta)
         
         def kernel_factory(*, batch_shape=None, ard_num_dims=None, active_dims=None):
 
@@ -287,6 +294,7 @@ class BotorchGP(Regressor):
                 case "RBF" | "ExpQuad":
                     base_kernel = RBFKernel(
                         lengthscale_constraint=lengthscale_constraint,
+                        lengthscale_prior=lengthscale_prior,
                         batch_shape=batch_shape,
                         ard_num_dims=ard_num_dims,
                         active_dims=active_dims,
@@ -295,6 +303,7 @@ class BotorchGP(Regressor):
                     base_kernel = MaternKernel(
                         nu=1.5,
                         lengthscale_constraint=lengthscale_constraint,
+                        lengthscale_prior=lengthscale_prior,
                         batch_shape=batch_shape,
                         ard_num_dims=ard_num_dims,
                         active_dims=active_dims,
@@ -303,6 +312,7 @@ class BotorchGP(Regressor):
                     base_kernel = MaternKernel(
                         nu=2.5,
                         lengthscale_constraint=lengthscale_constraint,
+                        lengthscale_prior=lengthscale_prior,
                         batch_shape=batch_shape,
                         ard_num_dims=ard_num_dims,
                         active_dims=active_dims,
@@ -314,12 +324,12 @@ class BotorchGP(Regressor):
             return base_kernel
         return kernel_factory
 
-    def _get_kernel(self, continuous_kernel, ard, ls_bounds=None):
+    def _get_kernel(self, continuous_kernel, ard, mass=0.98, ls_bounds=None):
         """
         Returns the appropriate kernel based on user settings.
         """
                 
-        kernel_factory = self._get_kernel_factory(continuous_kernel, ard, ls_bounds=ls_bounds)
+        kernel_factory = self._get_kernel_factory(continuous_kernel, ard, mass=mass, ls_bounds=ls_bounds)
         D_in = len([d for d in self.dims if d != self.out_col])
         base_kernel = kernel_factory(ard_num_dims=D_in if ard else None)
 
