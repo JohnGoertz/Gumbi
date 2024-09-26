@@ -8,8 +8,9 @@ from torch.nn.functional import pdist
 from botorch import fit_gpytorch_mll
 from botorch.models import SingleTaskGP, MixedSingleTaskGP, HeteroskedasticSingleTaskGP, MultiTaskGP, KroneckerMultiTaskGP
 from botorch.models.transforms.input import Normalize
-from botorch.acquisition.objective import GenericMCObjective
 from botorch.acquisition import qLogNoisyExpectedImprovement
+from botorch.acquisition.objective import GenericMCObjective, IdentityMCObjective
+from botorch.acquisition.multi_objective.objective import IdentityMCMultiOutputObjective, GenericMCMultiOutputObjective
 from botorch.acquisition.multi_objective.logei import qLogNoisyExpectedHypervolumeImprovement
 from botorch.sampling.normal import SobolQMCNormalSampler
 from botorch.optim.optimize import optimize_acqf
@@ -510,7 +511,7 @@ class BotorchGP(Regressor):
         bounds=None,
         maximize=True,
         num_restarts=10,
-        raw_samples=100,
+        raw_samples=512,
         mc_samples=256,
         seed=None,
         ref_point=None,
@@ -548,7 +549,7 @@ class BotorchGP(Regressor):
             # Construct the objective function for the acquisition function
 
             def identity(samples, X=None):
-                return samples.squeeze(-1)
+                return IdentityMCObjective(samples, X)
 
             def neg_identity(samples, X=None):
                 return -identity(samples, X)  # Negate the samples for minimization
@@ -569,6 +570,18 @@ class BotorchGP(Regressor):
                     objective=objective,
                 )
         else:
+            # Construct the objective function for the acquisition function
+
+            def identity(samples, X=None):
+                return IdentityMCMultiOutputObjective()(samples, X=X)
+
+            def neg_identity(samples, X=None):
+                return -identity(samples, X=X)
+
+            if maximize:
+                objective = GenericMCMultiOutputObjective(identity)
+            else:
+                objective = GenericMCMultiOutputObjective(neg_identity)
 
             Xs, ys = self.get_separated_data("mean")
             X_baseline = torch.unique(torch.cat(Xs, dim=0), dim=0)
@@ -590,13 +603,14 @@ class BotorchGP(Regressor):
                 acq_func = qLogNoisyExpectedHypervolumeImprovement(
                     model=self.model,
                     ref_point=torch.tensor(ref_point),  # use known reference point
-                    X_baseline=bt_normalize(X_baseline, bounds),
+                    X_baseline=X_baseline, #bt_normalize(X_baseline, bounds),
                     prune_baseline=True,  # prune baseline points that have estimated zero probability of being Pareto optimal
+                    objective=objective,
                     sampler=qmc_sampler,
                     cache_root=False,
                 )
 
-                bounds = bt_normalize(bounds, bounds)
+                # bounds = bt_normalize(bounds, bounds)
 
         with warnings.catch_warnings():
             simplefilter("ignore", category=NumericalWarning)
@@ -611,9 +625,9 @@ class BotorchGP(Regressor):
                 sequential=sequential,
             )
 
-        if D_out > 1:
-            # Unnormalize the candidates
-            candidates = bt_unnormalize(candidates, bounds)
+        # if D_out > 1:
+        #     # Unnormalize the candidates
+        #     candidates = bt_unnormalize(candidates, self.optimization_bounds)
 
         candidates, acqf_values = candidates.cpu().numpy(), acqf_values.cpu().numpy()
         candidates = self.parray(
