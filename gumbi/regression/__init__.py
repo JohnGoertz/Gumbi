@@ -1,5 +1,4 @@
 from .base import Regressor
-from .pymc.extras import GPC
-from .pymc import GP
+from .pymc import GP, GPC
 
 __all__ = ["Regressor", "GP", "GPC"]

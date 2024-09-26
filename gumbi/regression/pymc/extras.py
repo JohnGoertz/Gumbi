@@ -2,11 +2,11 @@ from functools import wraps
 
 import pymc as pm
 
-from .GP import *
+from .GP import PymcGP
 
 
-class GPC(GP):
-    @wraps(GP.build_model)
+class PymcGPC(PymcGP):
+    @wraps(PymcGP.build_model)
     def build_model(
         self,
         seed=None,
@@ -18,11 +18,11 @@ class GPC(GP):
         eps=1e-6,
     ):
         if heteroskedastic_inputs:
-            raise NotImplementedError("The GP Classifier does not support heteroskedastic inputs.")
+            raise NotImplementedError("The PymcGP Classifier does not support heteroskedastic inputs.")
         if heteroskedastic_outputs:
-            raise NotImplementedError("The GP Classifier does not support heteroskedastic outputs.")
+            raise NotImplementedError("The PymcGP Classifier does not support heteroskedastic outputs.")
         if sparse:
-            raise NotImplementedError("The GP Classifier does not support sparse structure (yet).")
+            raise NotImplementedError("The PymcGP Classifier does not support sparse structure (yet).")
 
         self.build_latent(seed=seed, continuous_kernel=continuous_kernel, eps=eps)
 
@@ -37,7 +37,7 @@ class GPC(GP):
 
         return self
 
-    @wraps(GP.draw_point_samples)
+    @wraps(PymcGP.draw_point_samples)
     def draw_point_samples(
         self,
         points,
@@ -54,7 +54,7 @@ class GPC(GP):
         # A
         self.stdzr.logit_vars += [var_name]
 
-        return super(GPC, self).draw_point_samples(
+        return super(PymcGPC, self).draw_point_samples(
             points,
             *args,
             source=source,
