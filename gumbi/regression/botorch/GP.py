@@ -1,5 +1,5 @@
 from gumbi import Regressor, ParameterArray
-from gumbi.utils import listify, assert_in, first
+from gumbi.utils import listify, assert_in, first, one
 from gumbi.utils.gp_utils import get_ls_prior, GPyTorchInverseGammaPrior
 import numpy as np
 
@@ -42,6 +42,17 @@ class BotorchGP(Regressor):
         self.mll = None
         self.structure = None
         self.optimization_bounds = None
+
+    @property
+    def D_tasks(self):
+        return len(self.outputs)
+
+    @property
+    def task_idxs(self):
+        if self.D_tasks == 1:
+            return {one(self.outputs): 0}
+        else:
+            return self.categorical_coords[self.out_col]
 
     def fit(
         self,
@@ -409,7 +420,7 @@ class BotorchGP(Regressor):
             if self.structure == "IndependentMultiTaskGP":
                 transform = first(self.model.models).input_transform
                 t_points_tensor = transform.transform(points_tensor)
-                t_points_tensor = [t_points_tensor]*D_out
+                t_points_tensor = [t_points_tensor] * D_out
                 predictions = self.model(*t_points_tensor)
                 predictive_distribution = self.model.likelihood(*predictions)
                 if with_noise:
@@ -456,41 +467,35 @@ class BotorchGP(Regressor):
         # TODO: add convenience method for predicting at a single point
 
         output = self._parse_prediction_output(output)
-        D_out = len(output)
         points_array, tall_points, param_coords = self._prepare_points_for_prediction(points, output=output)
+        D_out = len(output)
+        assert D_out <= self.D_tasks
 
         if self.structure in ["KroneckerMultiTaskGP", "IndependentMultiTaskGP"]:
-            points_array = points_array[points_array[:, -1] == 0, :-1]
+            points_array = points_array[points_array[:, -1] == self.task_idxs[first(output)], :-1]
 
         # Prediction means and variance as a list of numpy vectors
         pred_mean, pred_variance = self.predict(points_array, with_noise=with_noise, **kwargs)
         self.predictions_X = points
 
-        # if self.structure == 'KroneckerMultiTaskGP':
-        #     pred_mean
+        uparrays = []
+        for name in output:
+            out_idx = self.task_idxs[name]
+            if self.D_tasks == 1:
+                μ = pred_mean
+                σ2 = pred_variance
+            elif self.structure in ["KroneckerMultiTaskGP", "IndependentMultiTaskGP"]:
+                μ = pred_mean[:, out_idx]
+                σ2 = pred_variance[:, out_idx]
+            else:
+                idx = points_array[:, -1] == out_idx
+                μ = pred_mean[idx]
+                σ2 = pred_variance[idx]
+            uparrays.append(self.uparray(name, μ, σ2, stdzd=True))
 
-        # Store predictions in appropriate structured array format
         if D_out == 1:
-            # Predicting one output, return an UncertainParameterArray
-            self.predictions = self.uparray(output[0], pred_mean, pred_variance, stdzd=True)
+            self.predictions = one(uparrays)
         else:
-            # Predicting multiple parameters, return an MVUncertainParameterArray First split prediction into
-            # UncertainParameterArrays
-            uparrays = []
-            out_coords = {v: k for k, v in self.categorical_coords[self.out_col].items()}
-            for i in range(D_out):
-                if self.structure not in ["KroneckerMultiTaskGP", "IndependentMultiTaskGP"]:
-                    # idx = (tall_points[self.out_col].values() == param_coords[i]).squeeze()
-                    idx = points_array[:, -1] == i
-                    μ = pred_mean[idx]
-                    σ2 = pred_variance[idx]
-                    name = out_coords[i]
-                else:
-                    μ = pred_mean[:, i]
-                    σ2 = pred_variance[:, i]
-                    name = out_coords[i]
-                uparrays.append(self.uparray(name, μ, σ2, stdzd=True))
-
             # Calculate the correlation matrix from the hyperparameters of the coregion kernel
             with (
                 torch.no_grad(),
@@ -498,7 +503,7 @@ class BotorchGP(Regressor):
                 warnings.catch_warnings(),
             ):
                 simplefilter("ignore", category=NumericalWarning)
-                
+
                 if self.structure == "IndependentMultiTaskGP":
                     # Calculate the correlation matrix from the hyperparameters of the coregion kernel
                     cor = torch.eye(D_out).numpy()
