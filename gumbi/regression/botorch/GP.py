@@ -1,5 +1,5 @@
 from gumbi import Regressor, ParameterArray
-from gumbi.utils import listify, assert_in, first, one
+from gumbi.utils import listify, assert_in, first, one, group_by
 from gumbi.utils.gp_utils import get_ls_prior, GPyTorchInverseGammaPrior
 import numpy as np
 
@@ -528,6 +528,123 @@ class BotorchGP(Regressor):
             self.predictions = self.mvuparray(*uparrays, cor=cor)
 
         return self.predictions
+    
+    def predict_grad(self, points_array, additive_level="total"):
+        points_tensor = torch.tensor(points_array).float().to(self.device)
+        points_tensor = torch.autograd.Variable(points_tensor, requires_grad=True)
+
+        if additive_level != "total":
+            raise NotImplementedError(
+                "Prediction for additive sublevels is not yet supported."
+            )
+
+        self.model.eval()
+        self.model.likelihood.eval()
+
+        D_out = len(self.outputs)
+
+        if self.structure == "IndependentMultiTaskGP":
+            transform = first(self.model.models).input_transform
+            t_points_tensor = transform.transform(points_tensor)
+            t_points_tensor = [t_points_tensor] * D_out
+            predictions = self.model(*t_points_tensor)
+            predictive_distribution = self.model.likelihood(*predictions)
+            pred = torch.column_stack([pd.mean for pd in predictive_distribution])
+        else:
+            t_points_tensor = self.model.input_transform.transform(points_tensor)
+            prediction = self.model(t_points_tensor)
+            predictive_distribution = self.model.likelihood(prediction)
+            pred = predictive_distribution.mean
+
+        if self.structure in ["KroneckerMultiTaskGP", "IndependentMultiTaskGP"]:
+            dydX = torch.column_stack(
+                [
+                    one(
+                        torch.autograd.grad(
+                            pred[:, out_dim].sum(), points_tensor, retain_graph=True
+                        )
+                    )
+                    for out_dim in range(D_out)
+                ]
+            ).squeeze()  # [(input1 vs output1), (input2 vs output1), (input1 vs output2), ...]
+        else:
+            dydX = one(torch.autograd.grad(pred.sum(), points_tensor))
+        dydX = dydX.detach().cpu().numpy()
+        return dydX
+
+
+    def predict_points_grad(self, points, output=None, norm=True):
+        output = self._parse_prediction_output(output)
+        points_array, _, _ = self._prepare_points_for_prediction(
+            points, output=output
+        )
+
+        D_out = len(output)
+        D_in = len(self.continuous_dims)
+        assert D_out <= self.D_tasks
+
+        if self.structure in ["KroneckerMultiTaskGP", "IndependentMultiTaskGP"]:
+            points_array = points_array[
+                points_array[:, -1] == self.task_idxs[first(output)], :-1
+            ]
+
+        grad_z = self.predict_grad(points_array)
+        partials = {}
+
+        for y_var in output:
+            out_idx = self.task_idxs[y_var]
+            σy = np.sqrt(self.stdzr[y_var]["σ2"])
+            
+            for in_idx, x_var in enumerate(self.continuous_dims):
+                if self.D_tasks == 1:
+                    δyzδXz = grad_z
+                elif self.structure in ["KroneckerMultiTaskGP", "IndependentMultiTaskGP"]:
+                    δyzδXz = grad_z[:, out_idx*D_in : (out_idx+1)*D_in]
+                else:
+                    idx = points_array[:, -1] == out_idx
+                    δyzδXz = grad_z[idx, :-1]
+
+                σx = np.sqrt(self.stdzr[x_var]["σ2"])
+                if len(self.continuous_dims) == 1:
+                    δyzδxz = δyzδXz
+                else:
+                    δyzδxz = δyzδXz[:, in_idx]
+                partials[f"δ[{y_var}]/δ[{x_var}]"] = δyzδxz * σy / σx
+
+        grad = self.parray(**partials)
+
+        if norm:
+            grad = self._get_pgrad_norm(grad)
+
+        return grad
+
+
+    def predict_grid_grad(self, output=None, categorical_levels=None, norm=True):
+        points = self.grid_points
+        if self.categorical_dims:
+            points = self.append_categorical_points(
+                points, categorical_levels=categorical_levels
+            )
+        
+        grad = self.predict_points_grad(points, output=output, norm=norm)
+        return grad.reshape(self.grid_parray.shape)
+
+    @staticmethod
+    def _get_pgrad_norm(pgrad):
+        def get_output_name(partial_name):
+            name = partial_name.split("/")[0]
+            name = name.removeprefix("δ[")
+            name = name.removesuffix("]")
+            return name
+
+        partial_names_by_output = group_by(pgrad.names, get_output_name)
+        norms = {}
+
+        for output, partial_names in partial_names_by_output.items():
+            partials = np.stack([pgrad[name].values() for name in partial_names], axis=-1)
+            norms[f"|∇|{output}"] = np.sqrt(np.sum(np.square(partials), axis=-1))
+
+        return ParameterArray(**norms, stdzr=pgrad.stdzr)
 
     def propose(
         self,
