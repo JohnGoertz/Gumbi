@@ -658,6 +658,7 @@ class BotorchGP(Regressor):
         seed=None,
         ref_point=None,
         sequential=False,
+        **optim_kwargs,
     ):
         """
         Optimizes the acquisition function (Expected Improvement) to propose new candidates.
@@ -761,6 +762,7 @@ class BotorchGP(Regressor):
                 num_restarts=num_restarts,
                 raw_samples=raw_samples,
                 sequential=sequential,
+                **optim_kwargs,
             )
 
         # if D_out > 1:
