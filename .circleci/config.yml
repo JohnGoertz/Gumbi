@@ -79,7 +79,6 @@ jobs:
       - add_ssh_keys:
           fingerprints:
             - "ry2YLm1Lyvi9vmJrFcqq8LW+qPX8TWoPXu7V6YPknm4"
-            - "cWyis/Qfsl6QLIrB1ETY73GYAJulDXFWXDc5jE2uZ00"
       - run:
           name: Deploy docs to gh-pages branch
           command: gh-pages --dotfiles --message "Deploy docs [skip ci]" --dist docs/build/html
