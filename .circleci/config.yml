@@ -78,7 +78,7 @@ jobs:
             git config user.name "Docs Bot"
       - add_ssh_keys:
           fingerprints:
-            - "03:e8:4b:8f:64:b1:27:8b:b3:21:c7:c1:1d:94:0f:ae"
+            - "a7DRLpRhO4jiN6Hi4HSyVZsu3kveo8f1rTxE7jdYnIE"
       - run:
           name: Deploy docs to gh-pages branch
           command: gh-pages --dotfiles --message "Deploy docs [skip ci]" --dist docs/build/html
