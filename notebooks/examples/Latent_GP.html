@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Reproducible randomness &mdash; Gumbi 0.2.1 documentation</title>
+  <title>Regression and Classification with a Latent Gaussian Processes &mdash; Gumbi 0.4.1 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/nbsphinx-code-cells.css" type="text/css" />
@@ -23,7 +23,9 @@
         <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" /> 
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Bayesian Optimization with the Botorch backend" href="Cars_Dataset_Botorch.html" />
+    <link rel="prev" title="Multioutput Regression" href="Multioutput_Regression.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -38,7 +40,7 @@
             Gumbi
           </a>
               <div class="version">
-                0.2.1
+                0.4.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -53,10 +55,25 @@
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/introduction.html">Introduction</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Examples:</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="Cars_Dataset.html">The Cars Dataset</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Simple_Regression.html">Simple Regression and Prediction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Multioutput_Regression.html">Multioutput Regression</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Regression and Classification with a Latent Gaussian Processes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Reproducible-randomness">Reproducible randomness</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Student-T-Process">Student-T Process</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Classification">Classification</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Cars_Dataset_Botorch.html">Bayesian Optimization with the Botorch backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Cars_Dataset_Botorch.html#Single-output-regression">Single-output regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Cars_Dataset_Botorch.html#Multi-output-regression">Multi-output regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Cars_Dataset_Botorch.html#Multi-input-multi-output-regression">Multi-input multi-output regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Cars_Dataset_Botorch.html#Mixed-categorical-continuous-regression">Mixed categorical-continuous regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Cars_Dataset_Botorch.html#Multi-input-regression">Multi-input regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Cars_Dataset_Botorch.html#Multi-output-(Pareto-front)-optimization-with-qNEHVI">Multi-output (Pareto front) optimization with qNEHVI</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API:</span></p>
 <ul>
@@ -77,7 +94,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Reproducible randomness</li>
+      <li class="breadcrumb-item active">Regression and Classification with a Latent Gaussian Processes</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../_sources/notebooks/examples/Latent_GP.ipynb.txt" rel="nofollow"> View page source</a>
       </li>
@@ -87,32 +104,26 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="nbinput docutils container">
+  <section id="Regression-and-Classification-with-a-Latent-Gaussian-Processes">
+<h1>Regression and Classification with a Latent Gaussian Processes<a class="headerlink" href="#Regression-and-Classification-with-a-Latent-Gaussian-Processes" title="Permalink to this heading"></a></h1>
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pymc</span> <span class="k">as</span> <span class="nn">pm</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">arviz</span> <span class="k">as</span> <span class="nn">az</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pymc</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pm</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">arviz</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">az</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
-<span class="kn">import</span> <span class="nn">gumbi</span> <span class="k">as</span> <span class="nn">gmb</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">gumbi</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gmb</span>
 
 <span class="o">%</span><span class="k">config</span> InlineBackend.figure_format = &#39;retina&#39;
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS functions.
-</pre></div></div>
-</div>
 <section id="Reproducible-randomness">
-<h1>Reproducible randomness<a class="headerlink" href="#Reproducible-randomness" title="Permalink to this heading"></a></h1>
+<h2>Reproducible randomness<a class="headerlink" href="#Reproducible-randomness" title="Permalink to this heading"></a></h2>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
@@ -127,7 +138,7 @@ WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS 
 </div>
 </div>
 <section id="Student-T-Process">
-<h2>Student-T Process<a class="headerlink" href="#Student-T-Process" title="Permalink to this heading"></a></h2>
+<h3>Student-T Process<a class="headerlink" href="#Student-T-Process" title="Permalink to this heading"></a></h3>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
@@ -177,14 +188,14 @@ WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS 
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;matplotlib.legend.Legend at 0x7f477f5a8510&gt;
+&lt;matplotlib.legend.Legend at 0x7503953222d0&gt;
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_examples_Latent_GP_4_1.png" class="no-scaled-link" src="../../_images/notebooks_examples_Latent_GP_4_1.png" style="width: 1008px; height: 428px;" />
+<img alt="../../_images/notebooks_examples_Latent_GP_5_1.png" class="no-scaled-link" src="../../_images/notebooks_examples_Latent_GP_5_1.png" style="width: 1008px; height: 428px;" />
 </div>
 </div>
 <div class="nbinput docutils container">
@@ -223,76 +234,81 @@ DataSet:
 <br/><br/></pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
-<div class="output_area docutils container">
+<div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-
+/home/mambaforge/envs/sbdb-main/lib/python3.11/site-packages/gumbi/utils/gp_utils.py:64: FutureWarning: find_constrained_prior is deprecated and will be removed in a future version. Please use maxent function from PreliZ. https://preliz.readthedocs.io/en/latest/api_reference.html#preliz.unidimensional.maxent
+  params_ls = pm.find_constrained_prior(
 </pre></div></div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">prepare_grid</span><span class="p">()</span>
-<span class="n">pts</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">grid_points</span><span class="o">.</span><span class="n">z</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
-
-<span class="c1"># with gp.model:</span>
-<span class="c1"># #     X_new = pm.Data(&#39;X_new&#39;, pts)</span>
-<span class="c1">#     pred = gp.gp_dict[&#39;total&#39;].conditional(&#39;latent_posterior&#39;, pts)</span>
-
-<span class="k">with</span> <span class="n">gp</span><span class="o">.</span><span class="n">model</span><span class="p">:</span>
-    <span class="n">pred_samples</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">sample_posterior_predictive</span><span class="p">(</span>
-        <span class="p">[</span><span class="n">mp</span><span class="p">],</span> <span class="n">var_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;latent_posterior&quot;</span><span class="p">,</span> <span class="s2">&quot;ml&quot;</span><span class="p">],</span> <span class="n">samples</span><span class="o">=</span><span class="mi">200</span>
-    <span class="p">)</span>
-<br/></pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">TypeError</span>                                 Traceback (most recent call last)
-Cell <span class="ansi-green-fg">In[6], line 9</span>
-<span class="ansi-green-intense-fg ansi-bold">      4</span> # with gp.model:
-<span class="ansi-green-intense-fg ansi-bold">      5</span> # #     X_new = pm.Data(&#39;X_new&#39;, pts)
-<span class="ansi-green-intense-fg ansi-bold">      6</span> #     pred = gp.gp_dict[&#39;total&#39;].conditional(&#39;latent_posterior&#39;, pts)
-<span class="ansi-green-intense-fg ansi-bold">      8</span> with gp.model:
-<span class="ansi-green-fg">----&gt; 9</span>     pred_samples = pm.sample_posterior_predictive(
-<span class="ansi-green-intense-fg ansi-bold">     10</span>         [mp], var_names=[&#34;latent_posterior&#34;, &#34;ml&#34;], samples=200
-<span class="ansi-green-intense-fg ansi-bold">     11</span>     )
-
-<span class="ansi-red-fg">TypeError</span>: sample_posterior_predictive() got an unexpected keyword argument &#39;samples&#39;
-</pre></div></div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot_gp_dist</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">(),</span> <span class="n">pred_samples</span><span class="p">[</span><span class="s2">&quot;latent_posterior&quot;</span><span class="p">],</span> <span class="n">pts</span><span class="p">)</span>
-<br/><br/></pre></div>
-</div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-&lt;AxesSubplot:&gt;
-</pre></div></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "59dad81d261344cf9914039372244c01", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
-<div class="output_area docutils container">
-<img alt="../../_images/notebooks_examples_Latent_GP_8_1.png" class="no-scaled-link" src="../../_images/notebooks_examples_Latent_GP_8_1.png" style="width: 370px; height: 248px;" />
-</div>
+<div class="output_area rendered_html docutils container">
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">
+</pre></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[34]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">prepare_grid</span><span class="p">()</span>
+<span class="n">pts</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">grid_points</span><span class="o">.</span><span class="n">z</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+
+<span class="k">with</span> <span class="n">gp</span><span class="o">.</span><span class="n">model</span><span class="p">:</span>
+<span class="c1">#     X_new = pm.Data(&#39;X_new&#39;, pts)</span>
+    <span class="n">pred</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">gp_dict</span><span class="p">[</span><span class="s1">&#39;total&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">conditional</span><span class="p">(</span><span class="s1">&#39;latent_posterior&#39;</span><span class="p">,</span> <span class="n">pts</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">gp</span><span class="o">.</span><span class="n">model</span><span class="p">:</span>
+    <span class="n">pred_samples</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">sample_posterior_predictive</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">mp</span><span class="p">],</span> <span class="n">var_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;latent_posterior&quot;</span><span class="p">,</span> <span class="s2">&quot;ml&quot;</span><span class="p">]</span>
+    <span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Sampling: [latent_posterior, ml]
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "99932e028a1546489fc9e73ee2d1be79", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace">
+</pre></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gp</span> <span class="o">=</span> <span class="n">gmb</span><span class="o">.</span><span class="n">GP</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
@@ -314,72 +330,42 @@ Cell <span class="ansi-green-fg">In[6], line 9</span>
 <br/><br/></pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-Auto-assigning NUTS sampler...
-Initializing NUTS using jitter+adapt_diag...
-Sequential sampling (2 chains in 1 job)
-NUTS: [ν, σ, latent_prior_rotated_, η_total, ℓ_total]
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area rendered_html docutils container">
-<div>
-    <style>
-        /* Turns off some styling */
-        progress {
-            /* gets rid of default border in Firefox and Opera. */
-            border: none;
-            /* Needs to be in here for Safari polyfill so background images work as expected. */
-            background-size: auto;
-        }
-        .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
-            background: #F44336;
-        }
-    </style>
-  <progress value='2000' class='' max='2000' style='width:300px; height:20px; vertical-align: middle;'></progress>
-  100.00% [2000/2000 04:07<00:00 Sampling chain 0, 8 divergences]
-</div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area rendered_html docutils container">
-<div>
-    <style>
-        /* Turns off some styling */
-        progress {
-            /* gets rid of default border in Firefox and Opera. */
-            border: none;
-            /* Needs to be in here for Safari polyfill so background images work as expected. */
-            background-size: auto;
-        }
-        .progress-bar-interrupted, .progress-bar-interrupted::-webkit-progress-bar {
-            background: #F44336;
-        }
-    </style>
-  <progress value='2000' class='' max='2000' style='width:300px; height:20px; vertical-align: middle;'></progress>
-  100.00% [2000/2000 04:16<00:00 Sampling chain 1, 6 divergences]
-</div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
-<div class="output_area stderr docutils container">
+<div class="output_area docutils container">
 <div class="highlight"><pre>
-Sampling 2 chains for 1_000 tune and 1_000 draw iterations (2_000 + 2_000 draws total) took 504 seconds.
-There were 8 divergences after tuning. Increase `target_accept` or reparameterize.
-There were 14 divergences after tuning. Increase `target_accept` or reparameterize.
-The number of effective samples is smaller than 25% for some parameters.
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">TypeError</span>                                 Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In[27], line 4</span>
+<span class="ansi-green-intense-fg ansi-bold">      1</span> gp <span style="color: rgb(98,98,98)">=</span> gmb<span style="color: rgb(98,98,98)">.</span>GP(ds)
+<span class="ansi-green-intense-fg ansi-bold">      3</span> gp<span style="color: rgb(98,98,98)">.</span>specify_model(continuous_dims<span style="color: rgb(98,98,98)">=</span>[<span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">X</span><span style="color: rgb(175,0,0)">&#34;</span>])
+<span class="ansi-green-fg">----&gt; 4</span> <span class="ansi-yellow-bg">gp</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">build_latent</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">continuous_kernel</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">&#34;</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">Matern52</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">&#34;</span><span class="ansi-yellow-bg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">      6</span> <span class="ansi-bold" style="color: rgb(0,135,0)">with</span> gp<span style="color: rgb(98,98,98)">.</span>model:
+<span class="ansi-green-intense-fg ansi-bold">      7</span>     f <span style="color: rgb(98,98,98)">=</span> gp<span style="color: rgb(98,98,98)">.</span>prior
+
+File <span class="ansi-green-fg">/home/mambaforge/envs/sbdb-main/lib/python3.11/site-packages/gumbi/regression/pymc/GP.py:782</span>, in <span class="ansi-cyan-fg">PymcGP.build_latent</span><span class="ansi-blue-fg">(self, seed, continuous_kernel, prior_name, ARD, lower, upper, mass)</span>
+<span class="ansi-green-intense-fg ansi-bold">    779</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>sparse <span style="color: rgb(98,98,98)">=</span> <span class="ansi-bold" style="color: rgb(0,135,0)">False</span>
+<span class="ansi-green-intense-fg ansi-bold">    780</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>latent <span style="color: rgb(98,98,98)">=</span> <span class="ansi-bold" style="color: rgb(0,135,0)">True</span>
+<span class="ansi-green-fg">--&gt; 782</span> gp_dict <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">_construct_kernels</span><span class="ansi-yellow-bg">(</span>
+<span class="ansi-green-intense-fg ansi-bold">    783</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">X</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">    784</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">continuous_kernel</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">    785</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">seed</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">    786</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">sparse</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg ansi-bold" style="color: rgb(0,135,0)">False</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">    787</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">latent</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg ansi-bold" style="color: rgb(0,135,0)">True</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">    788</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">ARD</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">ARD</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">    789</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">lower</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">lower</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">    790</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">upper</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">upper</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">    791</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">mass</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">mass</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-intense-fg ansi-bold">    792</span> <span class="ansi-yellow-bg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">    794</span> <span class="ansi-bold" style="color: rgb(0,135,0)">with</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>model:
+<span class="ansi-green-intense-fg ansi-bold">    795</span>     <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>prior <span style="color: rgb(98,98,98)">=</span> gp_dict[<span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">total</span><span style="color: rgb(175,0,0)">&#34;</span>]<span style="color: rgb(98,98,98)">.</span>prior(prior_name, X<span style="color: rgb(98,98,98)">=</span>X)
+
+<span class="ansi-red-fg">TypeError</span>: PymcGP._construct_kernels() got an unexpected keyword argument &#39;lower&#39;
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[35]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">az</span><span class="o">.</span><span class="n">summary</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span> <span class="n">var_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;σ&quot;</span><span class="p">,</span> <span class="s2">&quot;ν&quot;</span><span class="p">,</span> <span class="s2">&quot;η_total&quot;</span><span class="p">,</span> <span class="s2">&quot;ℓ_total&quot;</span><span class="p">])</span>
@@ -387,8 +373,7 @@ The number of effective samples is smaller than 25% for some parameters.
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[35]:
-</pre></div>
+<div class="prompt empty docutils container">
 </div>
 <div class="output_area rendered_html docutils container">
 <div>
@@ -474,7 +459,7 @@ The number of effective samples is smaller than 25% for some parameters.
 </div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[36]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># plot the results</span>
@@ -482,7 +467,7 @@ The number of effective samples is smaller than 25% for some parameters.
 <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
 
 <span class="c1"># plot the samples from the gp posterior with samples and shading</span>
-<span class="kn">from</span> <span class="nn">pymc.gp.util</span> <span class="kn">import</span> <span class="n">plot_gp_dist</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pymc.gp.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_gp_dist</span>
 
 <span class="n">predictions</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">parray</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">trace</span><span class="o">.</span><span class="n">posterior</span><span class="p">[</span><span class="s2">&quot;latent_prior&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:],</span> <span class="n">stdzd</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
@@ -509,12 +494,12 @@ The number of effective samples is smaller than 25% for some parameters.
 </div>
 </section>
 <section id="Classification">
-<h2>Classification<a class="headerlink" href="#Classification" title="Permalink to this heading"></a></h2>
+<h3>Classification<a class="headerlink" href="#Classification" title="Permalink to this heading"></a></h3>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 
 <span class="c1"># reset the random seed for the new example</span>
 <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">SEEDs</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
@@ -538,7 +523,7 @@ The number of effective samples is smaller than 25% for some parameters.
 <span class="n">f_true</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">K</span> <span class="o">+</span> <span class="mf">1e-6</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
 
 <span class="c1"># link function</span>
-<span class="k">def</span> <span class="nf">invlogit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">float_info</span><span class="o">.</span><span class="n">epsilon</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">invlogit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">float_info</span><span class="o">.</span><span class="n">epsilon</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">eps</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="p">))</span> <span class="o">+</span> <span class="n">eps</span>
 
 
@@ -547,7 +532,7 @@ The number of effective samples is smaller than 25% for some parameters.
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
@@ -571,7 +556,7 @@ The number of effective samples is smaller than 25% for some parameters.
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">])</span>
@@ -583,8 +568,7 @@ The number of effective samples is smaller than 25% for some parameters.
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
-</pre></div>
+<div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
@@ -596,7 +580,7 @@ DataSet:
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gp</span> <span class="o">=</span> <span class="n">gmb</span><span class="o">.</span><span class="n">GPC</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
@@ -670,8 +654,7 @@ The estimated number of effective samples is smaller than 200 for some parameter
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
-</pre></div>
+<div class="prompt empty docutils container">
 </div>
 <div class="output_area rendered_html docutils container">
             <div>
@@ -2710,7 +2693,7 @@ dl.xr-attrs {
 .xr-wrap{width:700px!important;} </style></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">prepare_grid</span><span class="p">()</span>
@@ -2740,8 +2723,7 @@ dl.xr-attrs {
 </div></div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
-</pre></div>
+<div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
@@ -2761,19 +2743,18 @@ dl.xr-attrs {
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># plot the samples from the gp posterior with samples and shading</span>
-<span class="kn">from</span> <span class="nn">pymc.gp.util</span> <span class="kn">import</span> <span class="n">plot_gp_dist</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pymc.gp.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_gp_dist</span>
 
 <span class="n">plot_gp_dist</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">(),</span> <span class="n">gp</span><span class="o">.</span><span class="n">predictions</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">gp</span><span class="o">.</span><span class="n">predictions_X</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
 <br/><br/></pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
-</pre></div>
+<div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
@@ -2788,7 +2769,7 @@ dl.xr-attrs {
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">p_X</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">predictions_X</span>
@@ -2798,12 +2779,6 @@ dl.xr-attrs {
     <span class="n">σ2</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">predictions</span><span class="o">.</span><span class="n">t</span><span class="o">.</span><span class="n">values</span><span class="p">()</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>
     <span class="n">stdzd</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span>
-    <span class="s2">&quot;p&quot;</span><span class="p">,</span>
-    <span class="n">μ</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">predictions</span><span class="o">.</span><span class="n">t</span><span class="o">.</span><span class="n">values</span><span class="p">()</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>
-    <span class="n">σ2</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">predictions</span><span class="o">.</span><span class="n">t</span><span class="o">.</span><span class="n">values</span><span class="p">()</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>
-    <span class="n">stdzd</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-
-<span class="p">)</span>
 <span class="n">pp</span> <span class="o">=</span> <span class="n">gmb</span><span class="o">.</span><span class="n">ParrayPlotter</span><span class="p">(</span><span class="n">p_X</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
 <span class="n">pp</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 
@@ -2812,8 +2787,7 @@ dl.xr-attrs {
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
-</pre></div>
+<div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
@@ -2828,7 +2802,7 @@ dl.xr-attrs {
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[32]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gp</span> <span class="o">=</span> <span class="n">gmb</span><span class="o">.</span><span class="n">GP</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
@@ -2914,7 +2888,7 @@ The estimated number of effective samples is smaller than 200 for some parameter
 </pre></div></div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># plot the results</span>
@@ -2922,7 +2896,7 @@ The estimated number of effective samples is smaller than 200 for some parameter
 <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
 
 <span class="c1"># plot the samples from the gp posterior with samples and shading</span>
-<span class="kn">from</span> <span class="nn">pymc.gp.util</span> <span class="kn">import</span> <span class="n">plot_gp_dist</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pymc.gp.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_gp_dist</span>
 
 <span class="n">p_pred</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">parray</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="n">trace</span><span class="o">.</span><span class="n">posterior</span><span class="p">[</span><span class="s2">&quot;p&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:])</span>
 
@@ -2957,11 +2931,15 @@ The estimated number of effective samples is smaller than 200 for some parameter
 </div>
 </section>
 </section>
+</section>
 
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Multioutput_Regression.html" class="btn btn-neutral float-left" title="Multioutput Regression" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Cars_Dataset_Botorch.html" class="btn btn-neutral float-right" title="Bayesian Optimization with the Botorch backend" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 

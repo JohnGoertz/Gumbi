@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index &mdash; Gumbi 0.2.1 documentation</title>
+  <title>Index &mdash; Gumbi 0.4.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/green_theme.css" type="text/css" />
@@ -34,7 +34,7 @@
             Gumbi
           </a>
               <div class="version">
-                0.2.1
+                0.4.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -53,6 +53,14 @@
 <li class="toctree-l1"><a class="reference internal" href="notebooks/examples/Cars_Dataset.html">The Cars Dataset</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/examples/Simple_Regression.html">Simple Regression and Prediction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/examples/Multioutput_Regression.html">Multioutput Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/examples/Latent_GP.html">Regression and Classification with a Latent Gaussian Processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/examples/Cars_Dataset_Botorch.html">Bayesian Optimization with the Botorch backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/examples/Cars_Dataset_Botorch.html#Single-output-regression">Single-output regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/examples/Cars_Dataset_Botorch.html#Multi-output-regression">Multi-output regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/examples/Cars_Dataset_Botorch.html#Multi-input-multi-output-regression">Multi-input multi-output regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/examples/Cars_Dataset_Botorch.html#Mixed-categorical-continuous-regression">Mixed categorical-continuous regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/examples/Cars_Dataset_Botorch.html#Multi-input-regression">Multi-input regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/examples/Cars_Dataset_Botorch.html#Multi-output-(Pareto-front)-optimization-with-qNEHVI">Multi-output (Pareto front) optimization with qNEHVI</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API:</span></p>
 <ul>
@@ -123,14 +131,10 @@
         <li><a href="gumbi/arrays/gumbi.arrays.ParameterArray.html#gumbi.arrays.ParameterArray.add_layers">(gumbi.arrays.ParameterArray method)</a>
 </li>
       </ul></li>
-      <li><a href="gumbi/regression/gumbi.regression.GP.html#gumbi.regression.GP.additive">additive (gumbi.regression.GP attribute)</a>
-
-      <ul>
-        <li><a href="gumbi/regression/gumbi.regression.Regressor.html#gumbi.regression.Regressor.additive">(gumbi.regression.Regressor attribute)</a>
-</li>
-      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="gumbi/regression/gumbi.regression.Regressor.html#gumbi.regression.Regressor.additive">additive (gumbi.regression.Regressor attribute)</a>
+</li>
       <li><a href="gumbi/regression/gumbi.regression.Regressor.html#gumbi.regression.Regressor.append_categorical_points">append_categorical_points() (gumbi.regression.Regressor method)</a>
 </li>
       <li><a href="gumbi/arrays/gumbi.arrays.LayeredArray.html#gumbi.arrays.LayeredArray.as_dict">as_dict() (gumbi.arrays.LayeredArray method)</a>
@@ -143,66 +147,36 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="gumbi/arrays/gumbi.arrays.UncertainArray.html#gumbi.arrays.UncertainArray.BC">BC() (gumbi.arrays.UncertainArray method)</a>
 </li>
-      <li><a href="gumbi/arrays/gumbi.arrays.UncertainArray.html#gumbi.arrays.UncertainArray.BD">BD() (gumbi.arrays.UncertainArray method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="gumbi/regression/gumbi.regression.GP.html#gumbi.regression.GP.build_model">build_model() (gumbi.regression.GP method)</a>
-
-      <ul>
-        <li><a href="gumbi/regression/gumbi.regression.GPC.html#gumbi.regression.GPC.build_model">(gumbi.regression.GPC method)</a>
+      <li><a href="gumbi/arrays/gumbi.arrays.UncertainArray.html#gumbi.arrays.UncertainArray.BD">BD() (gumbi.arrays.UncertainArray method)</a>
 </li>
-        <li><a href="gumbi/regression/gumbi.regression.Regressor.html#gumbi.regression.Regressor.build_model">(gumbi.regression.Regressor method)</a>
+      <li><a href="gumbi/regression/gumbi.regression.Regressor.html#gumbi.regression.Regressor.build_model">build_model() (gumbi.regression.Regressor method)</a>
 </li>
-      </ul></li>
   </ul></td>
 </tr></table>
 
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="gumbi/regression/gumbi.regression.GP.html#gumbi.regression.GP.categorical_coords">categorical_coords (gumbi.regression.GP attribute)</a>
-
-      <ul>
-        <li><a href="gumbi/regression/gumbi.regression.Regressor.html#gumbi.regression.Regressor.categorical_coords">(gumbi.regression.Regressor attribute)</a>
+      <li><a href="gumbi/regression/gumbi.regression.Regressor.html#gumbi.regression.Regressor.categorical_coords">categorical_coords (gumbi.regression.Regressor attribute)</a>
 </li>
-      </ul></li>
-      <li><a href="gumbi/regression/gumbi.regression.GP.html#gumbi.regression.GP.categorical_dims">categorical_dims (gumbi.regression.GP attribute)</a>
-
-      <ul>
-        <li><a href="gumbi/regression/gumbi.regression.Regressor.html#gumbi.regression.Regressor.categorical_dims">(gumbi.regression.Regressor attribute)</a>
+      <li><a href="gumbi/regression/gumbi.regression.Regressor.html#gumbi.regression.Regressor.categorical_dims">categorical_dims (gumbi.regression.Regressor attribute)</a>
 </li>
-      </ul></li>
-      <li><a href="gumbi/regression/gumbi.regression.GP.html#gumbi.regression.GP.categorical_levels">categorical_levels (gumbi.regression.GP attribute)</a>
-
-      <ul>
-        <li><a href="gumbi/regression/gumbi.regression.Regressor.html#gumbi.regression.Regressor.categorical_levels">(gumbi.regression.Regressor attribute)</a>
+      <li><a href="gumbi/regression/gumbi.regression.Regressor.html#gumbi.regression.Regressor.categorical_levels">categorical_levels (gumbi.regression.Regressor attribute)</a>
 </li>
-      </ul></li>
       <li><a href="gumbi/arrays/gumbi.arrays.MultivariateNormalish.html#gumbi.arrays.MultivariateNormalish.cdf">cdf() (gumbi.arrays.MultivariateNormalish method)</a>
 </li>
       <li><a href="gumbi/plotting/gumbi.plotting.ParrayPlotter.html#gumbi.plotting.ParrayPlotter.colorbar">colorbar() (gumbi.plotting.ParrayPlotter method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="gumbi/regression/gumbi.regression.GP.html#gumbi.regression.GP.continuous_coords">continuous_coords (gumbi.regression.GP attribute)</a>
-
-      <ul>
-        <li><a href="gumbi/regression/gumbi.regression.Regressor.html#gumbi.regression.Regressor.continuous_coords">(gumbi.regression.Regressor attribute)</a>
+      <li><a href="gumbi/regression/gumbi.regression.Regressor.html#gumbi.regression.Regressor.continuous_coords">continuous_coords (gumbi.regression.Regressor attribute)</a>
 </li>
-      </ul></li>
-      <li><a href="gumbi/regression/gumbi.regression.GP.html#gumbi.regression.GP.continuous_dims">continuous_dims (gumbi.regression.GP attribute)</a>
-
-      <ul>
-        <li><a href="gumbi/regression/gumbi.regression.Regressor.html#gumbi.regression.Regressor.continuous_dims">(gumbi.regression.Regressor attribute)</a>
+      <li><a href="gumbi/regression/gumbi.regression.Regressor.html#gumbi.regression.Regressor.continuous_dims">continuous_dims (gumbi.regression.Regressor attribute)</a>
 </li>
-      </ul></li>
-      <li><a href="gumbi/regression/gumbi.regression.GP.html#gumbi.regression.GP.continuous_levels">continuous_levels (gumbi.regression.GP attribute)</a>
-
-      <ul>
-        <li><a href="gumbi/regression/gumbi.regression.Regressor.html#gumbi.regression.Regressor.continuous_levels">(gumbi.regression.Regressor attribute)</a>
+      <li><a href="gumbi/regression/gumbi.regression.Regressor.html#gumbi.regression.Regressor.continuous_levels">continuous_levels (gumbi.regression.Regressor attribute)</a>
 </li>
-      </ul></li>
       <li><a href="gumbi/regression/gumbi.regression.Regressor.html#gumbi.regression.Regressor.coords">coords (gumbi.regression.Regressor property)</a>
 </li>
       <li><a href="gumbi/arrays/gumbi.arrays.MVUncertainParameterArray.html#gumbi.arrays.MVUncertainParameterArray.cov">cov() (gumbi.arrays.MVUncertainParameterArray method)</a>
@@ -219,26 +193,16 @@
 </li>
       <li><a href="gumbi/aggregation/gumbi.aggregation.DataSet.html#gumbi.aggregation.DataSet">DataSet (class in gumbi.aggregation)</a>
 </li>
-      <li><a href="gumbi/regression/gumbi.regression.GP.html#gumbi.regression.GP.dataset">dataset (gumbi.regression.GP attribute)</a>
-</li>
       <li><a href="gumbi/regression/gumbi.regression.Regressor.html#gumbi.regression.Regressor.dims">dims (gumbi.regression.Regressor property)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="gumbi/arrays/gumbi.arrays.MVUncertainParameterArray.html#gumbi.arrays.MVUncertainParameterArray.dist">dist (gumbi.arrays.MVUncertainParameterArray property)</a>
 
       <ul>
         <li><a href="gumbi/arrays/gumbi.arrays.UncertainArray.html#gumbi.arrays.UncertainArray.dist">(gumbi.arrays.UncertainArray property)</a>
 </li>
         <li><a href="gumbi/arrays/gumbi.arrays.UncertainParameterArray.html#gumbi.arrays.UncertainParameterArray.dist">(gumbi.arrays.UncertainParameterArray property)</a>
-</li>
-      </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="gumbi/regression/gumbi.regression.GP.html#gumbi.regression.GP.draw_grid_samples">draw_grid_samples() (gumbi.regression.GP method)</a>
-</li>
-      <li><a href="gumbi/regression/gumbi.regression.GP.html#gumbi.regression.GP.draw_point_samples">draw_point_samples() (gumbi.regression.GP method)</a>
-
-      <ul>
-        <li><a href="gumbi/regression/gumbi.regression.GPC.html#gumbi.regression.GPC.draw_point_samples">(gumbi.regression.GPC method)</a>
 </li>
       </ul></li>
       <li><a href="gumbi/arrays/gumbi.arrays.LayeredArray.html#gumbi.arrays.LayeredArray.dstack">dstack() (gumbi.arrays.LayeredArray method)</a>
@@ -249,7 +213,7 @@
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="gumbi/arrays/gumbi.arrays.UncertainArray.html#gumbi.arrays.UncertainArray.EI">EI() (gumbi.arrays.UncertainArray method)</a>
+      <li><a href="gumbi/utils/gumbi.utils.GPyTorchInverseGammaPrior.html#gumbi.utils.GPyTorchInverseGammaPrior.expand">expand() (gumbi.utils.GPyTorchInverseGammaPrior method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -265,20 +229,10 @@
       </ul></li>
       <li><a href="gumbi/arrays/gumbi.arrays.ParameterArray.html#gumbi.arrays.ParameterArray.fill_with">fill_with() (gumbi.arrays.ParameterArray method)</a>
 </li>
-      <li><a href="gumbi/regression/gumbi.regression.GP.html#gumbi.regression.GP.filter_dims">filter_dims (gumbi.regression.GP attribute)</a>
-
-      <ul>
-        <li><a href="gumbi/regression/gumbi.regression.Regressor.html#gumbi.regression.Regressor.filter_dims">(gumbi.regression.Regressor attribute)</a>
+      <li><a href="gumbi/regression/gumbi.regression.Regressor.html#gumbi.regression.Regressor.filter_dims">filter_dims (gumbi.regression.Regressor attribute)</a>
 </li>
-      </ul></li>
-      <li><a href="gumbi/regression/gumbi.regression.GP.html#gumbi.regression.GP.find_MAP">find_MAP() (gumbi.regression.GP method)</a>
+      <li><a href="gumbi/regression/gumbi.regression.Regressor.html#gumbi.regression.Regressor.fit">fit() (gumbi.regression.Regressor method)</a>
 </li>
-      <li><a href="gumbi/regression/gumbi.regression.GP.html#gumbi.regression.GP.fit">fit() (gumbi.regression.GP method)</a>
-
-      <ul>
-        <li><a href="gumbi/regression/gumbi.regression.Regressor.html#gumbi.regression.Regressor.fit">(gumbi.regression.Regressor method)</a>
-</li>
-      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="gumbi/aggregation/gumbi.aggregation.DataSet.html#gumbi.aggregation.DataSet.float_inputs">float_inputs (gumbi.aggregation.DataSet property)</a>
@@ -315,19 +269,11 @@
 </li>
       <li><a href="gumbi/regression/gumbi.regression.Regressor.html#gumbi.regression.Regressor.get_filtered_data">get_filtered_data() (gumbi.regression.Regressor method)</a>
 </li>
-      <li><a href="gumbi/utils/gp_utils/index.html#gumbi.utils.gp_utils.get_l_prior">get_l_prior() (in module gumbi.utils.gp_utils)</a>
-</li>
       <li><a href="gumbi/regression/gumbi.regression.Regressor.html#gumbi.regression.Regressor.get_shaped_data">get_shaped_data() (gumbi.regression.Regressor method)</a>
 </li>
       <li><a href="gumbi/regression/gumbi.regression.Regressor.html#gumbi.regression.Regressor.get_structured_data">get_structured_data() (gumbi.regression.Regressor method)</a>
 </li>
-      <li><a href="gumbi/regression/gumbi.regression.GP.html#gumbi.regression.GP">GP (class in gumbi.regression)</a>
-</li>
-      <li><a href="gumbi/regression/gumbi.regression.GP.html#gumbi.regression.GP.gp_dict">gp_dict (gumbi.regression.GP attribute)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="gumbi/regression/gumbi.regression.GPC.html#gumbi.regression.GPC">GPC (class in gumbi.regression)</a>
+      <li><a href="gumbi/utils/gumbi.utils.GPyTorchInverseGammaPrior.html#gumbi.utils.GPyTorchInverseGammaPrior">GPyTorchInverseGammaPrior (class in gumbi.utils)</a>
 </li>
       <li>
     gumbi.aggregation
@@ -336,6 +282,8 @@
         <li><a href="gumbi/index.html#module-gumbi.aggregation">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     gumbi.arrays
 
@@ -373,6 +321,10 @@
       <li><a href="gumbi/arrays/gumbi.arrays.UncertainArray.html#gumbi.arrays.UncertainArray.HD">HD() (gumbi.arrays.UncertainArray method)</a>
 </li>
   </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="gumbi/array_utils/index.html#gumbi.array_utils.hstack">hstack() (in module gumbi.array_utils)</a>
+</li>
+  </ul></td>
 </tr></table>
 
 <h2 id="I">I</h2>
@@ -402,16 +354,12 @@
 </li>
       <li><a href="gumbi/regression/gumbi.regression.Regressor.html#gumbi.regression.Regressor.levels">levels (gumbi.regression.Regressor property)</a>
 </li>
-      <li><a href="gumbi/regression/gumbi.regression.GP.html#gumbi.regression.GP.linear_dims">linear_dims (gumbi.regression.GP attribute)</a>
-
-      <ul>
-        <li><a href="gumbi/regression/gumbi.regression.Regressor.html#gumbi.regression.Regressor.linear_dims">(gumbi.regression.Regressor attribute)</a>
+      <li><a href="gumbi/regression/gumbi.regression.Regressor.html#gumbi.regression.Regressor.linear_dims">linear_dims (gumbi.regression.Regressor attribute)</a>
 </li>
-      </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="gumbi/aggregation/gumbi.aggregation.Standardizer.html#gumbi.aggregation.Standardizer.log_vars">log_vars (gumbi.aggregation.Standardizer property)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="gumbi/arrays/gumbi.arrays.MultivariateNormalish.html#gumbi.arrays.MultivariateNormalish.logcdf">logcdf() (gumbi.arrays.MultivariateNormalish method)</a>
 </li>
       <li><a href="gumbi/aggregation/gumbi.aggregation.Standardizer.html#gumbi.aggregation.Standardizer.logit_vars">logit_vars (gumbi.aggregation.Standardizer property)</a>
@@ -428,6 +376,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="gumbi/arrays/gumbi.arrays.MVUncertainParameterArray.html#gumbi.arrays.MVUncertainParameterArray.mahalanobis">mahalanobis() (gumbi.arrays.MVUncertainParameterArray method)</a>
 </li>
+      <li><a href="gumbi/array_utils/index.html#gumbi.array_utils.make_deltas_parray">make_deltas_parray() (in module gumbi.array_utils)</a>
+</li>
       <li><a href="gumbi/regression/gumbi.regression.Regressor.html#gumbi.regression.Regressor.marginal_grids">marginal_grids() (gumbi.regression.Regressor method)</a>
 </li>
       <li><a href="gumbi/arrays/gumbi.arrays.UncertainArray.html#gumbi.arrays.UncertainArray.mean">mean() (gumbi.arrays.UncertainArray method)</a>
@@ -439,8 +389,6 @@
       <li><a href="gumbi/aggregation/gumbi.aggregation.Standardizer.html#gumbi.aggregation.Standardizer.mean_transforms">mean_transforms (gumbi.aggregation.Standardizer property)</a>
 </li>
       <li><a href="gumbi/aggregation/gumbi.aggregation.MetaFrame.html#gumbi.aggregation.MetaFrame">MetaFrame (class in gumbi.aggregation)</a>
-</li>
-      <li><a href="gumbi/regression/gumbi.regression.GP.html#gumbi.regression.GP.model">model (gumbi.regression.GP attribute)</a>
 </li>
       <li>
     module
@@ -497,12 +445,8 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="gumbi/regression/gumbi.regression.GP.html#gumbi.regression.GP.outputs">outputs (gumbi.regression.GP attribute)</a>
-
-      <ul>
-        <li><a href="gumbi/regression/gumbi.regression.Regressor.html#gumbi.regression.Regressor.outputs">(gumbi.regression.Regressor attribute)</a>
+      <li><a href="gumbi/regression/gumbi.regression.Regressor.html#gumbi.regression.Regressor.outputs">outputs (gumbi.regression.Regressor attribute)</a>
 </li>
-      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -531,12 +475,8 @@
 </li>
       <li><a href="gumbi/arrays/gumbi.arrays.LogitNormal.html#gumbi.arrays.LogitNormal.ppf">ppf() (gumbi.arrays.LogitNormal method)</a>
 </li>
-      <li><a href="gumbi/regression/gumbi.regression.GP.html#gumbi.regression.GP.predict">predict() (gumbi.regression.GP method)</a>
-
-      <ul>
-        <li><a href="gumbi/regression/gumbi.regression.Regressor.html#gumbi.regression.Regressor.predict">(gumbi.regression.Regressor method)</a>
+      <li><a href="gumbi/regression/gumbi.regression.Regressor.html#gumbi.regression.Regressor.predict">predict() (gumbi.regression.Regressor method)</a>
 </li>
-      </ul></li>
       <li><a href="gumbi/regression/gumbi.regression.Regressor.html#gumbi.regression.Regressor.predict_grid">predict_grid() (gumbi.regression.Regressor method)</a>
 </li>
       <li><a href="gumbi/regression/gumbi.regression.Regressor.html#gumbi.regression.Regressor.predict_points">predict_points() (gumbi.regression.Regressor method)</a>
@@ -567,16 +507,10 @@
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="gumbi/regression/gumbi.regression.GP.html#gumbi.regression.GP.sample">sample() (gumbi.regression.GP method)</a>
-</li>
       <li><a href="gumbi/utils/generic_utils/index.html#gumbi.utils.generic_utils.savefig">savefig() (in module gumbi.utils.generic_utils)</a>
 </li>
-      <li><a href="gumbi/regression/gumbi.regression.GP.html#gumbi.regression.GP.seed">seed (gumbi.regression.GP attribute)</a>
-
-      <ul>
-        <li><a href="gumbi/regression/gumbi.regression.Regressor.html#gumbi.regression.Regressor.seed">(gumbi.regression.Regressor attribute)</a>
+      <li><a href="gumbi/regression/gumbi.regression.Regressor.html#gumbi.regression.Regressor.seed">seed (gumbi.regression.Regressor attribute)</a>
 </li>
-      </ul></li>
       <li><a href="gumbi/utils/generic_utils/index.html#gumbi.utils.generic_utils.setup_paths">setup_paths() (in module gumbi.utils.generic_utils)</a>
 </li>
       <li><a href="gumbi/regression/gumbi.regression.Regressor.html#gumbi.regression.Regressor.specify_model">specify_model() (gumbi.regression.Regressor method)</a>
@@ -589,6 +523,8 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="gumbi/array_utils/index.html#gumbi.array_utils.stack">stack() (in module gumbi.array_utils)</a>
+</li>
       <li><a href="gumbi/aggregation/gumbi.aggregation.Standardizer.html#gumbi.aggregation.Standardizer">Standardizer (class in gumbi.aggregation)</a>
 </li>
       <li><a href="gumbi/aggregation/gumbi.aggregation.Standardizer.html#gumbi.aggregation.Standardizer.stdz">stdz() (gumbi.aggregation.Standardizer method)</a>
@@ -671,11 +607,15 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="gumbi/aggregation/gumbi.aggregation.Standardizer.html#gumbi.aggregation.Standardizer.validate">validate() (gumbi.aggregation.Standardizer class method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="gumbi/arrays/gumbi.arrays.LayeredArray.html#gumbi.arrays.LayeredArray.values">values() (gumbi.arrays.LayeredArray method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="gumbi/aggregation/gumbi.aggregation.Standardizer.html#gumbi.aggregation.Standardizer.var_transforms">var_transforms (gumbi.aggregation.Standardizer property)</a>
+</li>
+      <li><a href="gumbi/arrays/gumbi.arrays.UncertainArray.html#gumbi.arrays.UncertainArray.vEI">vEI() (gumbi.arrays.UncertainArray method)</a>
+</li>
+      <li><a href="gumbi/array_utils/index.html#gumbi.array_utils.vstack">vstack() (in module gumbi.array_utils)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -695,24 +635,16 @@
 <h2 id="X">X</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="gumbi/regression/gumbi.regression.GP.html#gumbi.regression.GP.X">X (gumbi.regression.GP attribute)</a>
-
-      <ul>
-        <li><a href="gumbi/regression/gumbi.regression.Regressor.html#gumbi.regression.Regressor.X">(gumbi.regression.Regressor attribute)</a>
+      <li><a href="gumbi/regression/gumbi.regression.Regressor.html#gumbi.regression.Regressor.X">X (gumbi.regression.Regressor attribute)</a>
 </li>
-      </ul></li>
   </ul></td>
 </tr></table>
 
 <h2 id="Y">Y</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="gumbi/regression/gumbi.regression.GP.html#gumbi.regression.GP.y">y (gumbi.regression.GP attribute)</a>
-
-      <ul>
-        <li><a href="gumbi/regression/gumbi.regression.Regressor.html#gumbi.regression.Regressor.y">(gumbi.regression.Regressor attribute)</a>
+      <li><a href="gumbi/regression/gumbi.regression.Regressor.html#gumbi.regression.Regressor.y">y (gumbi.regression.Regressor attribute)</a>
 </li>
-      </ul></li>
   </ul></td>
 </tr></table>
 

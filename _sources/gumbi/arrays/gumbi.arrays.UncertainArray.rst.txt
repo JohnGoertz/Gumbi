@@ -13,13 +13,13 @@
 
   UncertainArray.BC
   UncertainArray.BD
-  UncertainArray.EI
   UncertainArray.HD
   UncertainArray.KLD
   UncertainArray.mean
   UncertainArray.nlpd
   UncertainArray.stack
   UncertainArray.sum
+  UncertainArray.vEI
 
 
 

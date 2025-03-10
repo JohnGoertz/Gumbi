@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Regressor &mdash; Gumbi 0.2.1 documentation</title>
+  <title>Regressor &mdash; Gumbi 0.4.1 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/green_theme.css" type="text/css" />
@@ -21,8 +21,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="gumbi.utils" href="../utils/index.html" />
-    <link rel="prev" title="GPC" href="gumbi.regression.GPC.html" /> 
+    <link rel="next" title="GPyTorchInverseGammaPrior" href="../utils/gumbi.utils.GPyTorchInverseGammaPrior.html" />
+    <link rel="prev" title="ParrayPlotter" href="../plotting/gumbi.plotting.ParrayPlotter.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -37,7 +37,7 @@
             Gumbi
           </a>
               <div class="version">
-                0.2.1
+                0.4.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -56,6 +56,14 @@
 <li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Cars_Dataset.html">The Cars Dataset</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Simple_Regression.html">Simple Regression and Prediction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Multioutput_Regression.html">Multioutput Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Latent_GP.html">Regression and Classification with a Latent Gaussian Processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Cars_Dataset_Botorch.html">Bayesian Optimization with the Botorch backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Cars_Dataset_Botorch.html#Single-output-regression">Single-output regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Cars_Dataset_Botorch.html#Multi-output-regression">Multi-output regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Cars_Dataset_Botorch.html#Multi-input-multi-output-regression">Multi-input multi-output regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Cars_Dataset_Botorch.html#Mixed-categorical-continuous-regression">Mixed categorical-continuous regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Cars_Dataset_Botorch.html#Multi-input-regression">Multi-input regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Cars_Dataset_Botorch.html#Multi-output-(Pareto-front)-optimization-with-qNEHVI">Multi-output (Pareto front) optimization with qNEHVI</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API:</span></p>
 <ul class="current">
@@ -64,8 +72,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../index.html#module-gumbi.arrays">gumbi.arrays</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#module-gumbi.plotting">gumbi.plotting</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../index.html#module-gumbi.regression">gumbi.regression</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="gumbi.regression.GP.html">GP</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gumbi.regression.GPC.html">GPC</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Regressor</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#gumbi.regression.Regressor"><code class="docutils literal notranslate"><span class="pre">Regressor</span></code></a></li>
 </ul>
@@ -399,7 +405,7 @@ only one level is treated as a filter dimension.</p></li>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><a class="reference internal" href="gumbi.regression.GP.html#gumbi.regression.GP.build_model" title="gumbi.regression.GP.build_model"><code class="xref py py-meth docutils literal notranslate"><span class="pre">GP.build_model()</span></code></a></dt><dd><p>meth:<cite>GLM.build_model</cite></p>
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">GP.build_model()</span></code></dt><dd><p>meth:<cite>GLM.build_model</cite></p>
 </dd>
 </dl>
 </div>
@@ -470,7 +476,7 @@ between observations and prediction means, respectively.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><a class="reference internal" href="gumbi.regression.GP.html#gumbi.regression.GP.fit" title="gumbi.regression.GP.fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">GP.fit()</span></code></a></dt><dd><p>meth:<cite>GLM.fit</cite></p>
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">GP.fit()</span></code></dt><dd><p>meth:<cite>GLM.fit</cite></p>
 </dd>
 </dl>
 </div>
@@ -613,7 +619,7 @@ intuitive input structure and format the tidy appropriately prior to calling <a 
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><a class="reference internal" href="gumbi.regression.GP.html#gumbi.regression.GP.predict" title="gumbi.regression.GP.predict"><code class="xref py py-meth docutils literal notranslate"><span class="pre">GP.predict()</span></code></a></dt><dd><p>meth:<cite>GLM.predict</cite></p>
+<dt><code class="xref py py-meth docutils literal notranslate"><span class="pre">GP.predict()</span></code></dt><dd><p>meth:<cite>GLM.predict</cite></p>
 </dd>
 </dl>
 </div>
@@ -715,7 +721,7 @@ pairs in <cite>categorical_levels</cite>.</p>
 <dd class="field-even"><p><strong>self</strong></p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="gumbi.regression.GP.html#gumbi.regression.GP" title="gumbi.regression.GP"><code class="xref py py-class docutils literal notranslate"><span class="pre">GP</span></code></a></p>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">GP</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -734,8 +740,8 @@ pairs in <cite>categorical_levels</cite>.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="gumbi.regression.GPC.html" class="btn btn-neutral float-left" title="GPC" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../utils/index.html" class="btn btn-neutral float-right" title="gumbi.utils" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../plotting/gumbi.plotting.ParrayPlotter.html" class="btn btn-neutral float-left" title="ParrayPlotter" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../utils/gumbi.utils.GPyTorchInverseGammaPrior.html" class="btn btn-neutral float-right" title="GPyTorchInverseGammaPrior" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

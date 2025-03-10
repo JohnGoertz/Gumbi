@@ -11,6 +11,7 @@
 
 .. autosummary::
 
+  UncertainParameterArray.extract
   UncertainParameterArray.mean
   UncertainParameterArray.sum
 

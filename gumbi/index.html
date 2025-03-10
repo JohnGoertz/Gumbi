@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gumbi &mdash; Gumbi 0.2.1 documentation</title>
+  <title>gumbi &mdash; Gumbi 0.4.1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/green_theme.css" type="text/css" />
@@ -22,7 +22,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="DataSet" href="aggregation/gumbi.aggregation.DataSet.html" />
-    <link rel="prev" title="Multioutput Regression" href="../notebooks/examples/Multioutput_Regression.html" /> 
+    <link rel="prev" title="Bayesian Optimization with the Botorch backend" href="../notebooks/examples/Cars_Dataset_Botorch.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -37,7 +37,7 @@
             Gumbi
           </a>
               <div class="version">
-                0.2.1
+                0.4.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -56,6 +56,14 @@
 <li class="toctree-l1"><a class="reference internal" href="../notebooks/examples/Cars_Dataset.html">The Cars Dataset</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../notebooks/examples/Simple_Regression.html">Simple Regression and Prediction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../notebooks/examples/Multioutput_Regression.html">Multioutput Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/examples/Latent_GP.html">Regression and Classification with a Latent Gaussian Processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/examples/Cars_Dataset_Botorch.html">Bayesian Optimization with the Botorch backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/examples/Cars_Dataset_Botorch.html#Single-output-regression">Single-output regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/examples/Cars_Dataset_Botorch.html#Multi-output-regression">Multi-output regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/examples/Cars_Dataset_Botorch.html#Multi-input-multi-output-regression">Multi-input multi-output regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/examples/Cars_Dataset_Botorch.html#Mixed-categorical-continuous-regression">Mixed categorical-continuous regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/examples/Cars_Dataset_Botorch.html#Multi-input-regression">Multi-input regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/examples/Cars_Dataset_Botorch.html#Multi-output-(Pareto-front)-optimization-with-qNEHVI">Multi-output (Pareto front) optimization with qNEHVI</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API:</span></p>
 <ul class="current">
@@ -83,12 +91,11 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#module-gumbi.regression">gumbi.regression</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="regression/gumbi.regression.GP.html">GP</a></li>
-<li class="toctree-l3"><a class="reference internal" href="regression/gumbi.regression.GPC.html">GPC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="regression/gumbi.regression.Regressor.html">Regressor</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#module-gumbi.utils">gumbi.utils</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="utils/gumbi.utils.GPyTorchInverseGammaPrior.html">GPyTorchInverseGammaPrior</a></li>
 <li class="toctree-l3"><a class="reference internal" href="utils/index.html">gumbi.utils</a></li>
 </ul>
 </li>
@@ -133,7 +140,7 @@
 <tr class="row-even"><td><p><a class="reference internal" href="aggregation/gumbi.aggregation.MetaFrame.html#gumbi.aggregation.MetaFrame" title="gumbi.aggregation.MetaFrame"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MetaFrame</span></code></a>(df, outputs[, log_vars, ...])</p></td>
 <td><p>Abstract Base Class for <a class="reference internal" href="aggregation/gumbi.aggregation.WideData.html#gumbi.aggregation.WideData" title="gumbi.aggregation.WideData"><code class="xref py py-class docutils literal notranslate"><span class="pre">WideData</span></code></a> and <a class="reference internal" href="aggregation/gumbi.aggregation.TidyData.html#gumbi.aggregation.TidyData" title="gumbi.aggregation.TidyData"><code class="xref py py-class docutils literal notranslate"><span class="pre">TidyData</span></code></a>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="aggregation/gumbi.aggregation.Standardizer.html#gumbi.aggregation.Standardizer" title="gumbi.aggregation.Standardizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Standardizer</span></code></a>([log_vars, logit_vars])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="aggregation/gumbi.aggregation.Standardizer.html#gumbi.aggregation.Standardizer" title="gumbi.aggregation.Standardizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Standardizer</span></code></a>([log_vars, logit_vars, ...])</p></td>
 <td><p>Container for dict of mean (μ) and variance (σ2) for every parameter.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="aggregation/gumbi.aggregation.TidyData.html#gumbi.aggregation.TidyData" title="gumbi.aggregation.TidyData"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TidyData</span></code></a>(df, outputs[, log_vars, ...])</p></td>
@@ -190,12 +197,6 @@
 <p class="rubric">Classes</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="regression/gumbi.regression.GP.html#gumbi.regression.GP" title="gumbi.regression.GP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GP</span></code></a>(dataset[, outputs, seed])</p></td>
-<td><p>Gaussian Process surface learning and prediction.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="regression/gumbi.regression.GPC.html#gumbi.regression.GPC" title="gumbi.regression.GPC"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GPC</span></code></a>(dataset[, outputs, seed])</p></td>
-<td><p></p></td>
-</tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="regression/gumbi.regression.Regressor.html#gumbi.regression.Regressor" title="gumbi.regression.Regressor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Regressor</span></code></a>(dataset[, outputs, seed])</p></td>
 <td><p>Surface learning and prediction.</p></td>
 </tr>
@@ -207,14 +208,18 @@
 </section>
 <section id="module-gumbi.utils">
 <span id="gumbi-utils"></span><h2>gumbi.utils<a class="headerlink" href="#module-gumbi.utils" title="Permalink to this heading"></a></h2>
+<p class="rubric">Classes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="utils/gumbi.utils.GPyTorchInverseGammaPrior.html#gumbi.utils.GPyTorchInverseGammaPrior" title="gumbi.utils.GPyTorchInverseGammaPrior"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GPyTorchInverseGammaPrior</span></code></a>(concentration, rate)</p></td>
+<td><p>Creates an inverse gamma distribution parameterized by concentration and rate where:</p></td>
+</tr>
+</tbody>
+</table>
 <p class="rubric">Submodules</p>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="utils/index.html">gumbi.utils</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="utils/generic_utils/index.html">gumbi.utils.generic_utils</a></li>
-<li class="toctree-l2"><a class="reference internal" href="utils/gp_utils/index.html">gumbi.utils.gp_utils</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="utils/index.html">gumbi.utils</a></li>
 </ul>
 </div>
 </section>
@@ -224,7 +229,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../notebooks/examples/Multioutput_Regression.html" class="btn btn-neutral float-left" title="Multioutput Regression" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../notebooks/examples/Cars_Dataset_Botorch.html" class="btn btn-neutral float-left" title="Bayesian Optimization with the Botorch backend" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="aggregation/gumbi.aggregation.DataSet.html" class="btn btn-neutral float-right" title="DataSet" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

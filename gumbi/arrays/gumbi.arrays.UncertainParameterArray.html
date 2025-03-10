@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>UncertainParameterArray &mdash; Gumbi 0.2.1 documentation</title>
+  <title>UncertainParameterArray &mdash; Gumbi 0.4.1 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/green_theme.css" type="text/css" />
@@ -39,7 +39,7 @@
             Gumbi
           </a>
               <div class="version">
-                0.2.1
+                0.4.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -58,6 +58,14 @@
 <li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Cars_Dataset.html">The Cars Dataset</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Simple_Regression.html">Simple Regression and Prediction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Multioutput_Regression.html">Multioutput Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Latent_GP.html">Regression and Classification with a Latent Gaussian Processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Cars_Dataset_Botorch.html">Bayesian Optimization with the Botorch backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Cars_Dataset_Botorch.html#Single-output-regression">Single-output regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Cars_Dataset_Botorch.html#Multi-output-regression">Multi-output regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Cars_Dataset_Botorch.html#Multi-input-multi-output-regression">Multi-input multi-output regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Cars_Dataset_Botorch.html#Mixed-categorical-continuous-regression">Mixed categorical-continuous regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Cars_Dataset_Botorch.html#Multi-input-regression">Multi-input regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Cars_Dataset_Botorch.html#Multi-output-(Pareto-front)-optimization-with-qNEHVI">Multi-output (Pareto front) optimization with qNEHVI</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API:</span></p>
 <ul class="current">
@@ -120,10 +128,13 @@
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.arrays.UncertainParameterArray.mean" title="gumbi.arrays.UncertainParameterArray.mean"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UncertainParameterArray.mean</span></code></a>([axis, dtype, ...])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">UncertainParameterArray.extract</span></code>(field)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gumbi.arrays.UncertainParameterArray.mean" title="gumbi.arrays.UncertainParameterArray.mean"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UncertainParameterArray.mean</span></code></a>([axis, dtype, ...])</p></td>
 <td><p>The natural-space distribution parameters which represent the mean of the transformed-space distributions</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#gumbi.arrays.UncertainParameterArray.sum" title="gumbi.arrays.UncertainParameterArray.sum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UncertainParameterArray.sum</span></code></a>([axis, dtype, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.arrays.UncertainParameterArray.sum" title="gumbi.arrays.UncertainParameterArray.sum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UncertainParameterArray.sum</span></code></a>([axis, dtype, ...])</p></td>
 <td><p>Summation with uncertainty propagation</p></td>
 </tr>
 </tbody>
@@ -216,8 +227,8 @@ given dimensions in the underlying model than a true natural-space average.</p><
 </dl>
 <p class="rubric">Examples</p>
 <p>Create a <cite>LogNormal</cite> random variable, as indicated by its <code class="xref py py-class docutils literal notranslate"><span class="pre">Standardizer</span></code></p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gumbi</span> <span class="kn">import</span> <span class="n">uparray</span><span class="p">,</span> <span class="n">Standardizer</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gumbi</span><span class="w"> </span><span class="kn">import</span> <span class="n">uparray</span><span class="p">,</span> <span class="n">Standardizer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">stdzr</span> <span class="o">=</span> <span class="n">Standardizer</span><span class="p">(</span><span class="n">m</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;μ&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">5.30</span><span class="p">,</span> <span class="s1">&#39;σ&#39;</span><span class="p">:</span> <span class="mf">0.582</span><span class="p">},</span> <span class="n">log_vars</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;c&#39;</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">upa</span> <span class="o">=</span> <span class="n">uparray</span><span class="p">(</span><span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span><span class="o">/</span><span class="mi">10</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span><span class="o">/</span><span class="mi">100</span><span class="p">,</span> <span class="n">stdzr</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">upa</span>

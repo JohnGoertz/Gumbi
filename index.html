@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Welcome to Gumbi’s documentation! &mdash; Gumbi 0.2.1 documentation</title>
+  <title>Welcome to Gumbi’s documentation! &mdash; Gumbi 0.4.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/green_theme.css" type="text/css" />
@@ -36,7 +36,7 @@
             Gumbi
           </a>
               <div class="version">
-                0.2.1
+                0.4.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -55,6 +55,14 @@
 <li class="toctree-l1"><a class="reference internal" href="notebooks/examples/Cars_Dataset.html">The Cars Dataset</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/examples/Simple_Regression.html">Simple Regression and Prediction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/examples/Multioutput_Regression.html">Multioutput Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/examples/Latent_GP.html">Regression and Classification with a Latent Gaussian Processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/examples/Cars_Dataset_Botorch.html">Bayesian Optimization with the Botorch backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/examples/Cars_Dataset_Botorch.html#Single-output-regression">Single-output regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/examples/Cars_Dataset_Botorch.html#Multi-output-regression">Multi-output regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/examples/Cars_Dataset_Botorch.html#Multi-input-multi-output-regression">Multi-input multi-output regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/examples/Cars_Dataset_Botorch.html#Mixed-categorical-continuous-regression">Mixed categorical-continuous regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/examples/Cars_Dataset_Botorch.html#Multi-input-regression">Multi-input regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/examples/Cars_Dataset_Botorch.html#Multi-output-(Pareto-front)-optimization-with-qNEHVI">Multi-output (Pareto front) optimization with qNEHVI</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API:</span></p>
 <ul>
@@ -120,6 +128,23 @@
 <li class="toctree-l2"><a class="reference internal" href="notebooks/examples/Multioutput_Regression.html#Correlated-Parameter-Predictions">Correlated Parameter Predictions</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/examples/Latent_GP.html">Regression and Classification with a Latent Gaussian Processes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/examples/Latent_GP.html#Reproducible-randomness">Reproducible randomness</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/examples/Cars_Dataset_Botorch.html">Bayesian Optimization with the Botorch backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/examples/Cars_Dataset_Botorch.html#Single-output-regression">Single-output regression</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/examples/Cars_Dataset_Botorch.html#Batch-single-task-proposals-with-qNEI">Batch single-task proposals with qNEI</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/examples/Cars_Dataset_Botorch.html#Multi-output-regression">Multi-output regression</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/examples/Cars_Dataset_Botorch.html#Learned-correlations-between-outputs">Learned correlations between outputs</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/examples/Cars_Dataset_Botorch.html#Multi-input-multi-output-regression">Multi-input multi-output regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/examples/Cars_Dataset_Botorch.html#Mixed-categorical-continuous-regression">Mixed categorical-continuous regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/examples/Cars_Dataset_Botorch.html#Multi-input-regression">Multi-input regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/examples/Cars_Dataset_Botorch.html#Multi-output-(Pareto-front)-optimization-with-qNEHVI">Multi-output (Pareto front) optimization with qNEHVI</a></li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
@@ -149,12 +174,11 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="gumbi/index.html#module-gumbi.regression">gumbi.regression</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="gumbi/regression/gumbi.regression.GP.html">GP</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gumbi/regression/gumbi.regression.GPC.html">GPC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gumbi/regression/gumbi.regression.Regressor.html">Regressor</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="gumbi/index.html#module-gumbi.utils">gumbi.utils</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="gumbi/utils/gumbi.utils.GPyTorchInverseGammaPrior.html">GPyTorchInverseGammaPrior</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gumbi/utils/index.html">gumbi.utils</a></li>
 </ul>
 </li>

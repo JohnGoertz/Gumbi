@@ -1,0 +1,30 @@
+﻿GPyTorchInverseGammaPrior
+=========================
+
+.. currentmodule:: gumbi.utils
+
+.. autosummary:: GPyTorchInverseGammaPrior
+
+
+
+.. rubric:: Methods
+
+.. autosummary::
+
+  GPyTorchInverseGammaPrior.expand
+
+
+
+
+
+.. rubric:: Attributes
+
+.. autosummary::
+
+  GPyTorchInverseGammaPrior.training
+
+
+
+.. autoclass:: GPyTorchInverseGammaPrior
+   :members:
+   :show-inheritance:

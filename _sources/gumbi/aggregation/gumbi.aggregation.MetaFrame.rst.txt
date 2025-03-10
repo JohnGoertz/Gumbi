@@ -22,6 +22,7 @@
 
   MetaFrame.float_inputs
   MetaFrame.inputs
+  MetaFrame.isotropic_vars
   MetaFrame.log_vars
   MetaFrame.logit_vars
   MetaFrame.names_column

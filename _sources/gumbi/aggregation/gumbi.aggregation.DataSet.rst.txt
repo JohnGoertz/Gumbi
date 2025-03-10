@@ -25,6 +25,7 @@
 
   DataSet.float_inputs
   DataSet.inputs
+  DataSet.isotropic_vars
   DataSet.log_vars
   DataSet.logit_vars
   DataSet.names_column

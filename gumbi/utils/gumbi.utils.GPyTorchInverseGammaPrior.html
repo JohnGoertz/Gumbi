@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gumbi.utils &mdash; Gumbi 0.4.1 documentation</title>
+  <title>GPyTorchInverseGammaPrior &mdash; Gumbi 0.4.1 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/green_theme.css" type="text/css" />
@@ -21,7 +21,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="prev" title="GPyTorchInverseGammaPrior" href="gumbi.utils.GPyTorchInverseGammaPrior.html" /> 
+    <link rel="next" title="gumbi.utils" href="index.html" />
+    <link rel="prev" title="Regressor" href="../regression/gumbi.regression.Regressor.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -72,8 +73,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../index.html#module-gumbi.plotting">gumbi.plotting</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#module-gumbi.regression">gumbi.regression</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../index.html#module-gumbi.utils">gumbi.utils</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="gumbi.utils.GPyTorchInverseGammaPrior.html">GPyTorchInverseGammaPrior</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">gumbi.utils</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">GPyTorchInverseGammaPrior</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gumbi.utils.GPyTorchInverseGammaPrior"><code class="docutils literal notranslate"><span class="pre">GPyTorchInverseGammaPrior</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="index.html">gumbi.utils</a></li>
 </ul>
 </li>
 </ul>
@@ -95,9 +99,9 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">gumbi</a></li>
-      <li class="breadcrumb-item active">gumbi.utils</li>
+      <li class="breadcrumb-item active">GPyTorchInverseGammaPrior</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../../_sources/gumbi/utils/index.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../../_sources/gumbi/utils/gumbi.utils.GPyTorchInverseGammaPrior.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -105,15 +109,75 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="gumbi-utils">
-<h1>gumbi.utils<a class="headerlink" href="#gumbi-utils" title="Permalink to this heading"></a></h1>
+  <section id="gpytorchinversegammaprior">
+<h1>GPyTorchInverseGammaPrior<a class="headerlink" href="#gpytorchinversegammaprior" title="Permalink to this heading"></a></h1>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.utils.GPyTorchInverseGammaPrior" title="gumbi.utils.GPyTorchInverseGammaPrior"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GPyTorchInverseGammaPrior</span></code></a>(concentration, rate)</p></td>
+<td><p>Creates an inverse gamma distribution parameterized by concentration and rate where:</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.utils.GPyTorchInverseGammaPrior.expand" title="gumbi.utils.GPyTorchInverseGammaPrior.expand"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GPyTorchInverseGammaPrior.expand</span></code></a>(batch_shape)</p></td>
+<td><p>Returns a new distribution instance (or populates an existing instance provided by a derived class) with batch dimensions expanded to <cite>batch_shape</cite>.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">GPyTorchInverseGammaPrior.training</span></code></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="gumbi.utils.GPyTorchInverseGammaPrior">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gumbi.utils.</span></span><span class="sig-name descname"><span class="pre">GPyTorchInverseGammaPrior</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">concentration</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.utils.GPyTorchInverseGammaPrior" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Prior</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">InverseGamma</span></code></p>
+<p>Creates an inverse gamma distribution parameterized by concentration and rate where:</p>
+<p>X ~ Gamma(concentration, rate)
+Y = 1 / X ~ InverseGamma(concentration, rate)</p>
+<p>concentration (float or Tensor): shape parameter of the distribution (often referred to as alpha)
+rate (float or Tensor): rate = 1 / scale of the distribution (often referred to as beta)</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gumbi.utils.GPyTorchInverseGammaPrior.expand">
+<span class="sig-name descname"><span class="pre">expand</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch_shape</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.utils.GPyTorchInverseGammaPrior.expand" title="Permalink to this definition"></a></dt>
+<dd><p>Returns a new distribution instance (or populates an existing instance
+provided by a derived class) with batch dimensions expanded to
+<cite>batch_shape</cite>. This method calls <code class="xref py py-class docutils literal notranslate"><span class="pre">expand</span></code> on
+the distribution’s parameters. As such, this does not allocate new
+memory for the expanded distribution instance. Additionally,
+this does not repeat any args checking or parameter broadcasting in
+<cite>__init__.py</cite>, when an instance is first created.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>batch_shape</strong> (<em>torch.Size</em>) – the desired expanded size.</p></li>
+<li><p><strong>_instance</strong> – new instance provided by subclasses that
+need to override <cite>.expand</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>New distribution instance with batch dimensions expanded to
+<cite>batch_size</cite>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="gumbi.utils.GPyTorchInverseGammaPrior.html" class="btn btn-neutral float-left" title="GPyTorchInverseGammaPrior" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../regression/gumbi.regression.Regressor.html" class="btn btn-neutral float-left" title="Regressor" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral float-right" title="gumbi.utils" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

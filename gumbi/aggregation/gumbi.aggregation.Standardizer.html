@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Standardizer &mdash; Gumbi 0.2.1 documentation</title>
+  <title>Standardizer &mdash; Gumbi 0.4.1 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/green_theme.css" type="text/css" />
@@ -39,7 +39,7 @@
             Gumbi
           </a>
               <div class="version">
-                0.2.1
+                0.4.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -58,6 +58,14 @@
 <li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Cars_Dataset.html">The Cars Dataset</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Simple_Regression.html">Simple Regression and Prediction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Multioutput_Regression.html">Multioutput Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Latent_GP.html">Regression and Classification with a Latent Gaussian Processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Cars_Dataset_Botorch.html">Bayesian Optimization with the Botorch backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Cars_Dataset_Botorch.html#Single-output-regression">Single-output regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Cars_Dataset_Botorch.html#Multi-output-regression">Multi-output regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Cars_Dataset_Botorch.html#Multi-input-multi-output-regression">Multi-input multi-output regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Cars_Dataset_Botorch.html#Mixed-categorical-continuous-regression">Mixed categorical-continuous regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Cars_Dataset_Botorch.html#Multi-input-regression">Multi-input regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Cars_Dataset_Botorch.html#Multi-output-(Pareto-front)-optimization-with-qNEHVI">Multi-output (Pareto front) optimization with qNEHVI</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API:</span></p>
 <ul class="current">
@@ -110,7 +118,7 @@
 <h1>Standardizer<a class="headerlink" href="#standardizer" title="Permalink to this heading"></a></h1>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.aggregation.Standardizer" title="gumbi.aggregation.Standardizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Standardizer</span></code></a>([log_vars, logit_vars])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.aggregation.Standardizer" title="gumbi.aggregation.Standardizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Standardizer</span></code></a>([log_vars, logit_vars, ...])</p></td>
 <td><p>Container for dict of mean (μ) and variance (σ2) for every parameter.</p></td>
 </tr>
 </tbody>
@@ -122,7 +130,7 @@
 <td><p>Construct from wide-form DataFrame</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#gumbi.aggregation.Standardizer.stdz" title="gumbi.aggregation.Standardizer.stdz"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Standardizer.stdz</span></code></a>(name, μ=None, σ2=None)</p></td>
-<td><p>Transforms, mean-centers, and scales a parameter, distribution, or Series</p></td>
+<td><p>Transforms, centers, and scales a parameter, distribution, or Series</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.aggregation.Standardizer.transform" title="gumbi.aggregation.Standardizer.transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Standardizer.transform</span></code></a>(name, μ=None, σ2=None)</p></td>
 <td><p>Transforms a parameter, distribution, or Series</p></td>
@@ -160,42 +168,51 @@
 </table>
 <dl class="py class">
 <dt class="sig sig-object py" id="gumbi.aggregation.Standardizer">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gumbi.aggregation.</span></span><span class="sig-name descname"><span class="pre">Standardizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_vars</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logit_vars</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.aggregation.Standardizer" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gumbi.aggregation.</span></span><span class="sig-name descname"><span class="pre">Standardizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_vars</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logit_vars</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isotropic_vars</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.aggregation.Standardizer" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></p>
 <p>Container for dict of mean (μ) and variance (σ2) for every parameter.</p>
-<p><a class="reference internal" href="#gumbi.aggregation.Standardizer" title="gumbi.aggregation.Standardizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Standardizer</span></code></a> objects allow transformation and normalization of datasets. The main methods are <a class="reference internal" href="#gumbi.aggregation.Standardizer.stdz" title="gumbi.aggregation.Standardizer.stdz"><code class="xref py py-meth docutils literal notranslate"><span class="pre">stdz()</span></code></a>,
-which attempts to coerce the values of a given variable to a standard normal distribution (<cite>z-scores</cite>), and its
-complement <a class="reference internal" href="#gumbi.aggregation.Standardizer.unstdz" title="gumbi.aggregation.Standardizer.unstdz"><code class="xref py py-meth docutils literal notranslate"><span class="pre">unstdz()</span></code></a>. The steps are</p>
+<p><a class="reference internal" href="#gumbi.aggregation.Standardizer" title="gumbi.aggregation.Standardizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Standardizer</span></code></a> objects allow transformation and normalization of
+datasets. The main methods are <a class="reference internal" href="#gumbi.aggregation.Standardizer.stdz" title="gumbi.aggregation.Standardizer.stdz"><code class="xref py py-meth docutils literal notranslate"><span class="pre">stdz()</span></code></a>, which attempts to coerce the
+values of a given variable to a standard normal distribution (<cite>z-scores</cite>),
+and its complement <a class="reference internal" href="#gumbi.aggregation.Standardizer.unstdz" title="gumbi.aggregation.Standardizer.unstdz"><code class="xref py py-meth docutils literal notranslate"><span class="pre">unstdz()</span></code></a>. The steps are</p>
 <div class="math notranslate nohighlight">
 \[\mathbf{\text{tidy}} \rightarrow \text{transform} \rightarrow \text{mean-center} \rightarrow \text{scale}
 \rightarrow \mathbf{\text{tidy.z}}\]</div>
-<p>For example, reaction <cite>rate</cite> must clearly be strictly positive, so we use a <cite>log</cite> transformation so that it behaves
-as a normally-distributed random variable. We then mean-center and scale this transformed value to obtain <cite>z-scores</cite>
-indicating how similar a given estimate is to all the other estimates we’ve observed. <cite>Standardizer</cite> stores the
-transforms and population mean and variance for every parameter, allowing us to convert back and forth
-between natural space (<span class="math notranslate nohighlight">\(rate\)</span>), transformed space (<span class="math notranslate nohighlight">\(\text{ln}\; rate\)</span>), and standardized space
-(<span class="math notranslate nohighlight">\(\left( \text{ln}\; rate  - \mu_{\text{ln}\; rate} \right)/\sigma_{\text{ln}\; rate}\)</span>).</p>
-<p>Typically, a <a class="reference internal" href="#gumbi.aggregation.Standardizer" title="gumbi.aggregation.Standardizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Standardizer</span></code></a> will be constructed from a dataframe (<a class="reference internal" href="#gumbi.aggregation.Standardizer.from_DataFrame" title="gumbi.aggregation.Standardizer.from_DataFrame"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_DataFrame()</span></code></a>),
-but the individual means and variances can be provided at instantiation as well. Note, however,
-that these should be the mean/std of the <em>transformed</em> variable. For example, if <cite>r</cite> should be treated as
-log-normal with a natural-space mean of 1 and variance of 0.1, the right way to instantiate the class
-would be <cite>Standardizer(d={‘μ’: 0, ‘σ2’: 0.1}, log_vars=[‘d’])</cite>.</p>
+<p>For example, reaction <cite>rate</cite> must clearly be strictly positive, so we use a
+<cite>log</cite> transformation so that it behaves as a normally-distributed random
+variable. We then mean-center and scale this transformed value to obtain
+<cite>z-scores</cite> indicating how similar a given estimate is to all the other
+estimates we’ve observed. <cite>Standardizer</cite> stores the transforms and
+population mean and variance for every parameter, allowing us to convert
+back and forth between natural space (<span class="math notranslate nohighlight">\(rate\)</span>), transformed space
+(<span class="math notranslate nohighlight">\(\text{ln}\; rate\)</span>), and standardized space (<span class="math notranslate nohighlight">\(\left(
+\text{ln}\; rate  - \mu_{\text{ln}\; rate} \right)/\sigma_{\text{ln}\;
+rate}\)</span>).</p>
+<p>Typically, a <a class="reference internal" href="#gumbi.aggregation.Standardizer" title="gumbi.aggregation.Standardizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Standardizer</span></code></a> will be constructed from a dataframe
+(<a class="reference internal" href="#gumbi.aggregation.Standardizer.from_DataFrame" title="gumbi.aggregation.Standardizer.from_DataFrame"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_DataFrame()</span></code></a>), but the individual means and variances can be
+provided at instantiation as well. Note, however, that these should be the
+mean/std of the <em>transformed</em> variable. For example, if <cite>r</cite> should be
+treated as log-normal with a natural-space mean of 1 and variance of 0.1,
+the right way to instantiate the class would be <cite>Standardizer(d={‘μ’: 0,
+‘σ2’: 0.1}, log_vars=[‘d’])</cite>.</p>
 <p class="rubric">Notes</p>
-<p><a class="reference internal" href="#gumbi.aggregation.Standardizer" title="gumbi.aggregation.Standardizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Standardizer</span></code></a> is just a <a class="reference external" href="https://docs.python.org/3/tutorial/datastructures.html#dictionaries">dictionary</a>
-with some extra methods and defaults, so standard dictionary methods like <code class="xref py py-meth docutils literal notranslate"><span class="pre">dict.update()</span></code> still work.</p>
+<p><a class="reference internal" href="#gumbi.aggregation.Standardizer" title="gumbi.aggregation.Standardizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Standardizer</span></code></a> is just a <a class="reference external" href="https://docs.python.org/3/tutorial/datastructures.html#dictionaries">dictionary</a> with
+some extra methods and defaults, so standard dictionary methods like
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">dict.update()</span></code> still work.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>log_vars</strong> (<em>list</em><em>, </em><em>optional</em>) – List of input and output variables to be treated as log-normal.</p></li>
 <li><p><strong>logit_vars</strong> (<em>list</em><em>, </em><em>optional</em>) – List of input and output variables to be treated as logit-normal.</p></li>
-<li><p><strong>**kwargs</strong> – Mean and variance of each variable as a dictionary, e.g. d={‘μ’: 0, ‘σ2’: 0.1}</p></li>
+<li><p><strong>**kwargs</strong> – Mean and variance of each variable as a dictionary, e.g. d={‘μ’: 0,
+‘σ2’: 0.1}</p></li>
 </ul>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gumbi</span> <span class="kn">import</span> <span class="n">Standardizer</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">gumbi</span><span class="w"> </span><span class="kn">import</span> <span class="n">Standardizer</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">stdzr</span> <span class="o">=</span> <span class="n">Standardizer</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;μ&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;σ2&#39;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">},</span> <span class="n">d</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;μ&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;σ2&#39;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">},</span> <span class="n">log_vars</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;d&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
@@ -246,7 +263,7 @@ with some extra methods and defaults, so standard dictionary methods like <code 
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="gumbi.aggregation.Standardizer.from_DataFrame">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_DataFrame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_vars</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logit_vars</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.aggregation.Standardizer.from_DataFrame" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_DataFrame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_vars</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logit_vars</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isotropic_vars</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.aggregation.Standardizer.from_DataFrame" title="Permalink to this definition"></a></dt>
 <dd><p>Construct from wide-form DataFrame</p>
 </dd></dl>
 
@@ -266,30 +283,37 @@ with some extra methods and defaults, so standard dictionary methods like <code 
 <dt class="sig sig-object py" id="gumbi.aggregation.Standardizer.mean_transforms">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mean_transforms</span></span><a class="headerlink" href="#gumbi.aggregation.Standardizer.mean_transforms" title="Permalink to this definition"></a></dt>
 <dd><p>Function that transforms the mean of a distribution.</p>
-<p>These transform’s should follow scipy’s conventions such that a distribution can be defined in the given
-space by passing (loc=μ, scale=σ2**0.5). For a lognormal variable, an RV defined as <code class="docutils literal notranslate"><span class="pre">lognorm(loc=μ,</span>
-<span class="pre">scale=σ2**0.5)</span></code> in “natural” space is equivalent to <code class="docutils literal notranslate"><span class="pre">norm(loc=np.log(μ),</span> <span class="pre">scale=σ2**0.5)</span></code> in log space,
-so this transform should return <code class="docutils literal notranslate"><span class="pre">np.log(μ)</span></code> when converting from natural to log space, and <code class="docutils literal notranslate"><span class="pre">np.exp(μ)</span></code>
-when converting from log to natural space. Similarly for a logit-normal variable, an RV defined as
-<code class="docutils literal notranslate"><span class="pre">logitnorm(loc=μ,</span> <span class="pre">scale=σ2**0.5))</span></code> in natural space is equivalent to <code class="docutils literal notranslate"><span class="pre">norm(loc=logit(μ),</span> <span class="pre">scale=σ2**0.5)</span></code>
-in logit space, so this transform should return <code class="docutils literal notranslate"><span class="pre">logit(μ)</span></code> when converting from natural to logit space,
-and <code class="docutils literal notranslate"><span class="pre">expit(μ)</span></code> when converting from logit to natural space.</p>
+<p>These transform’s should follow scipy’s conventions such that a
+distribution can be defined in the given space by passing (loc=μ,
+scale=σ2**0.5). For a lognormal variable, an RV defined as
+<code class="docutils literal notranslate"><span class="pre">lognorm(loc=μ,</span> <span class="pre">scale=σ2**0.5)</span></code> in “natural” space is equivalent to
+<code class="docutils literal notranslate"><span class="pre">norm(loc=np.log(μ),</span> <span class="pre">scale=σ2**0.5)</span></code> in log space, so this transform
+should return <code class="docutils literal notranslate"><span class="pre">np.log(μ)</span></code> when converting from natural to log space,
+and <code class="docutils literal notranslate"><span class="pre">np.exp(μ)</span></code> when converting from log to natural space. Similarly
+for a logit-normal variable, an RV defined as <code class="docutils literal notranslate"><span class="pre">logitnorm(loc=μ,</span>
+<span class="pre">scale=σ2**0.5))</span></code> in natural space is equivalent to <code class="docutils literal notranslate"><span class="pre">norm(loc=logit(μ),</span>
+<span class="pre">scale=σ2**0.5)</span></code> in logit space, so this transform should return
+<code class="docutils literal notranslate"><span class="pre">logit(μ)</span></code> when converting from natural to logit space, and
+<code class="docutils literal notranslate"><span class="pre">expit(μ)</span></code> when converting from logit to natural space.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gumbi.aggregation.Standardizer.stdz">
-<span class="sig-name descname"><span class="pre">stdz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">pd.Series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">μ</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">σ2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">pd.Series</span></span></span><a class="headerlink" href="#gumbi.aggregation.Standardizer.stdz" title="Permalink to this definition"></a></dt>
-<dd><p>Transforms, mean-centers, and scales a parameter, distribution, or Series</p>
+<span class="sig-name descname"><span class="pre">stdz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">μ</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">σ2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Series</span></span></span><a class="headerlink" href="#gumbi.aggregation.Standardizer.stdz" title="Permalink to this definition"></a></dt>
+<dd><p>Transforms, centers, and scales a parameter, distribution, or Series</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<em>str</em><em> or </em><em>pd.Series</em>) – Name of parameter. If a Series is supplied, the name of the series must be the parameter name.</p></li>
-<li><p><strong>μ</strong> (<em>float</em><em>, </em><em>optional</em>) – Value of parameter or mean of parameter distribution. Only optional if first argument is a Series.</p></li>
+<li><p><strong>name</strong> (<em>str</em><em> or </em><em>pd.Series</em>) – Name of parameter. If a Series is supplied, the name of the series
+must be the parameter name.</p></li>
+<li><p><strong>μ</strong> (<em>float</em><em>, </em><em>optional</em>) – Value of parameter or mean of parameter distribution. Only optional
+if first argument is a Series.</p></li>
 <li><p><strong>σ2</strong> (<em>float</em><em>, </em><em>optional</em>) – Variance of parameter distribution.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Standardized parameter, (mean, variance) of standardized distribution, or standardized Series</p>
+<dd class="field-even"><p>Standardized parameter, (mean, variance) of standardized
+distribution, or standardized Series</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>float, tuple, or pd.Series</p>
@@ -299,18 +323,21 @@ and <code class="docutils literal notranslate"><span class="pre">expit(μ)</span
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gumbi.aggregation.Standardizer.transform">
-<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">pd.Series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">μ</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">σ2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">pd.Series</span></span></span><a class="headerlink" href="#gumbi.aggregation.Standardizer.transform" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">μ</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">σ2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Series</span></span></span><a class="headerlink" href="#gumbi.aggregation.Standardizer.transform" title="Permalink to this definition"></a></dt>
 <dd><p>Transforms a parameter, distribution, or Series</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<em>str</em><em> or </em><em>pd.Series</em>) – Name of parameter. If a Series is supplied, the name of the series must be the parameter name.</p></li>
-<li><p><strong>μ</strong> (<em>float</em><em>, </em><em>optional</em>) – Value of parameter or mean of parameter distribution. Only optional if first argument is a Series.</p></li>
+<li><p><strong>name</strong> (<em>str</em><em> or </em><em>pd.Series</em>) – Name of parameter. If a Series is supplied, the name of the series
+must be the parameter name.</p></li>
+<li><p><strong>μ</strong> (<em>float</em><em>, </em><em>optional</em>) – Value of parameter or mean of parameter distribution. Only optional
+if first argument is a Series.</p></li>
 <li><p><strong>σ2</strong> (<em>float</em><em>, </em><em>optional</em>) – Variance of parameter distribution.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Transformed parameter, (mean, variance) of untransformed distribution, or untransformed Series</p>
+<dd class="field-even"><p>Transformed parameter, (mean, variance) of untransformed
+distribution, or untransformed Series</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>float, tuple, or pd.Series</p>
@@ -321,23 +348,28 @@ and <code class="docutils literal notranslate"><span class="pre">expit(μ)</span
 <dl class="py property">
 <dt class="sig sig-object py" id="gumbi.aggregation.Standardizer.transforms">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">transforms</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span></em><a class="headerlink" href="#gumbi.aggregation.Standardizer.transforms" title="Permalink to this definition"></a></dt>
-<dd><p>Collection of forward and reverse transform functions for each variable</p>
+<dd><p>Collection of forward and reverse transform functions for each
+variable</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gumbi.aggregation.Standardizer.unstdz">
-<span class="sig-name descname"><span class="pre">unstdz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">pd.Series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">μ</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">σ2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">pd.Series</span></span></span><a class="headerlink" href="#gumbi.aggregation.Standardizer.unstdz" title="Permalink to this definition"></a></dt>
-<dd><p>Untransforms, un-centers, and un-scales a parameter, distribution, or Series</p>
+<span class="sig-name descname"><span class="pre">unstdz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">μ</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">σ2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Series</span></span></span><a class="headerlink" href="#gumbi.aggregation.Standardizer.unstdz" title="Permalink to this definition"></a></dt>
+<dd><p>Untransforms, un-centers, and un-scales a parameter, distribution, or
+Series</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<em>str</em><em> or </em><em>pd.Series</em>) – Name of parameter. If a Series is supplied, the name of the series must be the parameter name.</p></li>
-<li><p><strong>μ</strong> (<em>float</em><em>, </em><em>optional</em>) – Value of parameter or mean of parameter distribution. Only optional if first argument is a Series.</p></li>
+<li><p><strong>name</strong> (<em>str</em><em> or </em><em>pd.Series</em>) – Name of parameter. If a Series is supplied, the name of the series
+must be the parameter name.</p></li>
+<li><p><strong>μ</strong> (<em>float</em><em>, </em><em>optional</em>) – Value of parameter or mean of parameter distribution. Only optional
+if first argument is a Series.</p></li>
 <li><p><strong>σ2</strong> (<em>float</em><em>, </em><em>optional</em>) – Variance of parameter distribution.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Unstandardized parameter, (mean, variance) of unstandardized distribution, or unstandardized Series</p>
+<dd class="field-even"><p>Unstandardized parameter, (mean, variance) of unstandardized
+distribution, or unstandardized Series</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>float, tuple, or pd.Series</p>
@@ -347,18 +379,21 @@ and <code class="docutils literal notranslate"><span class="pre">expit(μ)</span
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gumbi.aggregation.Standardizer.untransform">
-<span class="sig-name descname"><span class="pre">untransform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">pd.Series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">μ</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">σ2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">pd.Series</span></span></span><a class="headerlink" href="#gumbi.aggregation.Standardizer.untransform" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">untransform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">μ</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">σ2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Series</span></span></span><a class="headerlink" href="#gumbi.aggregation.Standardizer.untransform" title="Permalink to this definition"></a></dt>
 <dd><p>Untransforms a parameter, distribution, or Series</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<em>str</em><em> or </em><em>pd.Series</em>) – Name of parameter. If a Series is supplied, the name of the series must be the parameter name.</p></li>
-<li><p><strong>μ</strong> (<em>float</em><em>, </em><em>optional</em>) – Value of parameter or mean of parameter distribution. Only optional if first argument is a Series.</p></li>
+<li><p><strong>name</strong> (<em>str</em><em> or </em><em>pd.Series</em>) – Name of parameter. If a Series is supplied, the name of the series
+must be the parameter name.</p></li>
+<li><p><strong>μ</strong> (<em>float</em><em>, </em><em>optional</em>) – Value of parameter or mean of parameter distribution. Only optional
+if first argument is a Series.</p></li>
 <li><p><strong>σ2</strong> (<em>float</em><em>, </em><em>optional</em>) – Variance of parameter distribution.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Untransformed parameter, (mean, variance) of untransformed distribution, or untransformed Series</p>
+<dd class="field-even"><p>Untransformed parameter, (mean, variance) of untransformed
+distribution, or untransformed Series</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>float, tuple, or pd.Series</p>
@@ -376,10 +411,12 @@ and <code class="docutils literal notranslate"><span class="pre">expit(μ)</span
 <dt class="sig sig-object py" id="gumbi.aggregation.Standardizer.var_transforms">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">var_transforms</span></span><a class="headerlink" href="#gumbi.aggregation.Standardizer.var_transforms" title="Permalink to this definition"></a></dt>
 <dd><p>Function that transforms the variance of a distribution.</p>
-<p>These transform’s should follow scipy’s conventions such that a distribution can be defined in the given
-space by passing (loc=μ, scale=σ2**0.5). Accordingly, since both log-normal and logit-normal variables are
-defined in terms of the scale (standard deviation) in their respective transformed spaces, this function
-simply returns the variance unchanged in these cases.</p>
+<p>These transform’s should follow scipy’s conventions such that a
+distribution can be defined in the given space by passing (loc=μ,
+scale=σ2**0.5). Accordingly, since both log-normal and logit-normal
+variables are defined in terms of the scale (standard deviation) in
+their respective transformed spaces, this function simply returns the
+variance unchanged in these cases.</p>
 </dd></dl>
 
 </dd></dl>

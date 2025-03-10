@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Introduction &mdash; Gumbi 0.2.1 documentation</title>
+  <title>Introduction &mdash; Gumbi 0.4.1 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/nbsphinx-code-cells.css" type="text/css" />
@@ -40,7 +40,7 @@
             Gumbi
           </a>
               <div class="version">
-                0.2.1
+                0.4.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -68,6 +68,14 @@
 <li class="toctree-l1"><a class="reference internal" href="../examples/Cars_Dataset.html">The Cars Dataset</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples/Simple_Regression.html">Simple Regression and Prediction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples/Multioutput_Regression.html">Multioutput Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/Latent_GP.html">Regression and Classification with a Latent Gaussian Processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/Cars_Dataset_Botorch.html">Bayesian Optimization with the Botorch backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/Cars_Dataset_Botorch.html#Single-output-regression">Single-output regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/Cars_Dataset_Botorch.html#Multi-output-regression">Multi-output regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/Cars_Dataset_Botorch.html#Multi-input-multi-output-regression">Multi-input multi-output regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/Cars_Dataset_Botorch.html#Mixed-categorical-continuous-regression">Mixed categorical-continuous regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/Cars_Dataset_Botorch.html#Multi-input-regression">Multi-input regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/Cars_Dataset_Botorch.html#Multi-output-(Pareto-front)-optimization-with-qNEHVI">Multi-output (Pareto front) optimization with qNEHVI</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API:</span></p>
 <ul>
@@ -101,32 +109,24 @@
   <section id="Introduction">
 <h1>Introduction<a class="headerlink" href="#Introduction" title="Permalink to this heading"></a></h1>
 <p>Gumbi simplifies the steps needed to build a Gaussian Process model from tabular data. It takes care of shaping, transforming, and standardizing data as necessary while applying best practices and sensible defaults to the construction of the GP model itself. Taking inspiration from popular packages such as <a class="reference external" href="https://bambinos.github.io/bambi/main/index.html">Bambi</a> and <a class="reference external" href="https://seaborn.pydata.org/index.html">Seaborn</a>, Gumbi’s aim is to allow quick iteration on both model structure and
-prediction visualization. Gumbi is primarily built on top of <a class="reference external" href="https://docs.pymc.io/">Pymc</a>, though additional support for <a class="reference external" href="https://gpflow.readthedocs.io/">GPflow</a> is planned.</p>
+prediction visualization. Gumbi is primarily designed with the experimental scientist in mind, and enabling easy implementation of Bayesian Optimization into laboratory workflows. Gumbi is primarily built on top of <a class="reference external" href="https://docs.pymc.io/">Pymc</a>, with a <a class="reference external" href="https://botorch.org/">Botorch</a> backend provided for acceleration and Bayesian Optimization.</p>
 <section id="Quickstart">
 <h2>Quickstart<a class="headerlink" href="#Quickstart" title="Permalink to this heading"></a></h2>
 <p>Read in some data and store it as a Gumbi <code class="docutils literal notranslate"><span class="pre">DataSet</span></code>:</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">gumbi</span> <span class="k">as</span> <span class="nn">gmb</span>
-<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">gumbi</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gmb</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
 <span class="n">cars</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="s1">&#39;mpg&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
 <span class="n">ds</span> <span class="o">=</span> <span class="n">gmb</span><span class="o">.</span><span class="n">DataSet</span><span class="p">(</span><span class="n">cars</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;mpg&#39;</span><span class="p">,</span> <span class="s1">&#39;acceleration&#39;</span><span class="p">],</span> <span class="n">log_vars</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;mpg&#39;</span><span class="p">,</span> <span class="s1">&#39;acceleration&#39;</span><span class="p">,</span> <span class="s1">&#39;horsepower&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS functions.
-</pre></div></div>
-</div>
 <p>Create a Gumbi <code class="docutils literal notranslate"><span class="pre">GP</span></code> object and fit a model that predicts <em>mpg</em> from <em>horsepower</em>:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gp</span> <span class="o">=</span> <span class="n">gmb</span><span class="o">.</span><span class="n">GP</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
@@ -134,17 +134,35 @@ WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS 
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/john/projects/gumbi/gumbi/utils/gp_utils.py:64: FutureWarning: find_constrained_prior is deprecated and will be removed in a future version. Please use maxent function from PreliZ. https://preliz.readthedocs.io/en/latest/api_reference.html#preliz.unidimensional.maxent
+  params_ls = pm.find_constrained_prior(
+/home/john/mambaforge/envs/gumbi-test/lib/python3.11/site-packages/pytensor/link/c/cmodule.py:2959: UserWarning: PyTensor could not link to a BLAS installation. Operations that might benefit from BLAS will be severely degraded.
+This usually happens when PyTensor is installed via pip. We recommend it be installed via conda/mamba/pixi instead.
+Alternatively, you can use an experimental backend such as Numba or JAX that perform their own BLAS optimizations, by setting `pytensor.config.mode == &#39;NUMBA&#39;` or passing `mode=&#39;NUMBA&#39;` when compiling a PyTensor function.
+For more options and details see https://pytensor.readthedocs.io/en/latest/troubleshooting.html#how-do-i-configure-test-my-blas-library
+  warnings.warn(
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-
-</pre></div></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "0ae23e02e6da4fd2b30b8fc68f9dd93e", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre></div>
 </div>
 <p>Make predictions and plot!</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">X</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">prepare_grid</span><span class="p">()</span>
@@ -154,7 +172,7 @@ WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS 
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="output_area docutils container">

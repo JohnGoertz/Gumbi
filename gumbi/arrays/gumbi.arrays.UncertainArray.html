@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>UncertainArray &mdash; Gumbi 0.2.1 documentation</title>
+  <title>UncertainArray &mdash; Gumbi 0.4.1 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/green_theme.css" type="text/css" />
@@ -37,7 +37,7 @@
             Gumbi
           </a>
               <div class="version">
-                0.2.1
+                0.4.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -56,6 +56,14 @@
 <li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Cars_Dataset.html">The Cars Dataset</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Simple_Regression.html">Simple Regression and Prediction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Multioutput_Regression.html">Multioutput Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Latent_GP.html">Regression and Classification with a Latent Gaussian Processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Cars_Dataset_Botorch.html">Bayesian Optimization with the Botorch backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Cars_Dataset_Botorch.html#Single-output-regression">Single-output regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Cars_Dataset_Botorch.html#Multi-output-regression">Multi-output regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Cars_Dataset_Botorch.html#Multi-input-multi-output-regression">Multi-input multi-output regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Cars_Dataset_Botorch.html#Mixed-categorical-continuous-regression">Mixed categorical-continuous regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Cars_Dataset_Botorch.html#Multi-input-regression">Multi-input regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Cars_Dataset_Botorch.html#Multi-output-(Pareto-front)-optimization-with-qNEHVI">Multi-output (Pareto front) optimization with qNEHVI</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API:</span></p>
 <ul class="current">
@@ -124,26 +132,26 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#gumbi.arrays.UncertainArray.BD" title="gumbi.arrays.UncertainArray.BD"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UncertainArray.BD</span></code></a>(other)</p></td>
 <td><p>Bhattacharyya Distance</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.arrays.UncertainArray.EI" title="gumbi.arrays.UncertainArray.EI"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UncertainArray.EI</span></code></a>(target, best_yet[, k])</p></td>
-<td><p>Expected improvement</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#gumbi.arrays.UncertainArray.HD" title="gumbi.arrays.UncertainArray.HD"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UncertainArray.HD</span></code></a>(other)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.arrays.UncertainArray.HD" title="gumbi.arrays.UncertainArray.HD"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UncertainArray.HD</span></code></a>(other)</p></td>
 <td><p>Hellinger Distance</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.arrays.UncertainArray.KLD" title="gumbi.arrays.UncertainArray.KLD"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UncertainArray.KLD</span></code></a>(other)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#gumbi.arrays.UncertainArray.KLD" title="gumbi.arrays.UncertainArray.KLD"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UncertainArray.KLD</span></code></a>(other)</p></td>
 <td><p>Kullback–Leibler Divergence</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#gumbi.arrays.UncertainArray.mean" title="gumbi.arrays.UncertainArray.mean"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UncertainArray.mean</span></code></a>([axis, dtype, out, keepdims])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.arrays.UncertainArray.mean" title="gumbi.arrays.UncertainArray.mean"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UncertainArray.mean</span></code></a>([axis, dtype, out, keepdims])</p></td>
 <td><p>Mean with uncertainty propagation</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.arrays.UncertainArray.nlpd" title="gumbi.arrays.UncertainArray.nlpd"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UncertainArray.nlpd</span></code></a>(target)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#gumbi.arrays.UncertainArray.nlpd" title="gumbi.arrays.UncertainArray.nlpd"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UncertainArray.nlpd</span></code></a>(target)</p></td>
 <td><p>Negative log posterior density</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">UncertainArray.stack</span></code>(uarray_list[, axis])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">UncertainArray.stack</span></code>(uarray_list[, axis])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.arrays.UncertainArray.sum" title="gumbi.arrays.UncertainArray.sum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UncertainArray.sum</span></code></a>([axis, dtype, out, keepdims])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#gumbi.arrays.UncertainArray.sum" title="gumbi.arrays.UncertainArray.sum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UncertainArray.sum</span></code></a>([axis, dtype, out, keepdims])</p></td>
 <td><p>Summation with uncertainty propagation</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.arrays.UncertainArray.vEI" title="gumbi.arrays.UncertainArray.vEI"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UncertainArray.vEI</span></code></a>(target, best_yet[, k])</p></td>
+<td><p>Vector expected improvement</p></td>
 </tr>
 </tbody>
 </table>
@@ -302,28 +310,6 @@ should give exactly zero with no uncertainty, but it doesn’t:</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="gumbi.arrays.UncertainArray.EI">
-<span class="sig-name descname"><span class="pre">EI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">best_yet</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#gumbi.arrays.UncertainArray.EI" title="Permalink to this definition"></a></dt>
-<dd><p>Expected improvement</p>
-<p>Taken from <a class="reference external" href="https://github.com/akuhren/target_vector_estimation">https://github.com/akuhren/target_vector_estimation</a></p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>target</strong> (<em>float</em>) – </p></li>
-<li><p><strong>best_yet</strong> (<em>float</em>) – </p></li>
-<li><p><strong>k</strong> (<em>int</em>) – </p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>EI</strong></p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>float</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="gumbi.arrays.UncertainArray.HD">
 <span class="sig-name descname"><span class="pre">HD</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.arrays.UncertainArray.HD" title="Permalink to this definition"></a></dt>
 <dd><p>Hellinger Distance</p>
@@ -379,6 +365,28 @@ should give exactly zero with no uncertainty, but it doesn’t:</p>
 <dt class="sig sig-object py" id="gumbi.arrays.UncertainArray.sum">
 <span class="sig-name descname"><span class="pre">sum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdims</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#gumbi.arrays.UncertainArray" title="gumbi.arrays.UncertainArray"><span class="pre">UncertainArray</span></a></span></span><a class="headerlink" href="#gumbi.arrays.UncertainArray.sum" title="Permalink to this definition"></a></dt>
 <dd><p>Summation with uncertainty propagation</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gumbi.arrays.UncertainArray.vEI">
+<span class="sig-name descname"><span class="pre">vEI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">best_yet</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#gumbi.arrays.UncertainArray.vEI" title="Permalink to this definition"></a></dt>
+<dd><p>Vector expected improvement</p>
+<p>Taken from <a class="reference external" href="https://github.com/akuhren/target_vector_estimation">https://github.com/akuhren/target_vector_estimation</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> (<em>float</em>) – </p></li>
+<li><p><strong>best_yet</strong> (<em>float</em>) – </p></li>
+<li><p><strong>k</strong> (<em>int</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>vEI</strong></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py property">

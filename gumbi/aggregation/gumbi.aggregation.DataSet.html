@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DataSet &mdash; Gumbi 0.2.1 documentation</title>
+  <title>DataSet &mdash; Gumbi 0.4.1 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/green_theme.css" type="text/css" />
@@ -37,7 +37,7 @@
             Gumbi
           </a>
               <div class="version">
-                0.2.1
+                0.4.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -56,6 +56,14 @@
 <li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Cars_Dataset.html">The Cars Dataset</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Simple_Regression.html">Simple Regression and Prediction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Multioutput_Regression.html">Multioutput Regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Latent_GP.html">Regression and Classification with a Latent Gaussian Processes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Cars_Dataset_Botorch.html">Bayesian Optimization with the Botorch backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Cars_Dataset_Botorch.html#Single-output-regression">Single-output regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Cars_Dataset_Botorch.html#Multi-output-regression">Multi-output regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Cars_Dataset_Botorch.html#Multi-input-multi-output-regression">Multi-input multi-output regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Cars_Dataset_Botorch.html#Mixed-categorical-continuous-regression">Mixed categorical-continuous regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Cars_Dataset_Botorch.html#Multi-input-regression">Multi-input regression</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/examples/Cars_Dataset_Botorch.html#Multi-output-(Pareto-front)-optimization-with-qNEHVI">Multi-output (Pareto front) optimization with qNEHVI</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API:</span></p>
 <ul class="current">
@@ -136,71 +144,89 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#gumbi.aggregation.DataSet.inputs" title="gumbi.aggregation.DataSet.inputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataSet.inputs</span></code></a></p></td>
 <td><p>Columns of dataframe not contained in <code class="xref py py-attr docutils literal notranslate"><span class="pre">outputs</span></code>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataSet.log_vars</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataSet.isotropic_vars</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataSet.logit_vars</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataSet.log_vars</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataSet.names_column</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataSet.logit_vars</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#gumbi.aggregation.DataSet.specs" title="gumbi.aggregation.DataSet.specs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataSet.specs</span></code></a></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataSet.names_column</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.aggregation.DataSet.specs" title="gumbi.aggregation.DataSet.specs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataSet.specs</span></code></a></p></td>
 <td><p>Provides keyword arguments for easy instantiation of a similar <a class="reference internal" href="#gumbi.aggregation.DataSet" title="gumbi.aggregation.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataSet</span></code></a>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataSet.stdzr</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataSet.stdzr</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#gumbi.aggregation.DataSet.tidy" title="gumbi.aggregation.DataSet.tidy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataSet.tidy</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.aggregation.DataSet.tidy" title="gumbi.aggregation.DataSet.tidy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataSet.tidy</span></code></a></p></td>
 <td><p>Tidy-form view of data</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataSet.values_column</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataSet.values_column</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#gumbi.aggregation.DataSet.wide" title="gumbi.aggregation.DataSet.wide"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataSet.wide</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gumbi.aggregation.DataSet.wide" title="gumbi.aggregation.DataSet.wide"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataSet.wide</span></code></a></p></td>
 <td><p>Wide-form view of data</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataSet.data</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataSet.data</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataSet.outputs</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataSet.outputs</span></code></p></td>
 <td><p></p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py class">
 <dt class="sig sig-object py" id="gumbi.aggregation.DataSet">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gumbi.aggregation.</span></span><span class="sig-name descname"><span class="pre">DataSet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Variable'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Value'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_vars</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logit_vars</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stdzr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gumbi.aggregation.Standardizer.html#gumbi.aggregation.Standardizer" title="gumbi.aggregation.Standardizer"><span class="pre">Standardizer</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.aggregation.DataSet" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gumbi.aggregation.</span></span><span class="sig-name descname"><span class="pre">DataSet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Variable'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Value'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_vars</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logit_vars</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">isotropic_vars</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stdzr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="gumbi.aggregation.Standardizer.html#gumbi.aggregation.Standardizer" title="gumbi.aggregation.Standardizer"><span class="pre">Standardizer</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.aggregation.DataSet" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Container for tabular data, allowing simple access to standardized values and wide or tidy dataframe formats.</p>
-<p><a class="reference internal" href="#gumbi.aggregation.DataSet" title="gumbi.aggregation.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataSet</span></code></a> is instantiated with a <strong>wide-form</strong> dataframe, with all outputs of a given observation in a
-single row, but allows easy access to the corresponding <strong>tidy</strong> dataframe, with each output in a separate row (
-the <a class="reference internal" href="#gumbi.aggregation.DataSet.from_tidy" title="gumbi.aggregation.DataSet.from_tidy"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_tidy()</span></code></a> also allows construction from tidy data`). The titles of the tidy-form columns for the
-output names and their values are supplied at instantiation, defaulting to “Variable” and “Value”. For example,
-say we have an observation at position (x,y) with measurements of i, j, and k. The wide-form dataframe would have
-one column for each of x, y, i, j, and k, while the tidy-form dataframe would have a column for each of x and y,
-a “Variable” column where each row contains either “i”, “j”, or “k” as strings, and a “Value” column containing
-the corresponding measurement. Wide data is more space-efficient and perhaps more intuitive to construct and
-inspect, while tidy data more clearly distinguishes inputs and outputs. These views are accessible through the
-<a class="reference internal" href="#gumbi.aggregation.DataSet.wide" title="gumbi.aggregation.DataSet.wide"><code class="xref py py-attr docutils literal notranslate"><span class="pre">wide</span></code></a> and <a class="reference internal" href="#gumbi.aggregation.DataSet.tidy" title="gumbi.aggregation.DataSet.tidy"><code class="xref py py-attr docutils literal notranslate"><span class="pre">tidy</span></code></a> attributes as instances of <a class="reference internal" href="gumbi.aggregation.WideData.html#gumbi.aggregation.WideData" title="gumbi.aggregation.WideData"><code class="xref py py-class docutils literal notranslate"><span class="pre">WideData</span></code></a> and <a class="reference internal" href="gumbi.aggregation.TidyData.html#gumbi.aggregation.TidyData" title="gumbi.aggregation.TidyData"><code class="xref py py-class docutils literal notranslate"><span class="pre">TidyData</span></code></a>, respectively.</p>
-<p>As a container for <a class="reference internal" href="gumbi.aggregation.WideData.html#gumbi.aggregation.WideData" title="gumbi.aggregation.WideData"><code class="xref py py-class docutils literal notranslate"><span class="pre">WideData</span></code></a> and <a class="reference internal" href="gumbi.aggregation.TidyData.html#gumbi.aggregation.TidyData" title="gumbi.aggregation.TidyData"><code class="xref py py-class docutils literal notranslate"><span class="pre">TidyData</span></code></a>, this class also provides simple access to
-standardized values of the data through <cite>wide.z</cite> and <cite>tidy.z</cite> or transformed values through <cite>wide.t</cite> and
-<cite>tidy.t</cite>. A <a class="reference internal" href="gumbi.aggregation.Standardizer.html#gumbi.aggregation.Standardizer" title="gumbi.aggregation.Standardizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Standardizer</span></code></a> instance can be supplied as a keyword argument, otherwise one will be
-constructed automatically from the supplied dataframe with the supplied values of <cite>log_vars</cite> and <cite>logit_vars</cite>.
-Unlike <a class="reference internal" href="gumbi.aggregation.WideData.html#gumbi.aggregation.WideData" title="gumbi.aggregation.WideData"><code class="xref py py-class docutils literal notranslate"><span class="pre">WideData</span></code></a> and <a class="reference internal" href="gumbi.aggregation.TidyData.html#gumbi.aggregation.TidyData" title="gumbi.aggregation.TidyData"><code class="xref py py-class docutils literal notranslate"><span class="pre">TidyData</span></code></a>, the <a class="reference internal" href="#gumbi.aggregation.DataSet.wide" title="gumbi.aggregation.DataSet.wide"><code class="xref py py-attr docutils literal notranslate"><span class="pre">wide</span></code></a> and <a class="reference internal" href="#gumbi.aggregation.DataSet.tidy" title="gumbi.aggregation.DataSet.tidy"><code class="xref py py-attr docutils literal notranslate"><span class="pre">tidy</span></code></a> attributes of a <em>DataSet</em> can
-be altered and sliced while retaining their functionality, with a cursory integrity check. The
-<a class="reference internal" href="gumbi.aggregation.Standardizer.html#gumbi.aggregation.Standardizer" title="gumbi.aggregation.Standardizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Standardizer</span></code></a> instance can be updated with <a class="reference internal" href="#gumbi.aggregation.DataSet.update_stdzr" title="gumbi.aggregation.DataSet.update_stdzr"><code class="xref py py-meth docutils literal notranslate"><span class="pre">update_stdzr()</span></code></a>, for example following manipulation of
-the data or alteration of <code class="xref py py-attr docutils literal notranslate"><span class="pre">log_vars</span></code> and <code class="xref py py-attr docutils literal notranslate"><span class="pre">logit_vars</span></code>.</p>
+<p>Container for tabular data, allowing simple access to standardized values
+and wide or tidy dataframe formats.</p>
+<p><a class="reference internal" href="#gumbi.aggregation.DataSet" title="gumbi.aggregation.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataSet</span></code></a> is instantiated with a <strong>wide-form</strong> dataframe, with all
+outputs of a given observation in a single row, but allows easy access to
+the corresponding <strong>tidy</strong> dataframe, with each output in a separate row (
+the <a class="reference internal" href="#gumbi.aggregation.DataSet.from_tidy" title="gumbi.aggregation.DataSet.from_tidy"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_tidy()</span></code></a> also allows construction from tidy data`). The titles
+of the tidy-form columns for the output names and their values are supplied
+at instantiation, defaulting to “Variable” and “Value”. For example, say we
+have an observation at position (x,y) with measurements of i, j, and k. The
+wide-form dataframe would have one column for each of x, y, i, j, and k,
+while the tidy-form dataframe would have a column for each of x and y, a
+“Variable” column where each row contains either “i”, “j”, or “k” as
+strings, and a “Value” column containing the corresponding measurement. Wide
+data is more space-efficient and perhaps more intuitive to construct and
+inspect, while tidy data more clearly distinguishes inputs and outputs.
+These views are accessible through the <a class="reference internal" href="#gumbi.aggregation.DataSet.wide" title="gumbi.aggregation.DataSet.wide"><code class="xref py py-attr docutils literal notranslate"><span class="pre">wide</span></code></a> and <a class="reference internal" href="#gumbi.aggregation.DataSet.tidy" title="gumbi.aggregation.DataSet.tidy"><code class="xref py py-attr docutils literal notranslate"><span class="pre">tidy</span></code></a>
+attributes as instances of <a class="reference internal" href="gumbi.aggregation.WideData.html#gumbi.aggregation.WideData" title="gumbi.aggregation.WideData"><code class="xref py py-class docutils literal notranslate"><span class="pre">WideData</span></code></a> and <a class="reference internal" href="gumbi.aggregation.TidyData.html#gumbi.aggregation.TidyData" title="gumbi.aggregation.TidyData"><code class="xref py py-class docutils literal notranslate"><span class="pre">TidyData</span></code></a>,
+respectively.</p>
+<p>As a container for <a class="reference internal" href="gumbi.aggregation.WideData.html#gumbi.aggregation.WideData" title="gumbi.aggregation.WideData"><code class="xref py py-class docutils literal notranslate"><span class="pre">WideData</span></code></a> and <a class="reference internal" href="gumbi.aggregation.TidyData.html#gumbi.aggregation.TidyData" title="gumbi.aggregation.TidyData"><code class="xref py py-class docutils literal notranslate"><span class="pre">TidyData</span></code></a>, this class also
+provides simple access to standardized values of the data through <cite>wide.z</cite>
+and <cite>tidy.z</cite> or transformed values through <cite>wide.t</cite> and <cite>tidy.t</cite>. A
+<a class="reference internal" href="gumbi.aggregation.Standardizer.html#gumbi.aggregation.Standardizer" title="gumbi.aggregation.Standardizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Standardizer</span></code></a> instance can be supplied as a keyword argument,
+otherwise one will be constructed automatically from the supplied dataframe
+with the supplied values of <cite>log_vars</cite> and <cite>logit_vars</cite>. Unlike
+<a class="reference internal" href="gumbi.aggregation.WideData.html#gumbi.aggregation.WideData" title="gumbi.aggregation.WideData"><code class="xref py py-class docutils literal notranslate"><span class="pre">WideData</span></code></a> and <a class="reference internal" href="gumbi.aggregation.TidyData.html#gumbi.aggregation.TidyData" title="gumbi.aggregation.TidyData"><code class="xref py py-class docutils literal notranslate"><span class="pre">TidyData</span></code></a>, the <a class="reference internal" href="#gumbi.aggregation.DataSet.wide" title="gumbi.aggregation.DataSet.wide"><code class="xref py py-attr docutils literal notranslate"><span class="pre">wide</span></code></a> and <a class="reference internal" href="#gumbi.aggregation.DataSet.tidy" title="gumbi.aggregation.DataSet.tidy"><code class="xref py py-attr docutils literal notranslate"><span class="pre">tidy</span></code></a>
+attributes of a <em>DataSet</em> can be altered and sliced while retaining their
+functionality, with a cursory integrity check. The <a class="reference internal" href="gumbi.aggregation.Standardizer.html#gumbi.aggregation.Standardizer" title="gumbi.aggregation.Standardizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Standardizer</span></code></a>
+instance can be updated with <a class="reference internal" href="#gumbi.aggregation.DataSet.update_stdzr" title="gumbi.aggregation.DataSet.update_stdzr"><code class="xref py py-meth docutils literal notranslate"><span class="pre">update_stdzr()</span></code></a>, for example following
+manipulation of the data or alteration of <code class="xref py py-attr docutils literal notranslate"><span class="pre">log_vars</span></code> and
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">logit_vars</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> (<em>pd.DataFrame</em>) – A wide-form dataframe. See class method <a class="reference internal" href="#gumbi.aggregation.DataSet.from_tidy" title="gumbi.aggregation.DataSet.from_tidy"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_tidy()</span></code></a> for instantiation from tidy data.</p></li>
+<li><p><strong>data</strong> (<em>pd.DataFrame</em>) – A wide-form dataframe. See class method <a class="reference internal" href="#gumbi.aggregation.DataSet.from_tidy" title="gumbi.aggregation.DataSet.from_tidy"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_tidy()</span></code></a> for
+instantiation from tidy data.</p></li>
 <li><p><strong>outputs</strong> (<em>list</em>) – Columns of <cite>data</cite> to be treated as outputs.</p></li>
 <li><p><strong>names_column</strong> (<em>str</em><em>, </em><em>default 'Variable'</em>) – Name to be used in tidy view for column containing output names.</p></li>
 <li><p><strong>values_column</strong> (<em>str</em><em>, </em><em>default 'Value'</em>) – Name to be used in tidy view for column containing output values.</p></li>
-<li><p><strong>log_vars</strong> (<em>list</em><em>, </em><em>optional</em>) – List of input and output variables to be treated as log-normal. Ignored if <cite>stdzr</cite> is supplied.</p></li>
-<li><p><strong>logit_vars</strong> (<em>list</em><em>, </em><em>optional</em>) – List of input and output variables to be treated as logit-normal. Ignored if <cite>stdzr</cite> is supplied.</p></li>
-<li><p><strong>stdzr</strong> (<a class="reference internal" href="gumbi.aggregation.Standardizer.html#gumbi.aggregation.Standardizer" title="gumbi.aggregation.Standardizer"><em>Standardizer</em></a><em>, </em><em>optional</em>) – An <a class="reference internal" href="gumbi.aggregation.Standardizer.html#gumbi.aggregation.Standardizer" title="gumbi.aggregation.Standardizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Standardizer</span></code></a> instance. If not supplied, one will be created automatically.</p></li>
+<li><p><strong>log_vars</strong> (<em>list</em><em>, </em><em>optional</em>) – List of input and output variables to be treated as log-normal. Ignored
+if <cite>stdzr</cite> is supplied.</p></li>
+<li><p><strong>logit_vars</strong> (<em>list</em><em>, </em><em>optional</em>) – List of input and output variables to be treated as logit-normal.
+Ignored if <cite>stdzr</cite> is supplied.</p></li>
+<li><p><strong>stdzr</strong> (<a class="reference internal" href="gumbi.aggregation.Standardizer.html#gumbi.aggregation.Standardizer" title="gumbi.aggregation.Standardizer"><em>Standardizer</em></a><em>, </em><em>optional</em>) – An <a class="reference internal" href="gumbi.aggregation.Standardizer.html#gumbi.aggregation.Standardizer" title="gumbi.aggregation.Standardizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Standardizer</span></code></a> instance. If not supplied, one will be created
+automatically.</p></li>
 </ul>
 </dd>
 </dl>
@@ -236,13 +262,15 @@ the data or alteration of <code class="xref py py-attr docutils literal notransl
 <dl class="py method">
 <dt class="sig sig-object py" id="gumbi.aggregation.DataSet.from_tidy">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_tidy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tidy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names_column</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Variable'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values_column</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Value'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stdzr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_vars</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logit_vars</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.aggregation.DataSet.from_tidy" title="Permalink to this definition"></a></dt>
-<dd><p>Constructs a <cite>DataSet</cite> from a tidy-form dataframe. See <a class="reference internal" href="#gumbi.aggregation.DataSet" title="gumbi.aggregation.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataSet</span></code></a> for explanation of arguments.</p>
+<dd><p>Constructs a <cite>DataSet</cite> from a tidy-form dataframe. See
+<a class="reference internal" href="#gumbi.aggregation.DataSet" title="gumbi.aggregation.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataSet</span></code></a> for explanation of arguments.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gumbi.aggregation.DataSet.from_wide">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_wide</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wide</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names_column</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Variable'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values_column</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Value'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stdzr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_vars</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logit_vars</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.aggregation.DataSet.from_wide" title="Permalink to this definition"></a></dt>
-<dd><p>Constructs a <cite>DataSet</cite> from a wide-form dataframe. See <a class="reference internal" href="#gumbi.aggregation.DataSet" title="gumbi.aggregation.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataSet</span></code></a> for explanation of arguments.</p>
+<dd><p>Constructs a <cite>DataSet</cite> from a wide-form dataframe. See
+<a class="reference internal" href="#gumbi.aggregation.DataSet" title="gumbi.aggregation.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataSet</span></code></a> for explanation of arguments.</p>
 </dd></dl>
 
 <dl class="py property">
@@ -254,7 +282,8 @@ the data or alteration of <code class="xref py py-attr docutils literal notransl
 <dl class="py property">
 <dt class="sig sig-object py" id="gumbi.aggregation.DataSet.specs">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">specs</span></span><a class="headerlink" href="#gumbi.aggregation.DataSet.specs" title="Permalink to this definition"></a></dt>
-<dd><p>Provides keyword arguments for easy instantiation of a similar <a class="reference internal" href="#gumbi.aggregation.DataSet" title="gumbi.aggregation.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataSet</span></code></a>.</p>
+<dd><p>Provides keyword arguments for easy instantiation of a similar
+<a class="reference internal" href="#gumbi.aggregation.DataSet" title="gumbi.aggregation.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataSet</span></code></a>.</p>
 </dd></dl>
 
 <dl class="py property">
@@ -266,7 +295,8 @@ the data or alteration of <code class="xref py py-attr docutils literal notransl
 <dl class="py method">
 <dt class="sig sig-object py" id="gumbi.aggregation.DataSet.update_stdzr">
 <span class="sig-name descname"><span class="pre">update_stdzr</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gumbi.aggregation.DataSet.update_stdzr" title="Permalink to this definition"></a></dt>
-<dd><p>Updates internal <a class="reference internal" href="gumbi.aggregation.Standardizer.html#gumbi.aggregation.Standardizer" title="gumbi.aggregation.Standardizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Standardizer</span></code></a> with current data, <code class="xref py py-attr docutils literal notranslate"><span class="pre">log_vars</span></code>, and <code class="xref py py-attr docutils literal notranslate"><span class="pre">logit_vars</span></code>.</p>
+<dd><p>Updates internal <a class="reference internal" href="gumbi.aggregation.Standardizer.html#gumbi.aggregation.Standardizer" title="gumbi.aggregation.Standardizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Standardizer</span></code></a> with current data,
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">log_vars</span></code>, and <code class="xref py py-attr docutils literal notranslate"><span class="pre">logit_vars</span></code>.</p>
 </dd></dl>
 
 <dl class="py property">
