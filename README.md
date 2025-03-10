@@ -8,9 +8,8 @@ Gumbi simplifies the steps needed to build a Gaussian Process model from tabular
 transforming, and standardizing data as necessary while applying best practices and sensible defaults to the
 construction of the GP model itself. Taking inspiration from popular packages such as
 __[Bambi](https://bambinos.github.io/bambi/main/index.html)__ and __[Seaborn](https://seaborn.pydata.org/index.html)__,
-Gumbi's aim is to allow quick iteration on both model structure and prediction visualization. Gumbi is primarily built
-on top of __[Pymc](https://docs.pymc.io/)__, though additional support for __[GPflow](https://gpflow.readthedocs.io/)__
-is planned.
+Gumbi's aim is to allow quick iteration on both model structure and prediction visualization. Gumbi is primarily designed with the experimental scientist in mind, and enabling easy implementation of Bayesian Optimization into laboratory workflows. Gumbi is primarily built
+on top of __[Pymc](https://docs.pymc.io/)__, with a __[Botorch](https://botorch.org/)__ backend provided for acceleration and Bayesian Optimization.
 
 ## Quickstart
 
