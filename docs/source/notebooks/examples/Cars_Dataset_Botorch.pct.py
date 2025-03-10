@@ -5,12 +5,15 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.14.7
+#       jupytext_version: 1.16.1
 #   kernelspec:
 #     display_name: botorch
 #     language: python
 #     name: python3
 # ---
+
+# %% [markdown]
+# # Bayesian Optimization with the Botorch backend
 
 # %%
 import gumbi as gmb
@@ -32,7 +35,7 @@ ds = gmb.DataSet(cars,
                  log_vars=['mpg', 'acceleration', 'weight', 'horsepower', 'displacement'])
 
 # %% [markdown]
-# # Single-output regression
+# ## Single-output regression
 
 # %%
 gp = GP(ds)
@@ -46,7 +49,7 @@ pp.plot()
 sns.scatterplot(data=cars, x='horsepower', y='mpg', color=sns.cubehelix_palette()[-1], alpha=0.5);
 
 # %% [markdown]
-# ## Batch single-task proposals with qNEI
+# ### Batch single-task proposals with qNEI
 #
 # Botorch uses "q Noisy Expected Improvement" (qNEI) to select a batch of points to evaluate. This is now controlled through a simple method `propose`, which _maximizes_ the output by default. Set `maximize=False` to minimize instead.
 
@@ -89,7 +92,7 @@ for x in candidates:
     plt.axvline(x.values(), color='C0', linestyle='--', alpha=0.5)
 
 # %% [markdown]
-# # Multi-output regression
+# ## Multi-output regression
 
 # %%
 gp = GP(ds)
@@ -107,7 +110,7 @@ for ax, output in zip(axs, gp.outputs):
     sns.scatterplot(data=cars, x='horsepower', y=output, color=sns.cubehelix_palette()[-1], alpha=0.5, ax=ax);
 
 # %% [markdown]
-# ## Learned correlations between outputs
+# ### Learned correlations between outputs
 
 # %%
 X = gp.parray(horsepower=[50, 100, 150, 200])
@@ -129,7 +132,7 @@ sns.pairplot(
 )
 
 # %% [markdown]
-# # Multi-input multi-output regression
+# ## Multi-input multi-output regression
 
 # %%
 gp = GP(ds)
@@ -175,7 +178,7 @@ for ax, output in zip(axs, gp.outputs):
     # ax.set_title(title)
 
 # %% [markdown]
-# # Mixed categorical-continuous regression
+# ## Mixed categorical-continuous regression
 
 # %%
 gp = GP(ds)
@@ -193,7 +196,7 @@ for i, (ax, origin) in enumerate(zip(axs, cars.origin.unique())):
     ax.set_ylim([5, 50])
 
 # %% [markdown]
-# # Multi-input regression
+# ## Multi-input regression
 #
 # Here we compare the use of "Automatic Relevance Determination" (ARD) - using independent length scales for each input dimension - to a single length scale for all input dimensions. ARD is on by default in `gumbi` but off by default in `AssayOptimizer` (in which it's controlled by the `isotropic` argument - `True` by default). We can see below that ARD learns that the output changes more rapidly in response to a small change in _horsepower_ relative to _mpg_, as reflected by the more eliptical contours in comparison to the more circular contours of the non-ARD model.
 
@@ -249,7 +252,7 @@ for ax, ard in zip(axs, [False, True]):
 plt.tight_layout()
 
 # %% [markdown]
-# # Multi-output (Pareto front) optimization with qNEHVI
+# ## Multi-output (Pareto front) optimization with qNEHVI
 #
 # Finally, Botorch can natively optimize the Pareto front of the multiple objectives. Here we take the toy scenario of wanting to select the ideal weight for a car in order to maximize both its fuel efficiency and horsepower.
 #

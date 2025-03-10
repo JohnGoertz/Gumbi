@@ -7,10 +7,13 @@
 #       format_version: '1.3'
 #       jupytext_version: 1.14.7
 #   kernelspec:
-#     display_name: Python 3.9.7 ('gumbi')
+#     display_name: sbdb-main
 #     language: python
 #     name: python3
 # ---
+
+# %% [markdown]
+# # Regression and Classification with a Latent Gaussian Processes
 
 # %% jupyter={"outputs_hidden": false} pycharm={"name": "#%%\n"}
 import pymc as pm
@@ -100,19 +103,14 @@ mp = gp.find_MAP()
 gp.prepare_grid()
 pts = gp.grid_points.z[:, None].values()
 
-# with gp.model:
-# #     X_new = pm.Data('X_new', pts)
-#     pred = gp.gp_dict['total'].conditional('latent_posterior', pts)
+with gp.model:
+#     X_new = pm.Data('X_new', pts)
+    pred = gp.gp_dict['total'].conditional('latent_posterior', pts)
 
 with gp.model:
     pred_samples = pm.sample_posterior_predictive(
-        [mp], var_names=["latent_posterior", "ml"], samples=200
+        [mp], var_names=["latent_posterior", "ml"]
     )
-
-
-# %%
-plot_gp_dist(plt.gca(), pred_samples["latent_posterior"], pts)
-
 
 
 # %% jupyter={"outputs_hidden": false} pycharm={"name": "#%%\n"}
@@ -258,12 +256,6 @@ p = gp.uparray(
     μ=gp.predictions.t.values().mean(0),
     σ2=gp.predictions.t.values().std(0),
     stdzd=True,
-)
-    "p",
-    μ=gp.predictions.t.values().mean(0),
-    σ2=gp.predictions.t.values().std(0),
-    stdzd=True,
-
 )
 pp = gmb.ParrayPlotter(p_X, p)
 pp.plot()
