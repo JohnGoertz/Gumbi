@@ -25,7 +25,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="gumbi" href="../../gumbi/index.html" />
-    <link rel="prev" title="Regression and Classification with a Latent Gaussian Processes" href="Latent_GP.html" /> 
+    <link rel="prev" title="Multioutput Regression" href="Multioutput_Regression.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -59,20 +59,21 @@
 <li class="toctree-l1"><a class="reference internal" href="Cars_Dataset.html">The Cars Dataset</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Simple_Regression.html">Simple Regression and Prediction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Multioutput_Regression.html">Multioutput Regression</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Latent_GP.html">Regression and Classification with a Latent Gaussian Processes</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Bayesian Optimization with the Botorch backend</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#Single-output-regression">Single-output regression</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#Batch-single-task-proposals-with-qNEI">Batch single-task proposals with qNEI</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Bayesian Optimization with the Botorch backend</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Single-output-regression">Single-output regression</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Batch-single-task-proposals-with-qNEI">Batch single-task proposals with qNEI</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="#Multi-output-regression">Multi-output regression</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#Learned-correlations-between-outputs">Learned correlations between outputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Multi-output-regression">Multi-output regression</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Learned-correlations-between-outputs">Learned correlations between outputs</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="#Multi-input-multi-output-regression">Multi-input multi-output regression</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#Mixed-categorical-continuous-regression">Mixed categorical-continuous regression</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#Multi-input-regression">Multi-input regression</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#Multi-output-(Pareto-front)-optimization-with-qNEHVI">Multi-output (Pareto front) optimization with qNEHVI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Multi-input-multi-output-regression">Multi-input multi-output regression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Mixed-categorical-continuous-regression">Mixed categorical-continuous regression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Multi-input-regression">Multi-input regression</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Multi-output-(Pareto-front)-optimization-with-qNEHVI">Multi-output (Pareto front) optimization with qNEHVI</a></li>
+</ul>
+</li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API:</span></p>
 <ul>
@@ -134,9 +135,8 @@
 </pre></div>
 </div>
 </div>
-</section>
 <section id="Single-output-regression">
-<h1>Single-output regression<a class="headerlink" href="#Single-output-regression" title="Permalink to this heading"></a></h1>
+<h2>Single-output regression<a class="headerlink" href="#Single-output-regression" title="Permalink to this heading"></a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
@@ -161,7 +161,7 @@
 </div>
 </div>
 <section id="Batch-single-task-proposals-with-qNEI">
-<h2>Batch single-task proposals with qNEI<a class="headerlink" href="#Batch-single-task-proposals-with-qNEI" title="Permalink to this heading"></a></h2>
+<h3>Batch single-task proposals with qNEI<a class="headerlink" href="#Batch-single-task-proposals-with-qNEI" title="Permalink to this heading"></a></h3>
 <p>Botorch uses “q Noisy Expected Improvement” (qNEI) to select a batch of points to evaluate. This is now controlled through a simple method <code class="docutils literal notranslate"><span class="pre">propose</span></code>, which <em>maximizes</em> the output by default. Set <code class="docutils literal notranslate"><span class="pre">maximize=False</span></code> to minimize instead.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
@@ -227,7 +227,7 @@ Trying again with a new set of initial conditions.
 </section>
 </section>
 <section id="Multi-output-regression">
-<h1>Multi-output regression<a class="headerlink" href="#Multi-output-regression" title="Permalink to this heading"></a></h1>
+<h2>Multi-output regression<a class="headerlink" href="#Multi-output-regression" title="Permalink to this heading"></a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
@@ -265,7 +265,7 @@ Trying again with a new set of initial conditions.
 </div>
 </div>
 <section id="Learned-correlations-between-outputs">
-<h2>Learned correlations between outputs<a class="headerlink" href="#Learned-correlations-between-outputs" title="Permalink to this heading"></a></h2>
+<h3>Learned correlations between outputs<a class="headerlink" href="#Learned-correlations-between-outputs" title="Permalink to this heading"></a></h3>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
@@ -309,7 +309,7 @@ Trying again with a new set of initial conditions.
 </section>
 </section>
 <section id="Multi-input-multi-output-regression">
-<h1>Multi-input multi-output regression<a class="headerlink" href="#Multi-input-multi-output-regression" title="Permalink to this heading"></a></h1>
+<h2>Multi-input multi-output regression<a class="headerlink" href="#Multi-input-multi-output-regression" title="Permalink to this heading"></a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
@@ -367,7 +367,7 @@ Trying again with a new set of initial conditions.
 </div>
 </section>
 <section id="Mixed-categorical-continuous-regression">
-<h1>Mixed categorical-continuous regression<a class="headerlink" href="#Mixed-categorical-continuous-regression" title="Permalink to this heading"></a></h1>
+<h2>Mixed categorical-continuous regression<a class="headerlink" href="#Mixed-categorical-continuous-regression" title="Permalink to this heading"></a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
@@ -397,7 +397,7 @@ Trying again with a new set of initial conditions.
 </div>
 </section>
 <section id="Multi-input-regression">
-<h1>Multi-input regression<a class="headerlink" href="#Multi-input-regression" title="Permalink to this heading"></a></h1>
+<h2>Multi-input regression<a class="headerlink" href="#Multi-input-regression" title="Permalink to this heading"></a></h2>
 <p>Here we compare the use of “Automatic Relevance Determination” (ARD) - using independent length scales for each input dimension - to a single length scale for all input dimensions. ARD is on by default in <code class="docutils literal notranslate"><span class="pre">gumbi</span></code> but off by default in <code class="docutils literal notranslate"><span class="pre">AssayOptimizer</span></code> (in which it’s controlled by the <code class="docutils literal notranslate"><span class="pre">isotropic</span></code> argument - <code class="docutils literal notranslate"><span class="pre">True</span></code> by default). We can see below that ARD learns that the output changes more rapidly in response to a small change in <em>horsepower</em> relative to <em>mpg</em>, as reflected by the more
 eliptical contours in comparison to the more circular contours of the non-ARD model.</p>
 <div class="nbinput docutils container">
@@ -465,7 +465,7 @@ eliptical contours in comparison to the more circular contours of the non-ARD mo
 </div>
 </section>
 <section id="Multi-output-(Pareto-front)-optimization-with-qNEHVI">
-<h1>Multi-output (Pareto front) optimization with qNEHVI<a class="headerlink" href="#Multi-output-(Pareto-front)-optimization-with-qNEHVI" title="Permalink to this heading"></a></h1>
+<h2>Multi-output (Pareto front) optimization with qNEHVI<a class="headerlink" href="#Multi-output-(Pareto-front)-optimization-with-qNEHVI" title="Permalink to this heading"></a></h2>
 <p>Finally, Botorch can natively optimize the Pareto front of the multiple objectives. Here we take the toy scenario of wanting to select the ideal weight for a car in order to maximize both its fuel efficiency and horsepower.</p>
 <p>There are three methods for specifying the multitask kernel: Independent, Hadamard, and Kronecker. Hadamard and Kronecker learn a correlation between the outputs, while Independent simply builds separate GPs for each output. The Kronecker kernel requires all outputs to be observed at every input, while the Hadamard kernel does not. Practically, the Hadamard kernel may perform better in low output and input dimensions (it’s the default for two or fewer outputs), while the Kronecker kernel
 supposedly may perform better in higher output dimensions (it’s the default for three or more outputs) and the Independent kernel may perform better in high input dimensions with relatively few observations. The choice can be forced by setting the <code class="docutils literal notranslate"><span class="pre">multitask_kernel</span></code> argument to either <code class="docutils literal notranslate"><span class="pre">&quot;Independent&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;Kronecker&quot;</span></code>, or <code class="docutils literal notranslate"><span class="pre">&quot;Hadamard&quot;</span></code>.</p>
@@ -582,12 +582,13 @@ supposedly may perform better in higher output dimensions (it’s the default fo
 </div>
 </div>
 </section>
+</section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="Latent_GP.html" class="btn btn-neutral float-left" title="Regression and Classification with a Latent Gaussian Processes" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Multioutput_Regression.html" class="btn btn-neutral float-left" title="Multioutput Regression" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="../../gumbi/index.html" class="btn btn-neutral float-right" title="gumbi" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

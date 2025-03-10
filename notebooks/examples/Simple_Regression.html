@@ -69,14 +69,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="Multioutput_Regression.html">Multioutput Regression</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Latent_GP.html">Regression and Classification with a Latent Gaussian Processes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Cars_Dataset_Botorch.html">Bayesian Optimization with the Botorch backend</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Cars_Dataset_Botorch.html#Single-output-regression">Single-output regression</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Cars_Dataset_Botorch.html#Multi-output-regression">Multi-output regression</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Cars_Dataset_Botorch.html#Multi-input-multi-output-regression">Multi-input multi-output regression</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Cars_Dataset_Botorch.html#Mixed-categorical-continuous-regression">Mixed categorical-continuous regression</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Cars_Dataset_Botorch.html#Multi-input-regression">Multi-input regression</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Cars_Dataset_Botorch.html#Multi-output-(Pareto-front)-optimization-with-qNEHVI">Multi-output (Pareto front) optimization with qNEHVI</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API:</span></p>
 <ul>
@@ -109,8 +102,8 @@
              
   <section id="Simple-Regression-and-Prediction">
 <h1>Simple Regression and Prediction<a class="headerlink" href="#Simple-Regression-and-Prediction" title="Permalink to this heading"></a></h1>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -121,17 +114,9 @@
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS functions.
-</pre></div></div>
-</div>
 <p>Use gumbi’ plotting defaults for stylistic consistency, good dataviz practice, and aesthetics</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="n">gmb</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">default</span><span class="p">)</span>
@@ -142,7 +127,7 @@ WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS 
 <h2>Setup<a class="headerlink" href="#Setup" title="Permalink to this heading"></a></h2>
 <p>Load in a DataFrame and store as a DataSet:</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_pickle</span><span class="p">(</span><span class="n">gmb</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">example_dataset</span><span class="p">)</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;Metric==&quot;mean&quot;&#39;</span><span class="p">)</span>
@@ -159,7 +144,7 @@ WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS 
 <h2>Building and fitting a model<a class="headerlink" href="#Building-and-fitting-a-model" title="Permalink to this heading"></a></h2>
 <p>Build and fit a GP model with linear + RBF kernels for each of <code class="docutils literal notranslate"><span class="pre">X</span></code>, <code class="docutils literal notranslate"><span class="pre">Y</span></code>, and log <code class="docutils literal notranslate"><span class="pre">Z</span></code>:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gp</span> <span class="o">=</span> <span class="n">gmb</span><span class="o">.</span><span class="n">GP</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;d&#39;</span><span class="p">])</span>
@@ -167,13 +152,38 @@ WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS 
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/john/projects/gumbi/gumbi/utils/gp_utils.py:64: FutureWarning: find_constrained_prior is deprecated and will be removed in a future version. Please use maxent function from PreliZ. https://preliz.readthedocs.io/en/latest/api_reference.html#preliz.unidimensional.maxent
+  params_ls = pm.find_constrained_prior(
+/home/john/projects/gumbi/gumbi/utils/gp_utils.py:64: FutureWarning: find_constrained_prior is deprecated and will be removed in a future version. Please use maxent function from PreliZ. https://preliz.readthedocs.io/en/latest/api_reference.html#preliz.unidimensional.maxent
+  params_ls = pm.find_constrained_prior(
+/home/john/projects/gumbi/gumbi/utils/gp_utils.py:64: FutureWarning: find_constrained_prior is deprecated and will be removed in a future version. Please use maxent function from PreliZ. https://preliz.readthedocs.io/en/latest/api_reference.html#preliz.unidimensional.maxent
+  params_ls = pm.find_constrained_prior(
+/home/john/mambaforge/envs/gumbi-test/lib/python3.11/site-packages/pytensor/link/c/cmodule.py:2959: UserWarning: PyTensor could not link to a BLAS installation. Operations that might benefit from BLAS will be severely degraded.
+This usually happens when PyTensor is installed via pip. We recommend it be installed via conda/mamba/pixi instead.
+Alternatively, you can use an experimental backend such as Numba or JAX that perform their own BLAS optimizations, by setting `pytensor.config.mode == &#39;NUMBA&#39;` or passing `mode=&#39;NUMBA&#39;` when compiling a PyTensor function.
+For more options and details see https://pytensor.readthedocs.io/en/latest/troubleshooting.html#how-do-i-configure-test-my-blas-library
+  warnings.warn(
+WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS functions.
+WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS functions.
+WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS functions.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-
-</pre></div></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "2e969b5f12974fa6aca34b9602f559e6", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre></div>
 </div>
 </section>
 <section id="Making-predictions">
@@ -181,7 +191,7 @@ WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS 
 <p>Predict at a single point using a ParameterArray. Note that you can build a <code class="docutils literal notranslate"><span class="pre">parray</span></code> using a method from the <code class="docutils literal notranslate"><span class="pre">GP</span></code> object; this is a convenience method that allows the <code class="docutils literal notranslate"><span class="pre">parray</span></code> to inherit <code class="docutils literal notranslate"><span class="pre">gp</span></code>’s <code class="docutils literal notranslate"><span class="pre">stdzr</span></code> instance.</p>
 <p>The result is an UncertainParameterArray containing the mean and variance of the prediction:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">point</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">parray</span><span class="p">(</span><span class="n">lg10_Z</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">X</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">Y</span><span class="o">=</span><span class="mi">88</span><span class="p">)</span>
@@ -191,17 +201,17 @@ WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS 
 </div>
 </div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-d[&#39;μ&#39;, &#39;σ2&#39;]: [(0.74650163, 0.00236929)]
+d[&#39;μ&#39;, &#39;σ2&#39;]: [(0.7526282, 0.00204789)]
 </pre></div></div>
 </div>
 <p>You can predict over a range of values for a given dimension while specifying a specific value for the remaining dimensions. The result is an UncertainParameterArray containing the mean and variance at each point:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">prepare_grid</span><span class="p">(</span><span class="n">at</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">parray</span><span class="p">(</span><span class="n">lg10_Z</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">X</span><span class="o">=</span><span class="mf">0.5</span><span class="p">))</span>
@@ -212,17 +222,25 @@ d[&#39;μ&#39;, &#39;σ2&#39;]: [(0.74650163, 0.00236929)]
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS functions.
+</pre></div></div>
+</div>
 <div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-d[&#39;μ&#39;, &#39;σ2&#39;]: [(0.96703721, 0.0281973 ) (0.9618966 , 0.02749476)
- (0.95720116, 0.02661119) (0.95297224, 0.0255096 )
- (0.94921989, 0.02415902) (0.94594046, 0.02254228)
- (0.94311484, 0.02066441) (0.94070747, 0.01856042)
- (0.93866644, 0.01629977) (0.93692469, 0.01398553)]
+d[&#39;μ&#39;, &#39;σ2&#39;]: [(0.95353955, 0.02777067) (0.94923129, 0.02648205)
+ (0.94544874, 0.02492182) (0.94220088, 0.02307904)
+ (0.93948256, 0.02096868) (0.93727268, 0.01863859)
+ (0.93553307, 0.01617249) (0.93420812, 0.01368664)
+ (0.93322533, 0.01131927) (0.93249681, 0.009213  )]
 </pre></div></div>
 </div>
 </section>
@@ -230,7 +248,7 @@ d[&#39;μ&#39;, &#39;σ2&#39;]: [(0.96703721, 0.0281973 ) (0.9618966 , 0.0274947
 <h2>Visualizing predictions<a class="headerlink" href="#Visualizing-predictions" title="Permalink to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">ParrayPlotter</span></code> provides a convenient way to plot structured arrays and switch between natural, transformed, and standardized views and/or tick labeling for any dimension. By default, all arrays are plotted and labeled in “natural” space:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pp</span> <span class="o">=</span> <span class="n">gmb</span><span class="o">.</span><span class="n">ParrayPlotter</span><span class="p">(</span><span class="n">x_pa</span><span class="p">,</span> <span class="n">y_upa</span><span class="p">)</span>
@@ -247,7 +265,7 @@ d[&#39;μ&#39;, &#39;σ2&#39;]: [(0.96703721, 0.0281973 ) (0.9618966 , 0.0274947
 </div>
 <p>Arrays can be viewed in “standardized” or “transformed” space by passing those values as the respective **_scale* argument. By default, the array the tick labels remain in “natural” space unless an alternative is specified as the corresponding **_tick_scale* argument.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pp</span> <span class="o">=</span> <span class="n">gmb</span><span class="o">.</span><span class="n">ParrayPlotter</span><span class="p">(</span><span class="n">x_pa</span><span class="p">,</span> <span class="n">y_upa</span><span class="p">,</span> <span class="n">x_scale</span><span class="o">=</span><span class="s1">&#39;standardized&#39;</span><span class="p">)</span>
@@ -265,7 +283,7 @@ d[&#39;μ&#39;, &#39;σ2&#39;]: [(0.96703721, 0.0281973 ) (0.9618966 , 0.0274947
 </div>
 <p>The same <code class="docutils literal notranslate"><span class="pre">ParrayPlotter</span></code> instance can be reused to produce an alternative view of the data. Simply call <code class="docutils literal notranslate"><span class="pre">pp.update()</span></code> after changing the **_scale* or **_tick_scale* attributes.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pp</span><span class="o">.</span><span class="n">x_scale</span> <span class="o">=</span> <span class="s1">&#39;transformed&#39;</span>
@@ -284,7 +302,7 @@ d[&#39;μ&#39;, &#39;σ2&#39;]: [(0.96703721, 0.0281973 ) (0.9618966 , 0.0274947
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pp</span><span class="o">.</span><span class="n">y_scale</span> <span class="o">=</span> <span class="s1">&#39;standardized&#39;</span>
@@ -305,7 +323,7 @@ d[&#39;μ&#39;, &#39;σ2&#39;]: [(0.96703721, 0.0281973 ) (0.9618966 , 0.0274947
 <h3>Marginalizing<a class="headerlink" href="#Marginalizing" title="Permalink to this heading"></a></h3>
 <p>The UncertainParameterArray allows marginalization with uncertainty propagation:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">prepare_grid</span><span class="p">(</span><span class="n">at</span><span class="o">=</span><span class="n">gp</span><span class="o">.</span><span class="n">parray</span><span class="p">(</span><span class="n">lg10_Z</span><span class="o">=</span><span class="mi">8</span><span class="p">))</span>
@@ -318,11 +336,19 @@ d[&#39;μ&#39;, &#39;σ2&#39;]: [(0.96703721, 0.0281973 ) (0.9618966 , 0.0274947
 </pre></div>
 </div>
 </div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS functions.
+</pre></div></div>
+</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_examples_Simple_Regression_25_0.png" src="../../_images/notebooks_examples_Simple_Regression_25_0.png" />
+<img alt="../../_images/notebooks_examples_Simple_Regression_25_1.png" src="../../_images/notebooks_examples_Simple_Regression_25_1.png" />
 </div>
 </div>
 </section>
@@ -331,8 +357,8 @@ d[&#39;μ&#39;, &#39;σ2&#39;]: [(0.96703721, 0.0281973 ) (0.9618966 , 0.0274947
 <h2>Higher-dimensional predictions and slicing<a class="headerlink" href="#Higher-dimensional-predictions-and-slicing" title="Permalink to this heading"></a></h2>
 <p>In most cases you’ll want to simply predict over a lower-dimensional set of points if that’s your goal, but sometimes you may wish to make a high-dimensional prediction and view lower-dimensional slices. The <code class="docutils literal notranslate"><span class="pre">get_conditional_prediction</span></code> method performs interpolation on the higher-dimensional prediction, returning a <em>ParameterArray</em> containing the lower-dimensional domain and an <em>UncertainParameterArray</em> containing the predictions at those points.</p>
 <p>To demonstrate, first make predictions across a large grid:</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">prepare_grid</span><span class="p">(</span><span class="n">resolution</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;Y&#39;</span><span class="p">:</span><span class="mi">100</span><span class="p">,</span> <span class="s1">&#39;X&#39;</span><span class="p">:</span><span class="mi">100</span><span class="p">,</span> <span class="s1">&#39;lg10_Z&#39;</span><span class="p">:</span> <span class="mi">21</span><span class="p">})</span>
@@ -341,10 +367,18 @@ d[&#39;μ&#39;, &#39;σ2&#39;]: [(0.96703721, 0.0281973 ) (0.9618966 , 0.0274947
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS functions.
+</pre></div></div>
+</div>
 <p>In addition to the <code class="docutils literal notranslate"><span class="pre">.plot</span></code> method shown above, a <em>ParrayPlotter</em> can be called on any function, typically a matplotlib function, to pass appropriately-formatted ndarrays as positional arguments along with any additional keyword arguments. This allows you to quickly iterate on different visualizations with minimal repetition.</p>
 <p>Now plot a 2D slice of the predictions, specifically the predictions across <code class="docutils literal notranslate"><span class="pre">X</span></code> and <code class="docutils literal notranslate"><span class="pre">Y</span></code> at a <code class="docutils literal notranslate"><span class="pre">Z</span></code> of 10^8:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">xy_pa</span><span class="p">,</span> <span class="n">z_upa</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">get_conditional_prediction</span><span class="p">(</span><span class="n">lg10_Z</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
@@ -373,7 +407,7 @@ d[&#39;μ&#39;, &#39;σ2&#39;]: [(0.96703721, 0.0281973 ) (0.9618966 , 0.0274947
 </div>
 <p>Or 1D slices:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">18</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="n">sharey</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>

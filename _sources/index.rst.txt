@@ -18,7 +18,6 @@ Welcome to Gumbi's documentation!
    notebooks/examples/Cars_Dataset
    notebooks/examples/Simple_Regression
    notebooks/examples/Multioutput_Regression
-   notebooks/examples/Latent_GP
    notebooks/examples/Cars_Dataset_Botorch
 
 .. toctree::

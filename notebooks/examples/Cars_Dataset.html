@@ -74,14 +74,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="Simple_Regression.html">Simple Regression and Prediction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Multioutput_Regression.html">Multioutput Regression</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Latent_GP.html">Regression and Classification with a Latent Gaussian Processes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Cars_Dataset_Botorch.html">Bayesian Optimization with the Botorch backend</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Cars_Dataset_Botorch.html#Single-output-regression">Single-output regression</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Cars_Dataset_Botorch.html#Multi-output-regression">Multi-output regression</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Cars_Dataset_Botorch.html#Multi-input-multi-output-regression">Multi-input multi-output regression</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Cars_Dataset_Botorch.html#Mixed-categorical-continuous-regression">Mixed categorical-continuous regression</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Cars_Dataset_Botorch.html#Multi-input-regression">Multi-input regression</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Cars_Dataset_Botorch.html#Multi-output-(Pareto-front)-optimization-with-qNEHVI">Multi-output (Pareto front) optimization with qNEHVI</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API:</span></p>
 <ul>
@@ -115,7 +108,7 @@
   <section id="The-Cars-Dataset">
 <h1>The Cars Dataset<a class="headerlink" href="#The-Cars-Dataset" title="Permalink to this heading"></a></h1>
 <p>Here we’ll use the classic Cars dataset to illustrate different ways Gumbi can be used.</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
@@ -133,14 +126,6 @@
 <span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">&quot;No data for colormapping provided via &#39;c&#39;. Parameters &#39;norm&#39; will be ignored&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS functions.
-</pre></div></div>
 </div>
 <p>Read in some data and store it as a Gumbi <code class="docutils literal notranslate"><span class="pre">DataSet</span></code>:</p>
 <div class="nbinput nblast docutils container">
@@ -175,13 +160,31 @@ WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS 
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/john/projects/gumbi/gumbi/utils/gp_utils.py:64: FutureWarning: find_constrained_prior is deprecated and will be removed in a future version. Please use maxent function from PreliZ. https://preliz.readthedocs.io/en/latest/api_reference.html#preliz.unidimensional.maxent
+  params_ls = pm.find_constrained_prior(
+/home/john/mambaforge/envs/gumbi-test/lib/python3.11/site-packages/pytensor/link/c/cmodule.py:2959: UserWarning: PyTensor could not link to a BLAS installation. Operations that might benefit from BLAS will be severely degraded.
+This usually happens when PyTensor is installed via pip. We recommend it be installed via conda/mamba/pixi instead.
+Alternatively, you can use an experimental backend such as Numba or JAX that perform their own BLAS optimizations, by setting `pytensor.config.mode == &#39;NUMBA&#39;` or passing `mode=&#39;NUMBA&#39;` when compiling a PyTensor function.
+For more options and details see https://pytensor.readthedocs.io/en/latest/troubleshooting.html#how-do-i-configure-test-my-blas-library
+  warnings.warn(
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-
-</pre></div></div>
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "d08ee5234cb7473985312510162727ed", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre></div>
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
@@ -269,18 +272,71 @@ WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS 
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
-<div class="output_area docutils container">
+<div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-
-
-
+/home/john/projects/gumbi/gumbi/utils/gp_utils.py:64: FutureWarning: find_constrained_prior is deprecated and will be removed in a future version. Please use maxent function from PreliZ. https://preliz.readthedocs.io/en/latest/api_reference.html#preliz.unidimensional.maxent
+  params_ls = pm.find_constrained_prior(
 </pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "5a0db07f8db442af861a482fda953902", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/john/projects/gumbi/gumbi/utils/gp_utils.py:64: FutureWarning: find_constrained_prior is deprecated and will be removed in a future version. Please use maxent function from PreliZ. https://preliz.readthedocs.io/en/latest/api_reference.html#preliz.unidimensional.maxent
+  params_ls = pm.find_constrained_prior(
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "ed9a16bc9ba2436bb8c7f59f5068fbb8", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/john/projects/gumbi/gumbi/utils/gp_utils.py:64: FutureWarning: find_constrained_prior is deprecated and will be removed in a future version. Please use maxent function from PreliZ. https://preliz.readthedocs.io/en/latest/api_reference.html#preliz.unidimensional.maxent
+  params_ls = pm.find_constrained_prior(
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "4959d172af024b69913eee95f348856c", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_examples_Cars_Dataset_15_1.png" src="../../_images/notebooks_examples_Cars_Dataset_15_1.png" />
+<img alt="../../_images/notebooks_examples_Cars_Dataset_15_9.png" src="../../_images/notebooks_examples_Cars_Dataset_15_9.png" />
 </div>
 </div>
 </section>
@@ -308,16 +364,33 @@ WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS 
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
-<div class="output_area docutils container">
+<div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-
+/home/john/projects/gumbi/gumbi/utils/gp_utils.py:64: FutureWarning: find_constrained_prior is deprecated and will be removed in a future version. Please use maxent function from PreliZ. https://preliz.readthedocs.io/en/latest/api_reference.html#preliz.unidimensional.maxent
+  params_ls = pm.find_constrained_prior(
+WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS functions.
+WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS functions.
+WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS functions.
+WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS functions.
 </pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "0c553cba976b47c798ed0baab927cae1", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_examples_Cars_Dataset_17_1.png" src="../../_images/notebooks_examples_Cars_Dataset_17_1.png" />
+<img alt="../../_images/notebooks_examples_Cars_Dataset_17_3.png" src="../../_images/notebooks_examples_Cars_Dataset_17_3.png" />
 </div>
 </div>
 </section>
@@ -345,16 +418,33 @@ WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS 
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
-<div class="output_area docutils container">
+<div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-
+/home/john/projects/gumbi/gumbi/utils/gp_utils.py:64: FutureWarning: find_constrained_prior is deprecated and will be removed in a future version. Please use maxent function from PreliZ. https://preliz.readthedocs.io/en/latest/api_reference.html#preliz.unidimensional.maxent
+  params_ls = pm.find_constrained_prior(
+WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS functions.
+WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS functions.
+WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS functions.
+WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS functions.
 </pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "7874910fec974216abf0995ea66f36a7", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_examples_Cars_Dataset_19_1.png" src="../../_images/notebooks_examples_Cars_Dataset_19_1.png" />
+<img alt="../../_images/notebooks_examples_Cars_Dataset_19_3.png" src="../../_images/notebooks_examples_Cars_Dataset_19_3.png" />
 </div>
 </div>
 <section id="Correlated-multivariate-sampling-from-joint-predictions">
@@ -408,16 +498,38 @@ WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS 
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
-<div class="output_area docutils container">
+<div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-
+/home/john/projects/gumbi/gumbi/utils/gp_utils.py:64: FutureWarning: find_constrained_prior is deprecated and will be removed in a future version. Please use maxent function from PreliZ. https://preliz.readthedocs.io/en/latest/api_reference.html#preliz.unidimensional.maxent
+  params_ls = pm.find_constrained_prior(
+WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS functions.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "93cc6e3d3c4549b8bb413e87026ccedf", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS functions.
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_examples_Cars_Dataset_23_1.png" src="../../_images/notebooks_examples_Cars_Dataset_23_1.png" />
+<img alt="../../_images/notebooks_examples_Cars_Dataset_23_4.png" src="../../_images/notebooks_examples_Cars_Dataset_23_4.png" />
 </div>
 </div>
 </section>
@@ -472,17 +584,103 @@ WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS 
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/john/projects/gumbi/gumbi/utils/gp_utils.py:64: FutureWarning: find_constrained_prior is deprecated and will be removed in a future version. Please use maxent function from PreliZ. https://preliz.readthedocs.io/en/latest/api_reference.html#preliz.unidimensional.maxent
+  params_ls = pm.find_constrained_prior(
+/home/john/projects/gumbi/gumbi/utils/gp_utils.py:64: FutureWarning: find_constrained_prior is deprecated and will be removed in a future version. Please use maxent function from PreliZ. https://preliz.readthedocs.io/en/latest/api_reference.html#preliz.unidimensional.maxent
+  params_ls = pm.find_constrained_prior(
+WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS functions.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<script type="application/vnd.jupyter.widget-view+json">{"model_id": "265c1e800c6547a6a8a4161568c9ed32", "version_major": 2, "version_minor": 0}</script></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area rendered_html docutils container">
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"></pre></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
+Cell <span class="ansi-green-fg">In[14], line 20</span>
+<span class="ansi-green-intense-fg ansi-bold">     17</span> cs <span style="color: rgb(98,98,98)">=</span> ax<span style="color: rgb(98,98,98)">.</span>contour(X<span style="color: rgb(98,98,98)">.</span>values(), Y<span style="color: rgb(98,98,98)">.</span>values(), z<span style="color: rgb(98,98,98)">.</span>σ<span style="color: rgb(98,98,98)">/</span>z<span style="color: rgb(98,98,98)">.</span>μ, levels<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(98,98,98)">4</span>, colors<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">0.2</span><span style="color: rgb(175,0,0)">&#39;</span>, linestyles<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">--</span><span style="color: rgb(175,0,0)">&#39;</span>)
+<span class="ansi-green-intense-fg ansi-bold">     18</span> ax<span style="color: rgb(98,98,98)">.</span>clabel(cs)
+<span class="ansi-green-fg">---&gt; 20</span> sns<span style="color: rgb(98,98,98)">.</span>scatterplot(data<span style="color: rgb(98,98,98)">=</span>cars, x<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">horsepower</span><span style="color: rgb(175,0,0)">&#39;</span>, y<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">weight</span><span style="color: rgb(175,0,0)">&#39;</span>, hue<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">mpg</span><span style="color: rgb(175,0,0)">&#39;</span>, palette<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">pink</span><span style="color: rgb(175,0,0)">&#39;</span>, norm<span style="color: rgb(98,98,98)">=</span>norm, ax<span style="color: rgb(98,98,98)">=</span>ax);
+<span class="ansi-green-intense-fg ansi-bold">     21</span> ax<span style="color: rgb(98,98,98)">.</span>legend()<span style="color: rgb(98,98,98)">.</span>remove()
+<span class="ansi-green-intense-fg ansi-bold">     23</span> title <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">RBF+Linear kernel</span><span style="color: rgb(175,0,0)">&#39;</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> linear <span class="ansi-bold" style="color: rgb(0,135,0)">else</span> <span style="color: rgb(175,0,0)">&#39;</span><span style="color: rgb(175,0,0)">RBF kernel</span><span style="color: rgb(175,0,0)">&#39;</span>
 
+File <span class="ansi-green-fg">~/mambaforge/envs/gumbi-test/lib/python3.11/site-packages/seaborn/relational.py:636</span>, in <span class="ansi-cyan-fg">scatterplot</span><span class="ansi-blue-fg">(data, x, y, hue, size, style, palette, hue_order, hue_norm, sizes, size_order, size_norm, markers, style_order, legend, ax, **kwargs)</span>
+<span class="ansi-green-intense-fg ansi-bold">    633</span> color <span style="color: rgb(98,98,98)">=</span> kwargs<span style="color: rgb(98,98,98)">.</span>pop(<span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">color</span><span style="color: rgb(175,0,0)">&#34;</span>, <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>)
+<span class="ansi-green-intense-fg ansi-bold">    634</span> kwargs[<span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">color</span><span style="color: rgb(175,0,0)">&#34;</span>] <span style="color: rgb(98,98,98)">=</span> _default_color(ax<span style="color: rgb(98,98,98)">.</span>scatter, hue, color, kwargs)
+<span class="ansi-green-fg">--&gt; 636</span> p<span style="color: rgb(98,98,98)">.</span>plot(ax, kwargs)
+<span class="ansi-green-intense-fg ansi-bold">    638</span> <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> ax
 
+File <span class="ansi-green-fg">~/mambaforge/envs/gumbi-test/lib/python3.11/site-packages/seaborn/relational.py:464</span>, in <span class="ansi-cyan-fg">_ScatterPlotter.plot</span><span class="ansi-blue-fg">(self, ax, kws)</span>
+<span class="ansi-green-intense-fg ansi-bold">    462</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>legend:
+<span class="ansi-green-intense-fg ansi-bold">    463</span>     attrs <span style="color: rgb(98,98,98)">=</span> {<span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">hue</span><span style="color: rgb(175,0,0)">&#34;</span>: <span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">color</span><span style="color: rgb(175,0,0)">&#34;</span>, <span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">size</span><span style="color: rgb(175,0,0)">&#34;</span>: <span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">s</span><span style="color: rgb(175,0,0)">&#34;</span>, <span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">style</span><span style="color: rgb(175,0,0)">&#34;</span>: <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>}
+<span class="ansi-green-fg">--&gt; 464</span>     <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>add_legend_data(ax, _scatter_legend_artist, kws, attrs)
+<span class="ansi-green-intense-fg ansi-bold">    465</span>     handles, _ <span style="color: rgb(98,98,98)">=</span> ax<span style="color: rgb(98,98,98)">.</span>get_legend_handles_labels()
+<span class="ansi-green-intense-fg ansi-bold">    466</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> handles:
+
+File <span class="ansi-green-fg">~/mambaforge/envs/gumbi-test/lib/python3.11/site-packages/seaborn/_base.py:1267</span>, in <span class="ansi-cyan-fg">VectorPlotter.add_legend_data</span><span class="ansi-blue-fg">(self, ax, func, common_kws, attrs, semantic_kws)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1265</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> attr <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> kws:
+<span class="ansi-green-intense-fg ansi-bold">   1266</span>         level_kws[attr] <span style="color: rgb(98,98,98)">=</span> kws[attr]
+<span class="ansi-green-fg">-&gt; 1267</span> artist <span style="color: rgb(98,98,98)">=</span> func(label<span style="color: rgb(98,98,98)">=</span>label, <span style="color: rgb(98,98,98)">*</span><span style="color: rgb(98,98,98)">*</span>{<span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">color</span><span style="color: rgb(175,0,0)">&#34;</span>: <span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">.2</span><span style="color: rgb(175,0,0)">&#34;</span>, <span style="color: rgb(98,98,98)">*</span><span style="color: rgb(98,98,98)">*</span>common_kws, <span style="color: rgb(98,98,98)">*</span><span style="color: rgb(98,98,98)">*</span>level_kws})
+<span class="ansi-green-intense-fg ansi-bold">   1268</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> _version_predates(mpl, <span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">3.5.0</span><span style="color: rgb(175,0,0)">&#34;</span>):
+<span class="ansi-green-intense-fg ansi-bold">   1269</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> <span style="color: rgb(0,135,0)">isinstance</span>(artist, mpl<span style="color: rgb(98,98,98)">.</span>lines<span style="color: rgb(98,98,98)">.</span>Line2D):
+
+File <span class="ansi-green-fg">~/mambaforge/envs/gumbi-test/lib/python3.11/site-packages/seaborn/utils.py:880</span>, in <span class="ansi-cyan-fg">_scatter_legend_artist</span><span class="ansi-blue-fg">(**kws)</span>
+<span class="ansi-green-intense-fg ansi-bold">    877</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">else</span>:
+<span class="ansi-green-intense-fg ansi-bold">    878</span>         line_kws[<span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">markeredgecolor</span><span style="color: rgb(175,0,0)">&#34;</span>] <span style="color: rgb(98,98,98)">=</span> edgecolor
+<span class="ansi-green-fg">--&gt; 880</span> <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> mpl<span style="color: rgb(98,98,98)">.</span>lines<span style="color: rgb(98,98,98)">.</span>Line2D([], [], <span style="color: rgb(98,98,98)">*</span><span style="color: rgb(98,98,98)">*</span>line_kws)
+
+File <span class="ansi-green-fg">~/mambaforge/envs/gumbi-test/lib/python3.11/site-packages/matplotlib/lines.py:407</span>, in <span class="ansi-cyan-fg">Line2D.__init__</span><span class="ansi-blue-fg">(self, xdata, ydata, linewidth, linestyle, color, gapcolor, marker, markersize, markeredgewidth, markeredgecolor, markerfacecolor, markerfacecoloralt, fillstyle, antialiased, dash_capstyle, solid_capstyle, dash_joinstyle, solid_joinstyle, pickradius, drawstyle, markevery, **kwargs)</span>
+<span class="ansi-green-intense-fg ansi-bold">    403</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>set_markeredgewidth(markeredgewidth)
+<span class="ansi-green-intense-fg ansi-bold">    405</span> <span style="color: rgb(95,135,135)"># update kwargs before updating data to give the caller a</span>
+<span class="ansi-green-intense-fg ansi-bold">    406</span> <span style="color: rgb(95,135,135)"># chance to init axes (and hence unit support)</span>
+<span class="ansi-green-fg">--&gt; 407</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_internal_update(kwargs)
+<span class="ansi-green-intense-fg ansi-bold">    408</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>pickradius <span style="color: rgb(98,98,98)">=</span> pickradius
+<span class="ansi-green-intense-fg ansi-bold">    409</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>ind_offset <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(98,98,98)">0</span>
+
+File <span class="ansi-green-fg">~/mambaforge/envs/gumbi-test/lib/python3.11/site-packages/matplotlib/artist.py:1233</span>, in <span class="ansi-cyan-fg">Artist._internal_update</span><span class="ansi-blue-fg">(self, kwargs)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1226</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span> <span style="color: rgb(0,0,255)">_internal_update</span>(<span style="color: rgb(0,135,0)">self</span>, kwargs):
+<span class="ansi-green-intense-fg ansi-bold">   1227</span> <span style="color: rgb(188,188,188)">    </span><span style="color: rgb(175,0,0)">&#34;&#34;&#34;</span>
+<span class="ansi-green-intense-fg ansi-bold">   1228</span> <span style="color: rgb(175,0,0)">    Update artist properties without prenormalizing them, but generating</span>
+<span class="ansi-green-intense-fg ansi-bold">   1229</span> <span style="color: rgb(175,0,0)">    errors as if calling `set`.</span>
+<span class="ansi-green-intense-fg ansi-bold">   1230</span>
+<span class="ansi-green-intense-fg ansi-bold">   1231</span> <span style="color: rgb(175,0,0)">    The lack of prenormalization is to maintain backcompatibility.</span>
+<span class="ansi-green-intense-fg ansi-bold">   1232</span> <span style="color: rgb(175,0,0)">    &#34;&#34;&#34;</span>
+<span class="ansi-green-fg">-&gt; 1233</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_update_props(
+<span class="ansi-green-intense-fg ansi-bold">   1234</span>         kwargs, <span style="color: rgb(175,0,0)">&#34;</span><span class="ansi-bold" style="color: rgb(175,95,135)">{cls.__name__}</span><span style="color: rgb(175,0,0)">.set() got an unexpected keyword argument </span><span style="color: rgb(175,0,0)">&#34;</span>
+<span class="ansi-green-intense-fg ansi-bold">   1235</span>         <span style="color: rgb(175,0,0)">&#34;</span><span class="ansi-bold" style="color: rgb(175,95,135)">{prop_name!r}</span><span style="color: rgb(175,0,0)">&#34;</span>)
+
+File <span class="ansi-green-fg">~/mambaforge/envs/gumbi-test/lib/python3.11/site-packages/matplotlib/artist.py:1206</span>, in <span class="ansi-cyan-fg">Artist._update_props</span><span class="ansi-blue-fg">(self, props, errfmt)</span>
+<span class="ansi-green-intense-fg ansi-bold">   1204</span>             func <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(0,135,0)">getattr</span>(<span style="color: rgb(0,135,0)">self</span>, <span style="color: rgb(175,0,0)">f</span><span style="color: rgb(175,0,0)">&#34;</span><span style="color: rgb(175,0,0)">set_</span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>k<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span style="color: rgb(175,0,0)">&#34;</span>, <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>)
+<span class="ansi-green-intense-fg ansi-bold">   1205</span>             <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> <span class="ansi-bold" style="color: rgb(175,0,255)">not</span> <span style="color: rgb(0,135,0)">callable</span>(func):
+<span class="ansi-green-fg">-&gt; 1206</span>                 <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> <span class="ansi-bold" style="color: rgb(215,95,95)">AttributeError</span>(
+<span class="ansi-green-intense-fg ansi-bold">   1207</span>                     errfmt<span style="color: rgb(98,98,98)">.</span>format(<span style="color: rgb(0,135,0)">cls</span><span style="color: rgb(98,98,98)">=</span><span style="color: rgb(0,135,0)">type</span>(<span style="color: rgb(0,135,0)">self</span>), prop_name<span style="color: rgb(98,98,98)">=</span>k),
+<span class="ansi-green-intense-fg ansi-bold">   1208</span>                     name<span style="color: rgb(98,98,98)">=</span>k)
+<span class="ansi-green-intense-fg ansi-bold">   1209</span>             ret<span style="color: rgb(98,98,98)">.</span>append(func(v))
+<span class="ansi-green-intense-fg ansi-bold">   1210</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> ret:
+
+<span class="ansi-red-fg">AttributeError</span>: Line2D.set() got an unexpected keyword argument &#39;norm&#39;
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_examples_Cars_Dataset_28_1.png" src="../../_images/notebooks_examples_Cars_Dataset_28_1.png" />
+<img alt="../../_images/notebooks_examples_Cars_Dataset_28_4.png" src="../../_images/notebooks_examples_Cars_Dataset_28_4.png" />
 </div>
 </div>
 </section>
@@ -490,7 +688,7 @@ WARNING (pytensor.tensor.blas): Using NumPy C-API based implementation for BLAS 
 <h3>3D regression with 2D predictions<a class="headerlink" href="#3D-regression-with-2D-predictions" title="Permalink to this heading"></a></h3>
 <p>Note that here we plot the epistemic uncertainty as dashed lines.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cylinders</span> <span class="o">=</span> <span class="n">cars</span><span class="o">.</span><span class="n">cylinders</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
