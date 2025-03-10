@@ -16,7 +16,7 @@ orbs:
 jobs:
   build-docs:
     docker:
-      - image: cimg/python:3.9
+      - image: cimg/python:3.11
     # Checkout the code as the first step. This is a dedicated CircleCI step.
     steps:
       - checkout
