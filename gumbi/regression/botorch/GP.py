@@ -9,7 +9,7 @@ from botorch import fit_gpytorch_mll
 from botorch.models import (
     SingleTaskGP,
     MixedSingleTaskGP,
-    HeteroskedasticSingleTaskGP,
+    # HeteroskedasticSingleTaskGP,
     MultiTaskGP,
     KroneckerMultiTaskGP,
     ModelListGP,
@@ -179,6 +179,9 @@ class BotorchGP(Regressor):
             n_cats = len(cat_dims)
             if n_cats == 0:
                 if heteroskedastic_inputs:
+                    raise NotImplementedError(
+                        "Support for heteroskedasticity over inputs via HeteroskedasticSingleTaskGP "
+                        "was removed from Botorch in https://github.com/pytorch/botorch/pull/2616.")
                     self.structure = "HeteroskedasticSingleTask"
                     self.model = HeteroskedasticSingleTaskGP(
                         X,
