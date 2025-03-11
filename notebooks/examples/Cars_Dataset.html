@@ -109,7 +109,7 @@
 <h1>The Cars Dataset<a class="headerlink" href="#The-Cars-Dataset" title="Permalink to this heading"></a></h1>
 <p>Here we’ll use the classic Cars dataset to illustrate different ways Gumbi can be used.</p>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">gumbi</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gmb</span>
@@ -121,8 +121,6 @@
 <span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="n">gmb</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">breve</span><span class="p">)</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">filterwarnings</span>
-
-<span class="c1"># Suppress a weird warning from seaborn</span>
 <span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">&quot;No data for colormapping provided via &#39;c&#39;. Parameters &#39;norm&#39; will be ignored&quot;</span><span class="p">)</span>
 <span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">&quot;find_constrained_prior is deprecated and will be removed in a future version. Please use maxent function from PreliZ. https://preliz.readthedocs.io/en/latest/api_reference.html#preliz.unidimensional.maxent&quot;</span><span class="p">)</span>
 <span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Using NumPy C-API based implementation for BLAS functions.&quot;</span><span class="p">)</span>
