@@ -107,7 +107,7 @@
   <section id="Bayesian-Optimization-with-the-Botorch-backend">
 <h1>Bayesian Optimization with the Botorch backend<a class="headerlink" href="#Bayesian-Optimization-with-the-Botorch-backend" title="Permalink to this heading"></a></h1>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">gumbi</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gmb</span>
@@ -119,12 +119,16 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">filterwarnings</span>
+<span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">&quot;find_constrained_prior is deprecated and will be removed in a future version. Please use maxent function from PreliZ. https://preliz.readthedocs.io/en/latest/api_reference.html#preliz.unidimensional.maxent&quot;</span><span class="p">)</span>
+<span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Using NumPy C-API based implementation for BLAS functions.&quot;</span><span class="p">)</span>
+
 <span class="o">%</span><span class="k">config</span> InlineBackend.figure_format = &#39;retina&#39;
 </pre></div>
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cars</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="s1">&#39;mpg&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">({</span><span class="s1">&#39;weight&#39;</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span> <span class="s1">&#39;model_year&#39;</span><span class="p">:</span><span class="nb">float</span><span class="p">})</span>
@@ -138,7 +142,7 @@
 <section id="Single-output-regression">
 <h2>Single-output regression<a class="headerlink" href="#Single-output-regression" title="Permalink to this heading"></a></h2>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gp</span> <span class="o">=</span> <span class="n">GP</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
@@ -164,7 +168,7 @@
 <h3>Batch single-task proposals with qNEI<a class="headerlink" href="#Batch-single-task-proposals-with-qNEI" title="Permalink to this heading"></a></h3>
 <p>Botorch uses “q Noisy Expected Improvement” (qNEI) to select a batch of points to evaluate. This is now controlled through a simple method <code class="docutils literal notranslate"><span class="pre">propose</span></code>, which <em>maximizes</em> the output by default. Set <code class="docutils literal notranslate"><span class="pre">maximize=False</span></code> to minimize instead.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds2</span> <span class="o">=</span> <span class="n">gmb</span><span class="o">.</span><span class="n">DataSet</span><span class="p">(</span>
@@ -211,9 +215,11 @@
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-/home/mambaforge/envs/sbdb-main/lib/python3.11/site-packages/botorch/optim/optimize.py:568: RuntimeWarning: Optimization failed in `gen_candidates_scipy` with the following warning(s):
-[OptimizationWarning(&#39;Optimization failed within `scipy.optimize.minimize` with status 2 and message ABNORMAL_TERMINATION_IN_LNSRCH.&#39;)]
+/home/john/mambaforge/envs/gumbi-test/lib/python3.11/site-packages/botorch/optim/optimize.py:652: RuntimeWarning: Optimization failed in `gen_candidates_scipy` with the following warning(s):
+[OptimizationWarning(&#39;Optimization failed within `scipy.optimize.minimize` with status 2 and message ABNORMAL: .&#39;)]
 Trying again with a new set of initial conditions.
+  return _optimize_acqf_batch(opt_inputs=opt_inputs)
+/home/john/mambaforge/envs/gumbi-test/lib/python3.11/site-packages/botorch/optim/optimize.py:652: RuntimeWarning: Optimization failed on the second try, after generating a new set of initial conditions.
   return _optimize_acqf_batch(opt_inputs=opt_inputs)
 </pre></div></div>
 </div>
@@ -229,7 +235,7 @@ Trying again with a new set of initial conditions.
 <section id="Multi-output-regression">
 <h2>Multi-output regression<a class="headerlink" href="#Multi-output-regression" title="Permalink to this heading"></a></h2>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gp</span> <span class="o">=</span> <span class="n">GP</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
@@ -248,26 +254,17 @@ Trying again with a new set of initial conditions.
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area stderr docutils container">
-<div class="highlight"><pre>
-/home/mambaforge/envs/sbdb-main/lib/python3.11/site-packages/linear_operator/utils/interpolation.py:71: UserWarning: torch.sparse.SparseTensor(indices, values, shape, *, device=) is deprecated.  Please use torch.sparse_coo_tensor(indices, values, shape, dtype=, device=). (Triggered internally at /opt/conda/conda-bld/pytorch_1724788960438/work/torch/csrc/utils/tensor_new.cpp:641.)
-  summing_matrix = cls(summing_matrix_indices, summing_matrix_values, size)
-</pre></div></div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../../_images/notebooks_examples_Cars_Dataset_Botorch_8_1.png" class="no-scaled-link" src="../../_images/notebooks_examples_Cars_Dataset_Botorch_8_1.png" style="width: 531px; height: 679px;" />
+<img alt="../../_images/notebooks_examples_Cars_Dataset_Botorch_8_0.png" class="no-scaled-link" src="../../_images/notebooks_examples_Cars_Dataset_Botorch_8_0.png" style="width: 531px; height: 679px;" />
 </div>
 </div>
 <section id="Learned-correlations-between-outputs">
 <h3>Learned correlations between outputs<a class="headerlink" href="#Learned-correlations-between-outputs" title="Permalink to this heading"></a></h3>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">X</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">parray</span><span class="p">(</span><span class="n">horsepower</span><span class="o">=</span><span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">150</span><span class="p">,</span> <span class="mi">200</span><span class="p">])</span>
@@ -291,12 +288,12 @@ Trying again with a new set of initial conditions.
 </div>
 </div>
 <div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-&lt;seaborn.axisgrid.PairGrid at 0x702718b57d10&gt;
+&lt;seaborn.axisgrid.PairGrid at 0x7f15ec665690&gt;
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -311,7 +308,7 @@ Trying again with a new set of initial conditions.
 <section id="Multi-input-multi-output-regression">
 <h2>Multi-input multi-output regression<a class="headerlink" href="#Multi-input-multi-output-regression" title="Permalink to this heading"></a></h2>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gp</span> <span class="o">=</span> <span class="n">GP</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
@@ -369,7 +366,7 @@ Trying again with a new set of initial conditions.
 <section id="Mixed-categorical-continuous-regression">
 <h2>Mixed categorical-continuous regression<a class="headerlink" href="#Mixed-categorical-continuous-regression" title="Permalink to this heading"></a></h2>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gp</span> <span class="o">=</span> <span class="n">GP</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
@@ -401,7 +398,7 @@ Trying again with a new set of initial conditions.
 <p>Here we compare the use of “Automatic Relevance Determination” (ARD) - using independent length scales for each input dimension - to a single length scale for all input dimensions. ARD is on by default in <code class="docutils literal notranslate"><span class="pre">gumbi</span></code> but off by default in <code class="docutils literal notranslate"><span class="pre">AssayOptimizer</span></code> (in which it’s controlled by the <code class="docutils literal notranslate"><span class="pre">isotropic</span></code> argument - <code class="docutils literal notranslate"><span class="pre">True</span></code> by default). We can see below that ARD learns that the output changes more rapidly in response to a small change in <em>horsepower</em> relative to <em>mpg</em>, as reflected by the more
 eliptical contours in comparison to the more circular contours of the non-ARD model.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.colors</span><span class="w"> </span><span class="kn">import</span> <span class="n">Normalize</span> <span class="k">as</span> <span class="n">cNormalize</span>
@@ -470,7 +467,7 @@ eliptical contours in comparison to the more circular contours of the non-ARD mo
 <p>There are three methods for specifying the multitask kernel: Independent, Hadamard, and Kronecker. Hadamard and Kronecker learn a correlation between the outputs, while Independent simply builds separate GPs for each output. The Kronecker kernel requires all outputs to be observed at every input, while the Hadamard kernel does not. Practically, the Hadamard kernel may perform better in low output and input dimensions (it’s the default for two or fewer outputs), while the Kronecker kernel
 supposedly may perform better in higher output dimensions (it’s the default for three or more outputs) and the Independent kernel may perform better in high input dimensions with relatively few observations. The choice can be forced by setting the <code class="docutils literal notranslate"><span class="pre">multitask_kernel</span></code> argument to either <code class="docutils literal notranslate"><span class="pre">&quot;Independent&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;Kronecker&quot;</span></code>, or <code class="docutils literal notranslate"><span class="pre">&quot;Hadamard&quot;</span></code>.</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
@@ -563,9 +560,19 @@ supposedly may perform better in higher output dimensions (it’s the default fo
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
-<div class="output_area docutils container">
-<img alt="../../_images/notebooks_examples_Cars_Dataset_Botorch_18_0.png" class="no-scaled-link" src="../../_images/notebooks_examples_Cars_Dataset_Botorch_18_0.png" style="width: 889px; height: 299px;" />
-</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/home/john/mambaforge/envs/gumbi-test/lib/python3.11/site-packages/botorch/optim/optimize.py:652: RuntimeWarning: Optimization failed in `gen_candidates_scipy` with the following warning(s):
+[OptimizationWarning(&#39;Optimization failed within `scipy.optimize.minimize` with status 2 and message ABNORMAL: .&#39;)]
+Trying again with a new set of initial conditions.
+  return _optimize_acqf_batch(opt_inputs=opt_inputs)
+/home/john/mambaforge/envs/gumbi-test/lib/python3.11/site-packages/botorch/optim/optimize.py:652: RuntimeWarning: Optimization failed on the second try, after generating a new set of initial conditions.
+  return _optimize_acqf_batch(opt_inputs=opt_inputs)
+/home/john/mambaforge/envs/gumbi-test/lib/python3.11/site-packages/botorch/optim/optimize.py:652: RuntimeWarning: Optimization failed in `gen_candidates_scipy` with the following warning(s):
+[OptimizationWarning(&#39;Optimization failed within `scipy.optimize.minimize` with status 2 and message ABNORMAL: .&#39;)]
+Trying again with a new set of initial conditions.
+  return _optimize_acqf_batch(opt_inputs=opt_inputs)
+</pre></div></div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt empty docutils container">
@@ -574,11 +581,18 @@ supposedly may perform better in higher output dimensions (it’s the default fo
 <img alt="../../_images/notebooks_examples_Cars_Dataset_Botorch_18_1.png" class="no-scaled-link" src="../../_images/notebooks_examples_Cars_Dataset_Botorch_18_1.png" style="width: 889px; height: 299px;" />
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <img alt="../../_images/notebooks_examples_Cars_Dataset_Botorch_18_2.png" class="no-scaled-link" src="../../_images/notebooks_examples_Cars_Dataset_Botorch_18_2.png" style="width: 889px; height: 299px;" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/notebooks_examples_Cars_Dataset_Botorch_18_3.png" class="no-scaled-link" src="../../_images/notebooks_examples_Cars_Dataset_Botorch_18_3.png" style="width: 889px; height: 299px;" />
 </div>
 </div>
 </section>
